@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吉川柚希 | Game Planner Portfolio</title>
+<meta name="description" content="独自の物理コントローラーとアフォーダンス設計で「遊び」をつくるゲームプランナー、吉川柚希のポートフォリオ。">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=DotGothic16&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================
+   DESIGN TOKENS
+   ===================================================== */
+:root {
+  --paper:  #F7F7F3;
+  --ink:    #1B1E2B;
+  --yuzu:   #F2A91F;
+  --mizu:   #2F6FED;
+  --sumi:   #7C7F8A;
+  --haze:   #E7E8E2;
+  --white:  #FFFFFF;
+
+  --r-sm:   10px;
+  --r-md:   16px;
+  --r-lg:   24px;
+  --r-pill: 999px;
+
+  --shadow-stamp: 0 4px 0 0 var(--ink);
+  --shadow-card:  0 2px 24px 0 rgba(27,30,43,0.07);
+
+  --site-max: 800px;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+  --font-dot:  'DotGothic16', monospace;
+}
+
+/* =====================================================
+   RESET & BASE
+   ===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+@media (pointer: fine) {
+  body, a, button, [data-mag] { cursor: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+::selection { background: var(--yuzu); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--mizu); outline-offset: 3px; border-radius: 4px; }
+img { display: block; max-width: 100%; }
+
+/* =====================================================
+   LAYOUT HELPERS
+   ===================================================== */
+.wrap {
+  max-width: var(--site-max);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* =====================================================
+   CUSTOM CURSOR & BLACKHOLE
+   ===================================================== */
+#cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--yuzu);
+  border: 2px solid var(--ink);
+  box-shadow: 0 2px 0 0 rgba(27,30,43,0.8);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .2s cubic-bezier(.2,1.4,.4,1), height .2s cubic-bezier(.2,1.4,.4,1), opacity .15s, background .3s;
+  will-change: transform;
+  display: none;
+}
+#cursor.snap { width: 42px; height: 42px; opacity: .82; }
+#cursor.press { transform: translate(-50%,-50%) scale(.76); }
+
+/* ブラックホール発動時のカーソル */
+#cursor.blackhole {
+  background: #000;
+  border-color: #000;
+  mix-blend-mode: normal; /* 背景を暗くしないので、カーソル自体は通常描画 */
+  animation: bh-pulse 0.5s alternate infinite ease-in-out;
+}
+@keyframes bh-pulse {
+  0% { width: 80px; height: 80px; box-shadow: 0 0 40px 20px rgba(0,0,0,0.8), inset 0 0 20px #fff; }
+  100% { width: 88px; height: 88px; box-shadow: 0 0 60px 30px rgba(0,0,0,0.9), inset 0 0 25px #fff; }
+}
+
+/* 予兆エフェクト（黒い粒の回転） */
+#bh-particles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+.bh-ptc {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: #000;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* ブラックホールに吸い込まれる要素のアニメーション */
+.sucking {
+  transition: transform 0.5s cubic-bezier(.5,0,1,.5), opacity 0.5s, filter 0.5s !important;
+  pointer-events: none !important;
+  opacity: 0;
+  filter: blur(4px);
+}
+.suck-target {
+  display: inline-block; /* transformを適用可能にするため */
+  transition: opacity 0.4s, filter 0.4s; /* 復帰時のトランジション */
+}
+
+/* =====================================================
+   HEADER / NAV
+   ===================================================== */
+#site-header {
+  position: fixed; top: 0; inset-inline: 0; z-index: 100;
+  border-bottom: 1px solid transparent;
+  transition: background .3s, border-color .3s, backdrop-filter .3s;
+}
+#site-header.scrolled {
+  background: rgba(247,247,243,0.88);
+  border-color: var(--haze);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+#site-header .wrap { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+.site-logo { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: inherit; }
+.site-logo .name { font-size: 17px; font-weight: 900; }
+.site-logo .role { font-family: var(--font-dot); font-size: 10px; letter-spacing: .22em; color: var(--sumi); }
+
+nav ul { list-style: none; display: flex; gap: 4px; }
+nav a {
+  display: block; padding: 7px 14px; border-radius: var(--r-pill);
+  font-size: 13px; font-weight: 500; text-decoration: none; color: var(--ink);
+  transition: background .15s;
+}
+nav a:hover { background: var(--haze); }
+
+/* =====================================================
+   COMPONENTS (Chip, Badge, Button, Text)
+   ===================================================== */
+/* 装飾のない通常のタグ */
+.chip {
+  display: inline-block; padding: 5px 14px; border-radius: 6px;
+  background: var(--haze); color: var(--sumi);
+  font-size: 12px; font-weight: 700;
+}
+
+/* ドラッグ可能な物理タグ（Heroセクション用） */
+.chip.draggable {
+  border: none; background: var(--haze); color: var(--sumi);
+  border-radius: 6px; padding: 5px 14px; font-size: 12px;
+  box-shadow: none;
+  cursor: grab; /* fallback for fine pointer */
+  touch-action: none;
+  user-select: none;
+  will-change: transform;
+}
+@media (pointer: fine) { .chip.draggable { cursor: none; } }
+.chip.draggable:active { cursor: grabbing; opacity: 0.8; }
+
+.badge { display: inline-block; padding: 3px 12px; border-radius: var(--r-pill); background: rgba(242,169,31,.2); color: #6b4a0e; font-size: 11px; font-weight: 700; }
+
+.btn {
+  display: inline-block; padding: 12px 26px; border-radius: var(--r-pill);
+  font-family: var(--font-body); font-size: 14px; font-weight: 700; text-decoration: none;
+  border: 2px solid var(--ink); transition: transform .12s cubic-bezier(.2,1.4,.4,1), box-shadow .12s; box-shadow: var(--shadow-stamp);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--ink); }
+.btn:active { transform: scale(.95) translateY(0); box-shadow: 0 1px 0 0 var(--ink); }
+.btn-dark { background: var(--ink); color: var(--paper); }
+.btn-outline { background: transparent; color: var(--ink); }
+
+.eyebrow { font-family: var(--font-dot); font-size: 11px; letter-spacing: .32em; color: var(--mizu); text-transform: uppercase; }
+.section-title { font-size: clamp(26px, 5vw, 40px); font-weight: 900; line-height: 1.2; margin-top: 8px; }
+.section-lead { margin-top: 12px; max-width: 560px; color: var(--sumi); font-size: 15px; }
+
+/* =====================================================
+   SCROLL-REVEAL
+   ===================================================== */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
+.reveal.in { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+
+/* =====================================================
+   IMAGE FRAME & INTERACTION
+   ===================================================== */
+.img-frame {
+  position: relative; border-radius: var(--r-md); background: var(--haze); border: 1px solid var(--haze);
+  overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; text-align: center;
+}
+.img-frame::before { content: "IMAGE"; font-family: var(--font-dot); font-size: 10px; letter-spacing: .2em; color: #b0b2aa; display: block; }
+.img-frame .img-label { font-size: 12px; font-weight: 500; color: var(--sumi); }
+.img-frame .img-path { font-family: var(--font-dot); font-size: 10px; color: #aaa; background: var(--white); padding: 2px 8px; border-radius: 4px; }
+.img-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.pressable { transition: transform .14s cubic-bezier(.2,1.4,.4,1); }
+/* ロケットギミック実行中はホバー効果を無効化 */
+.pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):hover { transform: scale(1.02); }
+.pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):active { transform: scale(.95); }
+
+/* =====================================================
+   INTERACTION: ROCKET WORD
+   ===================================================== */
+.rocket-go {
+  position: relative;
+  animation: rocketPath 8s forwards;
+  z-index: 50;
+  display: inline-block;
+}
+
+/* 打ち上げ時の煙（アニメ調の濃いグレーのもこもこ） */
+.rocket-go::before {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  width: 24px; height: 24px;
+  background: #888;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  animation: launchSmoke 8s forwards;
+  z-index: -1;
+}
+
+@keyframes launchSmoke {
+  0% { opacity: 0; box-shadow: 0 0 0 0 transparent; }
+  8% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1);
+    box-shadow: 
+      0 15px 0 5px #777,
+      -15px 25px 0 8px #666,
+      15px 25px 0 6px #555;
+  }
+  15% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1.2);
+    box-shadow: 
+      0 20px 0 5px #777,
+      -20px 40px 0 10px #666,
+      20px 45px 0 8px #555,
+      0 70px 0 15px #444,
+      -25px 100px 0 20px #555,
+      25px 110px 0 18px #333;
+  }
+  33% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1.5);
+    box-shadow: 
+      0 20px 0 5px #777,
+      -25px 50px 0 10px #666,
+      25px 60px 0 12px #555,
+      0 100px 0 18px #444,
+      -35px 150px 0 25px #555,
+      35px 170px 0 22px #333,
+      0 230px 0 30px #444,
+      -45px 300px 0 35px #555,
+      45px 330px 0 32px #222,
+      0 420px 0 45px #333,
+      -55px 520px 0 50px #444,
+      55px 550px 0 48px #222,
+      0 680px 0 60px #333,
+      -65px 820px 0 70px #444,
+      65px 860px 0 65px #222,
+      0 1050px 0 85px #111,
+      -80px 1250px 0 100px #222,
+      80px 1300px 0 90px #111;
+  }
+  35% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* 墜落時の黒煙（故障） */
+.rocket-go::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  width: 20px; height: 20px;
+  background: #333;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  animation: crashSmoke 8s forwards;
+  z-index: -1;
+}
+
+@keyframes crashSmoke {
+  0%, 74% { opacity: 0; box-shadow: 0 0 0 0 transparent; }
+  75% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1); 
+    box-shadow: 
+      8px 15px 0 4px #222, 
+      -8px 25px 0 6px #111,
+      0 35px 0 8px #000; 
+  }
+  94% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1.3); 
+    box-shadow: 
+      10px 20px 0 4px #222, 
+      -15px 40px 0 8px #111, 
+      0 70px 0 12px #000,
+      -20px 110px 0 18px #111,
+      25px 150px 0 22px #222,
+      0 210px 0 28px #000,
+      15px 280px 0 35px #111,
+      -25px 360px 0 40px #222,
+      20px 460px 0 50px #000,
+      -30px 580px 0 60px #111,
+      0 720px 0 75px #000,
+      35px 880px 0 90px #111,
+      -40px 1050px 0 110px #000; 
+  }
+  96% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes rocketPath {
+  0%   { transform: translateY(0) rotate(0deg); }
+  1%   { transform: translate(-2px, 1px) rotate(-1deg); }
+  2%   { transform: translate(2px, -1px) rotate(1deg); }
+  3%   { transform: translate(-1px, 2px) rotate(-0.5deg); }
+  4%   { transform: translate(1px, -2px) rotate(0.5deg); }
+  5%   { transform: translate(-2px, 1px) rotate(-1deg); }
+  6%   { transform: translate(2px, -1px) rotate(1deg); }
+  7%   { transform: translate(-1px, 2px) rotate(-0.5deg); }
+  8%   { transform: translateY(0) rotate(0deg); animation-timing-function: ease-in; } 
+  15%  { transform: translateY(-30px) rotate(0deg); animation-timing-function: ease-in; } 
+  35%  { transform: translateY(-150vh) rotate(0deg); } 
+  36%  { transform: translateY(-150vh) rotate(180deg); } 
+  75%  { transform: translateY(-150vh) rotate(180deg); animation-timing-function: ease-in; } 
+  95%  { transform: translateY(14px) rotate(180deg); } 
+  97%  { transform: translateY(-8px) rotate(180deg); } 
+  100% { transform: translateY(0) rotate(180deg); } 
+}
+
+/* 墜落してひっくり返った状態 */
+.rocket-crashed {
+  transform: rotate(180deg);
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* つついた時の小ジャンプ（向きは逆さまのまま） */
+.rocket-bump {
+  display: inline-block;
+  animation: rocketBump 0.3s ease-out;
+}
+@keyframes rocketBump {
+  0% { transform: translateY(0) rotate(180deg); }
+  50% { transform: translateY(-15px) rotate(180deg); } /* Y軸上方向（マイナス）へ跳ねる */
+  100% { transform: translateY(0) rotate(180deg); }
+}
+
+/* 3回目で大きく跳ねて元に戻る */
+.rocket-recover {
+  display: inline-block;
+  animation: rocketRecover 0.6s forwards;
+}
+@keyframes rocketRecover {
+  0% { transform: translateY(0) rotate(180deg); }
+  40% { transform: translateY(-60px) rotate(180deg); } /* 上に大きく跳ねる */
+  100% { transform: translateY(0) rotate(360deg); } /* 回転して正位置へ */
+}
+
+/* 着弾時の画面揺れ */
+@keyframes crashShake {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-10px, 15px); }
+  40% { transform: translate(10px, -10px); }
+  60% { transform: translate(-5px, 5px); }
+  80% { transform: translate(5px, -5px); }
+  100% { transform: translate(0,0); }
+}
+
+/* =====================================================
+   PROJECT CARD BASE
+   ===================================================== */
+.project-card { background: var(--white); border-radius: var(--r-lg); border: 1px solid var(--haze); padding: clamp(20px, 4vw, 36px); box-shadow: var(--shadow-card); }
+.project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+.project-index { font-family: var(--font-dot); font-size: 11px; letter-spacing: .18em; color: var(--sumi); }
+.project-title { font-size: clamp(18px, 3vw, 22px); font-weight: 900; line-height: 1.35; margin-bottom: 10px; }
+.project-summary { font-size: 14px; color: var(--sumi); line-height: 1.8; margin-bottom: 18px; }
+
+/* =====================================================
+   HERO
+   ===================================================== */
+#hero { min-height: 100svh; display: flex; align-items: center; padding-top: 80px; padding-bottom: 60px; position: relative; overflow: hidden; }
+#hero::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+#hero .wrap { position: relative; z-index: 1; width: 100%; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; position: relative; z-index: 10; }
+.hero-h1 { font-size: clamp(40px, 8vw, 72px); font-weight: 900; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 20px; }
+.hero-h1 .accent { color: var(--mizu); display: inline-block; }
+.hero-lead { max-width: 480px; font-size: 15px; color: var(--sumi); margin-bottom: 32px; line-height: 1.85; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 48px; }
+.hero-visual { aspect-ratio: 16 / 7; border-radius: var(--r-lg); overflow: hidden; }
+.hero-bg-letter { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); font-family: var(--font-dot); font-size: clamp(200px, 30vw, 340px); color: rgba(27,30,43,.028); pointer-events: none; user-select: none; line-height: 1; z-index: 0; white-space: nowrap; }
+
+#progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--yuzu); width: 0%; z-index: 9998; transition: width .05s linear; }
+
+/* =====================================================
+   SECTIONS
+   ===================================================== */
+#philosophy { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); border-bottom: 1px solid var(--haze); }
+.philosophy-grid { display: grid; grid-template-columns: 1fr 300px; gap: 48px; align-items: start; margin-top: 40px; }
+.philosophy-quote { border-left: 4px solid var(--yuzu); padding-left: 22px; font-size: clamp(15px, 2.2vw, 18px); line-height: 2.1; font-weight: 500; }
+.philosophy-keywords { display: flex; flex-direction: column; gap: 14px; }
+.kw-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); border: 1px solid var(--haze); font-size: 13px; font-weight: 700; transition: transform .14s cubic-bezier(.2,1.4,.4,1), box-shadow .14s; }
+/* .kw-item のホバー装飾は維持（マグネット無効化済み） */
+.kw-item:hover { transform: translateX(6px); box-shadow: -4px 0 0 0 var(--yuzu); }
+.kw-icon { width: 32px; height: 32px; border-radius: var(--r-sm); background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+
+#works { padding-block: clamp(60px, 10vw, 100px); }
+.works-list { display: flex; flex-direction: column; gap: 28px; margin-top: 48px; }
+
+/* Project A */
+#proj-kumi { position: relative; overflow: hidden; }
+.drops-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.drop { position: absolute; will-change: transform; }
+#proj-kumi .project-inner { position: relative; z-index: 1; }
+
+/* Project B */
+#proj-nigi-outer { position: relative; }
+.finger-bar-wrap { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.finger-bar-wrap.left { left: -4px; }
+.finger-bar-wrap.right { right: -4px; align-items: flex-end; }
+.finger-bar { height: 16px; background: var(--yuzu); border-radius: 0 var(--r-pill) var(--r-pill) 0; }
+.finger-bar-wrap.right .finger-bar { border-radius: var(--r-pill) 0 0 var(--r-pill); }
+#proj-nigi { transform-origin: center; will-change: transform; }
+
+/* Project C: ShakeCon Animation */
+#proj-shake { transform-style: preserve-3d; will-change: transform; }
+#shake-inner { will-change: transform; }
+@keyframes rattle {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-2px, 1px); }
+  50%  { transform: translate(1.5px, -1.5px); }
+  75%  { transform: translate(-1px, 2px); }
+  100% { transform: translate(2px, -1px); }
+}
+.rattle-active { animation: rattle 0.08s linear infinite; }
+
+#about { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); }
+.about-grid { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; margin-top: 40px; }
+.profile-img-frame { aspect-ratio: 3/4; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-card); }
+.about-dl { display: flex; flex-direction: column; gap: 24px; }
+.about-dt { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--mizu); margin-bottom: 4px; }
+.about-dd { font-size: 14px; line-height: 1.85; }
+.about-dd strong { font-weight: 700; font-size: 16px; }
+.skills-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+footer { padding-block: 32px; border-top: 1px solid var(--haze); text-align: center; }
+footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--sumi); }
+
+@media (max-width: 768px) {
+  .philosophy-grid, .about-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .hero-bg-letter { display: none; }
+  .hero-btns { gap: 10px; }
+  .btn { padding: 11px 20px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"></div>
+<div id="bh-particles"></div> <!-- 予兆パーティクル用コンテナ -->
+
+<header id="site-header">
+  <div class="wrap">
+    <a href="#hero" class="site-logo" data-mag>
+      <span class="name">吉川柚希</span>
+      <span class="role">GAME PLANNER</span>
+    </a>
+    <nav aria-label="メインナビゲーション">
+      <ul>
+        <li><a href="#philosophy" data-mag>Philosophy</a></li>
+        <li><a href="#works" data-mag>Works</a></li>
+        <li><a href="#about" data-mag>About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section id="hero">
+  <div class="hero-bg-letter" aria-hidden="true">PLAY</div>
+  <div class="wrap">
+    <!-- ドラッグして投げられる物理タグ -->
+    <div class="hero-chips reveal">
+      <div class="chip draggable">遊び</div>
+      <div class="chip draggable reveal-delay-1">インタラクション</div>
+      <div class="chip draggable reveal-delay-2">体験設計</div>
+    </div>
+    
+    <h1 class="hero-h1 reveal reveal-delay-1">
+      手が先に、<br>
+      <span class="accent pressable" id="rocket-word" data-mag>面白さ</span>を見つける。
+    </h1>
+    
+    <p class="hero-lead reveal reveal-delay-2">独自の物理コントローラーとアフォーダンス設計で、<br>プレイヤーの直感的な行動そのものを「遊び」に変える<br>体験をつくっています。</p>
+    
+    <div class="hero-btns reveal reveal-delay-2">
+      <a href="#works" class="btn btn-dark" data-mag>作品を見る</a>
+      <a href="#philosophy" class="btn btn-outline" data-mag>設計思想</a>
+    </div>
+    
+    <div class="hero-visual img-frame reveal reveal-delay-3" style="aspect-ratio:16/7;">
+      <span class="img-label">プレイヤーがデバイスで遊ぶ様子</span>
+      <span class="img-path">images/hero.gif</span>
+    </div>
+  </div>
+</section>
+
+<section id="philosophy">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">PHILOSOPHY</p>
+      <h2 class="section-title">「想定外」は、<br>いちばん正直なフィードバック。</h2>
+    </div>
+    <div class="philosophy-grid">
+      <blockquote class="philosophy-quote reveal reveal-delay-1">
+        展示において、ユーザーが私の制作したコントローラーを想定外の持ち方や遊び方で扱う場面に何度も直面した。しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。この経験から、作り手の「こう遊ぶべき」という無意識のバイアスを自覚し、初見プレイヤーの直感的な行動を観察・予測して、自然な形で面白さへ導くアフォーダンスとルール設計の重要性を学んだ。
+      </blockquote>
+      <div class="philosophy-keywords reveal reveal-delay-2">
+        <div class="kw-item"><div class="kw-icon" aria-hidden="true">👁</div><span>初見観察・行動予測</span></div>
+        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🤲</div><span>アフォーダンス設計</span></div>
+        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🎮</div><span>物理入力とゲームフィール</span></div>
+        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🔁</div><span>展示 → 観察 → 再設計</span></div>
+        <div class="img-frame" style="aspect-ratio:4/3; margin-top:6px;">
+          <span class="img-label">展示会でのユーザー観察風景</span>
+          <span class="img-path">images/philosophy.jpg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="works">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">WORKS</p>
+      <h2 class="section-title">実証としての作品</h2>
+      <p class="section-lead">思想は作品でしか証明できない。デバイスの実機、プレイの現場、企画書。3つの視点から各プロジェクトを記録しています。</p>
+    </div>
+    <div class="works-list">
+      
+      <!-- Project A -->
+      <article class="project-card reveal" id="proj-kumi">
+        <div class="drops-layer" id="drops-layer" aria-hidden="true"></div>
+        <div class="project-inner">
+          <div class="project-meta"><span class="project-index">PROJECT A</span><span class="badge">ISCA2026 提出目標</span></div>
+          <h3 class="project-title">汲・撒・響</h3>
+          <p class="project-summary">柄杓型・桶型の独自デバイスで、水を「汲む・撒く」物理的な解放感をそのままゲームに写し取る作品。床へモニターを水平配置することで、2人のプレイヤーが画面を挟んで自然と向かい合い、対面コミュニケーションが誘発される空間設計を狙っている。</p>
+          <div class="grid-3">
+            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">デバイス外観</span><span class="img-path">images/kumi-device.jpg</span></div>
+            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">テストプレイ風景</span><span class="img-path">images/kumi-play.jpg</span></div>
+            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">ゲームループ図解</span><span class="img-path">images/kumi-loop.jpg</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Project B -->
+      <div id="proj-nigi-outer" class="reveal">
+        <div class="finger-bar-wrap left" id="fingers-left" aria-hidden="true"></div>
+        <div class="finger-bar-wrap right" id="fingers-right" aria-hidden="true"></div>
+        <article class="project-card" id="proj-nigi">
+          <div class="project-meta"><span class="project-index">PROJECT B</span><span class="badge">BitSummit2026 出展</span></div>
+          <h3 class="project-title">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</h3>
+          <p class="project-summary">「握り込む」という一動作の手応えを、ゲーム内アクションへ直接連動させた専用コントローラー。握る強さ・速さがそのままスライムの変形に反映され、入力と結果のあいだに翻訳を挟まないダイレクトな体験を設計した。</p>
+          <div class="grid-2">
+            <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">BitSummit展示風景</span><span class="img-path">images/nigicon-bitsummit.jpg</span></div>
+            <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">コントローラー構造図</span><span class="img-path">images/nigicon-structure.jpg</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Project C -->
+      <article class="project-card reveal" style="perspective: 900px;">
+        <div id="proj-shake">
+          <div id="shake-inner">
+            <div class="project-meta"><span class="project-index">PROJECT C</span><span class="badge">遊創研/GCCP・BitSummit2027 出展目標</span></div>
+            <h3 class="project-title">ShakeCon</h3>
+            <p class="project-summary">内部に独立稼働するパーツを組み込み、振るとカチャカチャと物理的な音が鳴るコントローラー。「振る」行為そのもののプリミティブな面白さを起点に、音と手応えがゲーム体験へ還流する設計を探求している。</p>
+            <div class="grid-2">
+              <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">マイコン内部ギミック</span><span class="img-path">images/shakecon-inside.jpg</span></div>
+              <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span></div>
+            </div>
+            <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* このカードにマウスを乗せると実機のように傾き、カチャカチャ震えます</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Project D -->
+      <article class="project-card reveal">
+        <div class="project-meta"><span class="project-index">PROJECT D</span><span class="badge">授業内制作（アナログ）</span></div>
+        <h3 class="project-title">トリ合い譲り合い</h3>
+        <p class="project-summary">焼き鳥の最後の1本をテーマにした、譲り合いの駆け引きを楽しむ社会人向けカードゲーム。「奪う」ではなく「譲る」をプレイの主語に置くことで、場の空気の読み合いがそのままゲームメカニクスになる構造を設計した。デジタルに限らない遊びの幅を示す制作実績。</p>
+        <div class="grid-2">
+          <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">カードデザイン</span><span class="img-path">images/toriai-cards.jpg</span></div>
+          <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">プレイ風景</span><span class="img-path">images/toriai-play.jpg</span></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="reveal"><p class="eyebrow">ABOUT ME</p><h2 class="section-title">吉川 柚希</h2></div>
+    <div class="about-grid">
+      <div class="profile-img-frame img-frame reveal" style="aspect-ratio:3/4;">
+        <span class="img-label">ポートレート / 作業風景</span><span class="img-path">images/profile.jpg</span>
+      </div>
+      <dl class="about-dl reveal reveal-delay-1">
+        <div><dt class="about-dt">NAME</dt><dd class="about-dd"><strong>吉川 柚希 (Yoshikawa Yuzuki)</strong></dd></div>
+        <div><dt class="about-dt">AFFILIATION</dt><dd class="about-dd">立命館大学 映像学部 ゲームゼミ</dd></div>
+        <div><dt class="about-dt">BACKGROUND</dt><dd class="about-dd">工学部で1年間学んだ後、ゲームデザインを学ぶため現学部へ再入学。現在は立命館大学遊び創り研究センター（遊創研）に設置されたプロジェクト「ゲーム創造・継承プロジェクト（GCCP）」などでも活動している。</dd></div>
+        <div><dt class="about-dt">SKILLS</dt><dd class="about-dd">
+          <div class="skills-list">
+            <span class="chip">企画立案</span><span class="chip">Unity</span><span class="chip">マイコン制御 (Arduino)</span><span class="chip">3Dモデリング (Fusion)</span>
+          </div>
+        </dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>PLAY &nbsp;/&nbsp; INTERACTION &nbsp;/&nbsp; EXPERIENCE DESIGN</p>
+  <p style="margin-top:6px; font-size:9px; letter-spacing:.2em;">© 2026 Yuzuki Yoshikawa</p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine   = window.matchMedia('(pointer: fine)').matches;
+
+  /* --------------------------------------------------
+     SCROLL REVEAL
+     -------------------------------------------------- */
+  if (!reduce) {
+    var ro = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); }
+      });
+    }, { rootMargin: '-60px 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el) { ro.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* --------------------------------------------------
+     MAGNETIC CURSOR & BLACKHOLE (6s hold)
+     -------------------------------------------------- */
+  var cursor = document.getElementById('cursor');
+  var bhParticlesContainer = document.getElementById('bh-particles');
+  var cx = -100, cy = -100, tx = -100, ty = -100, isSnap = false;
+  
+  var holdTimer = null;
+  var particleTimer = null;
+  var holdTime = 0;
+  var isBlackhole = false;
+  var isPreBlackhole = false;
+  var particles = [];
+  var suckTargets = [];
+
+  if (fine && !reduce) {
+    cursor.style.display = 'block';
+    var mags = document.querySelectorAll('[data-mag]');
+
+    // 自動で吸い込みターゲットを収集 (テキスト要素、画像フレーム、物理タグなど)
+    function collectSuckTargets() {
+      // 画面上の様々な細かい要素を対象にする
+      var els = document.querySelectorAll('h1, h2, h3, p, li, dt, dd, blockquote, .btn, .chip, .kw-item, .img-frame, .badge, .project-index, .eyebrow, .hero-bg-letter, footer p');
+      els.forEach(function(el) {
+        if (!el.classList.contains('suck-target') && el.id !== 'rocket-word' && el.id !== 'bh-particles') {
+          el.classList.add('suck-target');
+          suckTargets.push({ el: el, sucked: false });
+        }
+      });
+    }
+    collectSuckTargets();
+
+    window.addEventListener('mousemove', function (e) {
+      tx = e.clientX; ty = e.clientY;
+      isSnap = false;
+      var best = null;
+      
+      // ブラックホール起動中・予兆中はマグネットを無効化
+      if (!isBlackhole && !isPreBlackhole) {
+        mags.forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          var dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+          var dy = Math.max(r.top  - e.clientY, 0, e.clientY - r.bottom);
+          var d  = Math.hypot(dx, dy);
+          if (d < 90 && (!best || d < best.d)) best = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, d: d };
+        });
+      }
+
+      if (best) {
+        var t = (1 - best.d / 90) * 0.44;
+        tx = e.clientX + (best.cx - e.clientX) * t;
+        ty = e.clientY + (best.cy - e.clientY) * t;
+        isSnap = true;
+      }
+    }, { passive: true });
+
+    function createParticle() {
+      var p = document.createElement('div');
+      p.className = 'bh-ptc';
+      var angle = Math.random() * Math.PI * 2;
+      var radius = 60 + Math.random() * 40;
+      var speed = 0.05 + Math.random() * 0.05;
+      bhParticlesContainer.appendChild(p);
+      particles.push({ el: p, angle: angle, radius: radius, speed: speed });
+    }
+
+    var pressed = false;
+    window.addEventListener('mousedown', function (e) { 
+      // ロケット文字クリック時はブラックホールを発動させない
+      if (e.target.id === 'rocket-word') return;
+      
+      pressed = true;  
+      if (!isBlackhole) cursor.classList.add('press'); 
+      holdTime = 0;
+      
+      holdTimer = setInterval(function() {
+        holdTime += 100;
+        
+        // 4秒経過：予兆エフェクト（黒い粒の回転）開始
+        if (holdTime >= 4000 && !isPreBlackhole && !isBlackhole) {
+          isPreBlackhole = true;
+          particleTimer = setInterval(createParticle, 50); // 粒を生成開始
+        }
+        
+        // 6秒経過：ブラックホール発動
+        if (holdTime >= 6000 && !isBlackhole) {
+          isBlackhole = true;
+          isPreBlackhole = false;
+          cursor.classList.remove('press');
+          cursor.classList.add('blackhole');
+        }
+      }, 100);
+    });
+
+    window.addEventListener('mouseup', function () { 
+      pressed = false; 
+      cursor.classList.remove('press'); 
+      clearInterval(holdTimer);
+      
+      if (isPreBlackhole || isBlackhole) {
+        isPreBlackhole = false;
+        isBlackhole = false;
+        cursor.classList.remove('blackhole');
+        
+        // パーティクル削除
+        clearInterval(particleTimer);
+        particles.forEach(function(p) { p.el.remove(); });
+        particles = [];
+
+        // 吸い込んだ要素を元に戻す
+        suckTargets.forEach(function(target) {
+          if (target.sucked) {
+            target.el.style.transform = '';
+            target.el.classList.remove('sucking');
+            target.sucked = false;
+          }
+        });
+      }
+    });
+
+    (function loop() {
+      cx += (tx - cx) * 0.26;
+      cy += (ty - cy) * 0.26;
+      cursor.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)' + (pressed && !isBlackhole ? ' scale(.76)' : '');
+      cursor.classList.toggle('snap', isSnap && !isBlackhole);
+
+      // パーティクルの回転処理
+      if (isPreBlackhole || isBlackhole) {
+        particles.forEach(function(p) {
+          p.angle += p.speed;
+          // ブラックホール発動時は半径を狭めて中心に吸い込まれるように見せる
+          var currentRadius = isBlackhole ? p.radius * 0.5 : p.radius;
+          var px = cx + Math.cos(p.angle) * currentRadius;
+          var py = cy + Math.sin(p.angle) * currentRadius;
+          p.el.style.transform = 'translate(' + px + 'px, ' + py + 'px)';
+        });
+      }
+
+      // ブラックホール中の吸い込み判定をアニメーションループ内で実行
+      if (isBlackhole) {
+        suckTargets.forEach(function(target) {
+          if (target.sucked) return;
+          var rect = target.el.getBoundingClientRect();
+          var elCx = rect.left + rect.width / 2;
+          var elCy = rect.top + rect.height / 2;
+          var dist = Math.hypot(cx - elCx, cy - elCy); // カーソル追従座標で判定
+
+          if (dist < 150) { // 引力圏内
+            target.sucked = true;
+            var dx = cx - elCx;
+            var dy = cy - elCy;
+            // 物理演算タグの場合はドラッグ状態を強制解除して震えを防ぐ
+            if (target.el.classList.contains('draggable')) {
+              target.el.style.transform = '';
+            }
+            target.el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(0) rotate(180deg)';
+            target.el.classList.add('sucking');
+          }
+        });
+      }
+
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  /* --------------------------------------------------
+     INTERACTION: DRAGGABLE CHIPS (Physics)
+     -------------------------------------------------- */
+  var draggables = document.querySelectorAll('.chip.draggable');
+  draggables.forEach(function(el) {
+    var isDragging = false;
+    var startX, startY, initialX, initialY;
+    var vx = 0, vy = 0;
+    var lastX, lastY;
+    var raf;
+    var currentX = 0, currentY = 0;
+
+    el.addEventListener('pointerdown', function(e) {
+      if (isBlackhole) return; // 吸い込み中は掴めない
+      isDragging = true;
+      startX = e.clientX - currentX;
+      startY = e.clientY - currentY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      cancelAnimationFrame(raf);
+      el.style.transition = 'none';
+      el.setPointerCapture(e.pointerId);
+    });
+
+    el.addEventListener('pointermove', function(e) {
+      if (!isDragging || isBlackhole) return;
+      currentX = e.clientX - startX;
+      currentY = e.clientY - startY;
+      vx = e.clientX - lastX;
+      vy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      el.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px) rotate(' + (vx * 0.5) + 'deg)';
+    });
+
+    el.addEventListener('pointerup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      // ブラックホールに吸い込まれている場合は物理シミュレーションを回さない
+      var suckTarget = suckTargets.find(function(t) { return t.el === el; });
+      if (suckTarget && suckTarget.sucked) return;
+
+      var gravity = 0.8;
+      var bounce = -0.5;
+      var floor = window.innerHeight - el.getBoundingClientRect().height - 20;
+
+      function physicsLoop() {
+        if (suckTarget && suckTarget.sucked) return; // 吸い込まれたら中断
+
+        vy += gravity;
+        currentX += vx;
+        currentY += vy;
+
+        // 床判定 (ざっくりViewport下部)
+        var rect = el.getBoundingClientRect();
+        if (rect.top + currentY > floor) {
+          currentY = floor - rect.top;
+          vy *= bounce;
+          vx *= 0.8; // 摩擦
+        }
+
+        el.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px) rotate(' + (vx * 1.5) + 'deg)';
+
+        if (Math.abs(vy) > 0.5 || Math.abs(vx) > 0.5 || rect.top + currentY < floor) {
+          raf = requestAnimationFrame(physicsLoop);
+        }
+      }
+      raf = requestAnimationFrame(physicsLoop);
+    });
+  });
+
+  /* --------------------------------------------------
+     INTERACTION: ROCKET WORD
+     -------------------------------------------------- */
+  var rocketWord = document.getElementById('rocket-word');
+  if (rocketWord) {
+    var crashedClickCount = 0;
+
+    rocketWord.addEventListener('click', function(e) {
+      if (isBlackhole) return; // ブラックホール発動中は無効
+
+      // 1. 通常状態からの打ち上げ
+      if (!rocketWord.classList.contains('rocket-go') && !rocketWord.classList.contains('rocket-crashed') && !rocketWord.classList.contains('rocket-recover')) {
+        rocketWord.classList.add('rocket-go');
+        crashedClickCount = 0; 
+        
+        // 8秒アニメの約95% (7600ms) の着弾に合わせて画面を揺らす
+        setTimeout(function() {
+          document.body.style.animation = 'crashShake 0.4s ease-out';
+          
+          setTimeout(function() { 
+            document.body.style.animation = ''; 
+            rocketWord.classList.remove('rocket-go');
+            rocketWord.classList.add('rocket-crashed');
+          }, 400);
+        }, 7600);
+      }
+      // 2. 墜落後（ひっくり返った状態）のクリック
+      else if (rocketWord.classList.contains('rocket-crashed')) {
+        // 重複実行を防ぐ
+        if (rocketWord.classList.contains('rocket-bump')) return;
+
+        crashedClickCount++;
+
+        if (crashedClickCount < 3) {
+          // 軽くジャンプ（向きはそのまま）
+          rocketWord.classList.add('rocket-bump');
+          setTimeout(function() {
+            rocketWord.classList.remove('rocket-bump');
+          }, 300);
+        } else {
+          // 3回目で大きく跳ねて元に戻る
+          rocketWord.classList.remove('rocket-crashed');
+          rocketWord.classList.add('rocket-recover');
+          
+          setTimeout(function() {
+            rocketWord.classList.remove('rocket-recover');
+            crashedClickCount = 0;
+          }, 600);
+        }
+      }
+    });
+  }
+
+  /* --------------------------------------------------
+     PROJECT SETUP (DOM Elements)
+     -------------------------------------------------- */
+  var dropsLayer = document.getElementById('drops-layer');
+  var projKumi   = document.getElementById('proj-kumi');
+  var dropEls = [];
+  if (dropsLayer && !reduce) {
+    var dropDefs = [ {l:'5%',s:24,o:.18,sp:.5}, {l:'13%',s:15,o:.3,sp:1.2}, {l:'47%',s:19,o:.14,sp:.82}, {l:'77%',s:13,o:.28,sp:1.1}, {l:'89%',s:28,o:.16,sp:.55}, {l:'67%',s:11,o:.22,sp:.95} ];
+    dropEls = dropDefs.map(function(d) {
+      var el = document.createElement('div');
+      el.className = 'drop';
+      el.style.cssText = 'left:'+d.l+'; top:15%; width:'+d.s+'px; height:'+(d.s*1.42)+'px; opacity:'+d.o;
+      el.innerHTML = '<svg viewBox="0 0 40 56"><path d="M20 2 C20 2 4 26 4 38 a16 16 0 0 0 32 0 C36 26 20 2 20 2 Z" fill="#2F6FED"/><circle cx="14" cy="38" r="4" fill="#fff" opacity=".5"/></svg>';
+      dropsLayer.appendChild(el);
+      return { el: el, speed: d.sp };
+    });
+  }
+
+  var nigiOuter = document.getElementById('proj-nigi-outer');
+  var nigiCard  = document.getElementById('proj-nigi');
+  var fingL = document.getElementById('fingers-left');
+  var fingR = document.getElementById('fingers-right');
+  if (nigiOuter && !reduce) {
+    [fingL, fingR].forEach(function(wrap) {
+      [0,1,2,3].forEach(function(i) {
+        var f = document.createElement('div');
+        f.className = 'finger-bar'; f.style.width = (44 - Math.abs(i - 1.5) * 8) + 'px';
+        wrap.appendChild(f);
+      });
+    });
+  }
+
+  var shakeCard  = document.getElementById('proj-shake');
+  var shakeInner = document.getElementById('shake-inner');
+  if (shakeCard && !reduce) {
+    shakeCard.parentElement.addEventListener('mousemove', function (e) {
+      var r = shakeCard.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top)  / r.height;
+      shakeCard.style.transform = 'rotateY(' + ((px - 0.5) * 13) + 'deg) rotateX(' + (-(py - 0.5) * 10) + 'deg)';
+    });
+    shakeCard.parentElement.addEventListener('mouseenter', function () { shakeInner.classList.add('rattle-active'); });
+    shakeCard.parentElement.addEventListener('mouseleave', function () { shakeCard.style.transform = ''; shakeInner.classList.remove('rattle-active'); });
+  }
+
+  /* --------------------------------------------------
+     SCROLL EVENT CONTROLLER
+     -------------------------------------------------- */
+  var bar = document.getElementById('progress-bar');
+  var hdr = document.getElementById('site-header');
+  var isScrolling = false;
+
+  function onScrollFrame() {
+    var scrolled = window.scrollY;
+    var vh = window.innerHeight;
+    
+    var total = document.documentElement.scrollHeight - vh;
+    if (bar) bar.style.width = (total > 0 ? (scrolled / total * 100) : 0) + '%';
+    if (hdr) hdr.classList.toggle('scrolled', scrolled > 10);
+
+    if (dropsLayer && dropEls.length) {
+      var rKumi = projKumi.getBoundingClientRect();
+      var pKumi = Math.max(0, Math.min(1, 1 - (rKumi.top + rKumi.height) / (vh + rKumi.height)));
+      dropEls.forEach(function(d) { d.el.style.transform = 'translateY(' + ((160 - pKumi * 360) * d.speed) + 'px)'; });
+    }
+
+    if (nigiOuter) {
+      var rNigi = nigiOuter.getBoundingClientRect();
+      var pNigi = Math.max(0, Math.min(1, 1 - (rNigi.top / (vh * 0.82))));
+      fingL.style.transform = 'translateY(-50%) translateX(' + (-78 + pNigi * 78) + 'px)';
+      fingR.style.transform = 'translateY(-50%) translateX(' + ( 78 - pNigi * 78) + 'px)';
+      nigiCard.style.transform = 'scaleX(' + (1 - pNigi * 0.036) + ')';
+    }
+    isScrolling = false;
+  }
+
+  window.addEventListener('scroll', function() {
+    if (!isScrolling) { window.requestAnimationFrame(onScrollFrame); isScrolling = true; }
+  }, { passive: true });
+
+  window.requestAnimationFrame(onScrollFrame);
+
+})();
+</script>
+</body>
+</html>
