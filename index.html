@@ -42,6 +42,8 @@
    ===================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+
+/* ギミック成立のため、サイト全体のテキスト選択と長押しメニューを禁止 */
 body {
   font-family: var(--font-body);
   background: var(--paper);
@@ -49,6 +51,9 @@ body {
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
   overflow-x: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 @media (pointer: fine) {
@@ -68,7 +73,7 @@ body {
 img { display: block; max-width: 100%; }
 
 /* =====================================================
-   LAYOUT HELPERS
+   LAYOUT HELPERS & RESPONSIVE TYPOGRAPHY
    ===================================================== */
 .wrap {
   max-width: var(--site-max);
@@ -78,8 +83,13 @@ img { display: block; max-width: 100%; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
+@media (min-width: 769px) {
+  .sp-only { display: none !important; }
+}
+
 @media (max-width: 768px) {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .pc-only { display: none !important; }
 }
 
 /* =====================================================
@@ -107,7 +117,7 @@ img { display: block; max-width: 100%; }
 #cursor.blackhole {
   background: #000;
   border-color: #000;
-  mix-blend-mode: normal; /* 背景を暗くしないので、カーソル自体は通常描画 */
+  mix-blend-mode: normal; 
   animation: bh-pulse 0.5s alternate infinite ease-in-out;
 }
 @keyframes bh-pulse {
@@ -140,8 +150,8 @@ img { display: block; max-width: 100%; }
   filter: blur(4px);
 }
 .suck-target {
-  display: inline-block; /* transformを適用可能にするため */
-  transition: opacity 0.4s, filter 0.4s; /* 復帰時のトランジション */
+  display: inline-block; 
+  transition: opacity 0.4s, filter 0.4s; 
 }
 
 /* =====================================================
@@ -181,18 +191,18 @@ nav a:hover { background: var(--haze); }
   font-size: 12px; font-weight: 700;
 }
 
-/* ドラッグ可能な物理タグ（Heroセクション用） */
+/* ドラッグ可能な物理タグ */
 .chip.draggable {
   border: none; background: var(--haze); color: var(--sumi);
   border-radius: 6px; padding: 5px 14px; font-size: 12px;
   box-shadow: none;
-  cursor: grab; /* fallback for fine pointer */
+  cursor: grab; 
   touch-action: none;
   user-select: none;
   will-change: transform;
 }
 @media (pointer: fine) { .chip.draggable { cursor: none; } }
-.chip.draggable:active { cursor: grabbing; opacity: 0.8; }
+.chip.draggable:active { opacity: 0.8; }
 
 .badge { display: inline-block; padding: 3px 12px; border-radius: var(--r-pill); background: rgba(242,169,31,.2); color: #6b4a0e; font-size: 11px; font-weight: 700; }
 
@@ -232,7 +242,6 @@ nav a:hover { background: var(--haze); }
 .img-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .pressable { transition: transform .14s cubic-bezier(.2,1.4,.4,1); }
-/* ロケットギミック実行中はホバー効果を無効化 */
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):hover { transform: scale(1.02); }
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):active { transform: scale(.95); }
 
@@ -246,7 +255,6 @@ nav a:hover { background: var(--haze); }
   display: inline-block;
 }
 
-/* 打ち上げ時の煙（アニメ調の濃いグレーのもこもこ） */
 .rocket-go::before {
   content: '';
   position: absolute;
@@ -266,50 +274,22 @@ nav a:hover { background: var(--haze); }
   8% { 
     opacity: 1; 
     transform: translateX(-50%) scale(1);
-    box-shadow: 
-      0 15px 0 5px #777,
-      -15px 25px 0 8px #666,
-      15px 25px 0 6px #555;
+    box-shadow: 0 15px 0 5px #777, -15px 25px 0 8px #666, 15px 25px 0 6px #555;
   }
   15% { 
     opacity: 1; 
     transform: translateX(-50%) scale(1.2);
-    box-shadow: 
-      0 20px 0 5px #777,
-      -20px 40px 0 10px #666,
-      20px 45px 0 8px #555,
-      0 70px 0 15px #444,
-      -25px 100px 0 20px #555,
-      25px 110px 0 18px #333;
+    box-shadow: 0 20px 0 5px #777, -20px 40px 0 10px #666, 20px 45px 0 8px #555, 0 70px 0 15px #444, -25px 100px 0 20px #555, 25px 110px 0 18px #333;
   }
   33% { 
     opacity: 1; 
     transform: translateX(-50%) scale(1.5);
-    box-shadow: 
-      0 20px 0 5px #777,
-      -25px 50px 0 10px #666,
-      25px 60px 0 12px #555,
-      0 100px 0 18px #444,
-      -35px 150px 0 25px #555,
-      35px 170px 0 22px #333,
-      0 230px 0 30px #444,
-      -45px 300px 0 35px #555,
-      45px 330px 0 32px #222,
-      0 420px 0 45px #333,
-      -55px 520px 0 50px #444,
-      55px 550px 0 48px #222,
-      0 680px 0 60px #333,
-      -65px 820px 0 70px #444,
-      65px 860px 0 65px #222,
-      0 1050px 0 85px #111,
-      -80px 1250px 0 100px #222,
-      80px 1300px 0 90px #111;
+    box-shadow: 0 20px 0 5px #777, -25px 50px 0 10px #666, 25px 60px 0 12px #555, 0 100px 0 18px #444, -35px 150px 0 25px #555, 35px 170px 0 22px #333, 0 230px 0 30px #444, -45px 300px 0 35px #555, 45px 330px 0 32px #222, 0 420px 0 45px #333, -55px 520px 0 50px #444, 55px 550px 0 48px #222, 0 680px 0 60px #333, -65px 820px 0 70px #444, 65px 860px 0 65px #222, 0 1050px 0 85px #111, -80px 1250px 0 100px #222, 80px 1300px 0 90px #111;
   }
   35% { opacity: 0; }
   100% { opacity: 0; }
 }
 
-/* 墜落時の黒煙（故障） */
 .rocket-go::after {
   content: '';
   position: absolute;
@@ -329,28 +309,12 @@ nav a:hover { background: var(--haze); }
   75% { 
     opacity: 1; 
     transform: translateX(-50%) scale(1); 
-    box-shadow: 
-      8px 15px 0 4px #222, 
-      -8px 25px 0 6px #111,
-      0 35px 0 8px #000; 
+    box-shadow: 8px 15px 0 4px #222, -8px 25px 0 6px #111, 0 35px 0 8px #000; 
   }
   94% { 
     opacity: 1; 
     transform: translateX(-50%) scale(1.3); 
-    box-shadow: 
-      10px 20px 0 4px #222, 
-      -15px 40px 0 8px #111, 
-      0 70px 0 12px #000,
-      -20px 110px 0 18px #111,
-      25px 150px 0 22px #222,
-      0 210px 0 28px #000,
-      15px 280px 0 35px #111,
-      -25px 360px 0 40px #222,
-      20px 460px 0 50px #000,
-      -30px 580px 0 60px #111,
-      0 720px 0 75px #000,
-      35px 880px 0 90px #111,
-      -40px 1050px 0 110px #000; 
+    box-shadow: 10px 20px 0 4px #222, -15px 40px 0 8px #111, 0 70px 0 12px #000, -20px 110px 0 18px #111, 25px 150px 0 22px #222, 0 210px 0 28px #000, 15px 280px 0 35px #111, -25px 360px 0 40px #222, 20px 460px 0 50px #000, -30px 580px 0 60px #111, 0 720px 0 75px #000, 35px 880px 0 90px #111, -40px 1050px 0 110px #000; 
   }
   96% { opacity: 0; }
   100% { opacity: 0; }
@@ -375,36 +339,21 @@ nav a:hover { background: var(--haze); }
   100% { transform: translateY(0) rotate(180deg); } 
 }
 
-/* 墜落してひっくり返った状態 */
-.rocket-crashed {
-  transform: rotate(180deg);
-  display: inline-block;
-  cursor: pointer;
-}
-
-/* つついた時の小ジャンプ（向きは逆さまのまま） */
-.rocket-bump {
-  display: inline-block;
-  animation: rocketBump 0.3s ease-out;
-}
+.rocket-crashed { transform: rotate(180deg); display: inline-block; cursor: pointer; }
+.rocket-bump { display: inline-block; animation: rocketBump 0.3s ease-out; }
 @keyframes rocketBump {
   0% { transform: translateY(0) rotate(180deg); }
-  50% { transform: translateY(-15px) rotate(180deg); } /* Y軸上方向（マイナス）へ跳ねる */
+  50% { transform: translateY(-15px) rotate(180deg); }
   100% { transform: translateY(0) rotate(180deg); }
 }
 
-/* 3回目で大きく跳ねて元に戻る */
-.rocket-recover {
-  display: inline-block;
-  animation: rocketRecover 0.6s forwards;
-}
+.rocket-recover { display: inline-block; animation: rocketRecover 0.6s forwards; }
 @keyframes rocketRecover {
   0% { transform: translateY(0) rotate(180deg); }
-  40% { transform: translateY(-60px) rotate(180deg); } /* 上に大きく跳ねる */
-  100% { transform: translateY(0) rotate(360deg); } /* 回転して正位置へ */
+  40% { transform: translateY(-60px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
 }
 
-/* 着弾時の画面揺れ */
 @keyframes crashShake {
   0% { transform: translate(0,0); }
   20% { transform: translate(-10px, 15px); }
@@ -447,7 +396,6 @@ nav a:hover { background: var(--haze); }
 .philosophy-quote { border-left: 4px solid var(--yuzu); padding-left: 22px; font-size: clamp(15px, 2.2vw, 18px); line-height: 2.1; font-weight: 500; }
 .philosophy-keywords { display: flex; flex-direction: column; gap: 14px; }
 .kw-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); border: 1px solid var(--haze); font-size: 13px; font-weight: 700; transition: transform .14s cubic-bezier(.2,1.4,.4,1), box-shadow .14s; }
-/* .kw-item のホバー装飾は維持（マグネット無効化済み） */
 .kw-item:hover { transform: translateX(6px); box-shadow: -4px 0 0 0 var(--yuzu); }
 .kw-icon { width: 32px; height: 32px; border-radius: var(--r-sm); background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
 
@@ -493,13 +441,17 @@ nav a:hover { background: var(--haze); }
 footer { padding-block: 32px; border-top: 1px solid var(--haze); text-align: center; }
 footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--sumi); }
 
-@media (max-width: 768px) {
-  .philosophy-grid, .about-grid { grid-template-columns: 1fr; }
-}
+/* SP向けサイズ調整 */
 @media (max-width: 480px) {
   .hero-bg-letter { display: none; }
   .hero-btns { gap: 10px; }
   .btn { padding: 11px 20px; font-size: 13px; }
+  
+  .hero-h1 { font-size: clamp(32px, 8vw, 44px); }
+  .hero-lead { font-size: 14px; line-height: 1.7; }
+  .philosophy-quote { font-size: 14px; line-height: 1.9; }
+  .project-summary { font-size: 13px; line-height: 1.7; }
+  .about-dd { font-size: 13px; line-height: 1.7; }
 }
 </style>
 </head>
@@ -507,7 +459,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
 <div id="progress-bar" aria-hidden="true"></div>
 <div id="cursor" aria-hidden="true"></div>
-<div id="bh-particles"></div> <!-- 予兆パーティクル用コンテナ -->
+<div id="bh-particles"></div>
 
 <header id="site-header">
   <div class="wrap">
@@ -528,7 +480,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 <section id="hero">
   <div class="hero-bg-letter" aria-hidden="true">PLAY</div>
   <div class="wrap">
-    <!-- ドラッグして投げられる物理タグ -->
     <div class="hero-chips reveal">
       <div class="chip draggable">遊び</div>
       <div class="chip draggable reveal-delay-1">インタラクション</div>
@@ -540,7 +491,12 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       <span class="accent pressable" id="rocket-word" data-mag>面白さ</span>を見つける。
     </h1>
     
-    <p class="hero-lead reveal reveal-delay-2">独自の物理コントローラーとアフォーダンス設計で、<br>プレイヤーの直感的な行動そのものを「遊び」に変える<br>体験をつくっています。</p>
+    <!-- スマホでは自然な折り返しにするため、pc-only / sp-only を活用 -->
+    <p class="hero-lead reveal reveal-delay-2">
+      独自の物理コントローラーと<br class="sp-only">アフォーダンス設計で、<br class="pc-only">
+      プレイヤーの直感的な行動そのものを<br class="sp-only">「遊び」に変える<br class="pc-only">
+      体験をつくっています。
+    </p>
     
     <div class="hero-btns reveal reveal-delay-2">
       <a href="#works" class="btn btn-dark" data-mag>作品を見る</a>
@@ -562,7 +518,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </div>
     <div class="philosophy-grid">
       <blockquote class="philosophy-quote reveal reveal-delay-1">
-        展示において、ユーザーが私の制作したコントローラーを想定外の持ち方や遊び方で扱う場面に何度も直面した。しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。この経験から、作り手の「こう遊ぶべき」という無意識のバイアスを自覚し、初見プレイヤーの直感的な行動を観察・予測して、自然な形で面白さへ導くアフォーダンスとルール設計の重要性を学んだ。
+        展示において、ユーザーが私の制作したコントローラーを<br class="pc-only">想定外の持ち方や遊び方で扱う場面に何度も直面した。<br class="pc-only">しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。<br class="pc-only">この経験から、作り手の「こう遊ぶべき」という無意識のバイアスを自覚し、<br class="pc-only">初見プレイヤーの直感的な行動を観察・予測して、<br class="pc-only">自然な形で面白さへ導くアフォーダンスとルール設計の重要性を学んだ。
       </blockquote>
       <div class="philosophy-keywords reveal reveal-delay-2">
         <div class="kw-item"><div class="kw-icon" aria-hidden="true">👁</div><span>初見観察・行動予測</span></div>
@@ -587,7 +543,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </div>
     <div class="works-list">
       
-      <!-- Project A -->
       <article class="project-card reveal" id="proj-kumi">
         <div class="drops-layer" id="drops-layer" aria-hidden="true"></div>
         <div class="project-inner">
@@ -602,7 +557,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         </div>
       </article>
 
-      <!-- Project B -->
       <div id="proj-nigi-outer" class="reveal">
         <div class="finger-bar-wrap left" id="fingers-left" aria-hidden="true"></div>
         <div class="finger-bar-wrap right" id="fingers-right" aria-hidden="true"></div>
@@ -617,7 +571,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         </article>
       </div>
 
-      <!-- Project C -->
       <article class="project-card reveal" style="perspective: 900px;">
         <div id="proj-shake">
           <div id="shake-inner">
@@ -633,7 +586,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         </div>
       </article>
 
-      <!-- Project D -->
       <article class="project-card reveal">
         <div class="project-meta"><span class="project-index">PROJECT D</span><span class="badge">授業内制作（アナログ）</span></div>
         <h3 class="project-title">トリ合い譲り合い</h3>
@@ -661,8 +613,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div><dt class="about-dt">BACKGROUND</dt><dd class="about-dd">工学部で1年間学んだ後、ゲームデザインを学ぶため現学部へ再入学。現在は立命館大学遊び創り研究センター（遊創研）に設置されたプロジェクト「ゲーム創造・継承プロジェクト（GCCP）」などでも活動している。</dd></div>
         <div><dt class="about-dt">SKILLS</dt><dd class="about-dd">
           <div class="skills-list">
-            <span class="chip">企画立案</span><span class="chip">Unity</span><span class="chip">マイコン制御 (Arduino)</span><span class="chip">3Dモデリング (Fusion)</span>
+            <span class="chip draggable">企画立案</span>
+            <span class="chip draggable">Unity</span>
+            <span class="chip draggable">マイコン制御 (Arduino)</span>
+            <span class="chip draggable">3Dモデリング (Fusion)</span>
           </div>
+        </dd></div>
+        <div><dt class="about-dt">CONTACT</dt><dd class="about-dd">
+          <a href="mailto:y.yoshikawa.113@gmail.com" style="color: var(--ink); font-weight: 500; text-decoration: underline; text-decoration-color: var(--mizu); text-decoration-thickness: 2px; text-underline-offset: 4px;">y.yoshikawa.113@gmail.com</a>
         </dd></div>
       </dl>
     </div>
@@ -710,13 +668,17 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   var particles = [];
   var suckTargets = [];
 
-  if (fine && !reduce) {
+  // スマホのコンテキストメニュー（長押しメニュー）を無効化
+  window.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  if (!reduce) {
+    // fine(PC)だけでなく、スマホでもカーソル（ブラックホール）を表示させるため常にアクティブ
     cursor.style.display = 'block';
     var mags = document.querySelectorAll('[data-mag]');
 
-    // 自動で吸い込みターゲットを収集 (テキスト要素、画像フレーム、物理タグなど)
     function collectSuckTargets() {
-      // 画面上の様々な細かい要素を対象にする
       var els = document.querySelectorAll('h1, h2, h3, p, li, dt, dd, blockquote, .btn, .chip, .kw-item, .img-frame, .badge, .project-index, .eyebrow, .hero-bg-letter, footer p');
       els.forEach(function(el) {
         if (!el.classList.contains('suck-target') && el.id !== 'rocket-word' && el.id !== 'bh-particles') {
@@ -727,13 +689,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
     collectSuckTargets();
 
-    window.addEventListener('mousemove', function (e) {
+    // pointermove に変更（スマホのタッチ移動にも対応）
+    window.addEventListener('pointermove', function (e) {
       tx = e.clientX; ty = e.clientY;
       isSnap = false;
       var best = null;
       
-      // ブラックホール起動中・予兆中はマグネットを無効化
-      if (!isBlackhole && !isPreBlackhole) {
+      if (!isBlackhole && !isPreBlackhole && fine) { // マグネットはPCのみ
         mags.forEach(function (el) {
           var r = el.getBoundingClientRect();
           var dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
@@ -762,24 +724,27 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
 
     var pressed = false;
-    window.addEventListener('mousedown', function (e) { 
-      // ロケット文字クリック時はブラックホールを発動させない
-      if (e.target.id === 'rocket-word') return;
+    
+    function startBlackholeTimer(e) {
+      // ロケット文字や物理チップをタッチした場合はブラックホールを起動しない
+      if (e.target.closest('#rocket-word') || e.target.closest('.draggable')) return;
       
+      // タッチ時は座標を即座に更新
+      if (e.pointerType === 'touch') {
+        tx = e.clientX; ty = e.clientY;
+        cx = tx; cy = ty;
+      }
+
       pressed = true;  
       if (!isBlackhole) cursor.classList.add('press'); 
       holdTime = 0;
       
       holdTimer = setInterval(function() {
         holdTime += 100;
-        
-        // 4秒経過：予兆エフェクト（黒い粒の回転）開始
         if (holdTime >= 4000 && !isPreBlackhole && !isBlackhole) {
           isPreBlackhole = true;
-          particleTimer = setInterval(createParticle, 50); // 粒を生成開始
+          particleTimer = setInterval(createParticle, 50); 
         }
-        
-        // 6秒経過：ブラックホール発動
         if (holdTime >= 6000 && !isBlackhole) {
           isBlackhole = true;
           isPreBlackhole = false;
@@ -787,9 +752,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           cursor.classList.add('blackhole');
         }
       }, 100);
-    });
+    }
 
-    window.addEventListener('mouseup', function () { 
+    function stopBlackholeTimer() {
       pressed = false; 
       cursor.classList.remove('press'); 
       clearInterval(holdTimer);
@@ -799,12 +764,10 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         isBlackhole = false;
         cursor.classList.remove('blackhole');
         
-        // パーティクル削除
         clearInterval(particleTimer);
         particles.forEach(function(p) { p.el.remove(); });
         particles = [];
 
-        // 吸い込んだ要素を元に戻す
         suckTargets.forEach(function(target) {
           if (target.sucked) {
             target.el.style.transform = '';
@@ -813,7 +776,12 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           }
         });
       }
-    });
+    }
+
+    // mousedown系からpointer系へ（PC/スマホ両対応）
+    window.addEventListener('pointerdown', startBlackholeTimer);
+    window.addEventListener('pointerup', stopBlackholeTimer);
+    window.addEventListener('pointercancel', stopBlackholeTimer);
 
     (function loop() {
       cx += (tx - cx) * 0.26;
@@ -821,11 +789,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       cursor.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)' + (pressed && !isBlackhole ? ' scale(.76)' : '');
       cursor.classList.toggle('snap', isSnap && !isBlackhole);
 
-      // パーティクルの回転処理
       if (isPreBlackhole || isBlackhole) {
         particles.forEach(function(p) {
           p.angle += p.speed;
-          // ブラックホール発動時は半径を狭めて中心に吸い込まれるように見せる
           var currentRadius = isBlackhole ? p.radius * 0.5 : p.radius;
           var px = cx + Math.cos(p.angle) * currentRadius;
           var py = cy + Math.sin(p.angle) * currentRadius;
@@ -833,20 +799,18 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         });
       }
 
-      // ブラックホール中の吸い込み判定をアニメーションループ内で実行
       if (isBlackhole) {
         suckTargets.forEach(function(target) {
           if (target.sucked) return;
           var rect = target.el.getBoundingClientRect();
           var elCx = rect.left + rect.width / 2;
           var elCy = rect.top + rect.height / 2;
-          var dist = Math.hypot(cx - elCx, cy - elCy); // カーソル追従座標で判定
+          var dist = Math.hypot(cx - elCx, cy - elCy);
 
-          if (dist < 150) { // 引力圏内
+          if (dist < 150) {
             target.sucked = true;
             var dx = cx - elCx;
             var dy = cy - elCy;
-            // 物理演算タグの場合はドラッグ状態を強制解除して震えを防ぐ
             if (target.el.classList.contains('draggable')) {
               target.el.style.transform = '';
             }
@@ -873,7 +837,8 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var currentX = 0, currentY = 0;
 
     el.addEventListener('pointerdown', function(e) {
-      if (isBlackhole) return; // 吸い込み中は掴めない
+      if (isBlackhole) return;
+      e.stopPropagation(); // 背景のブラックホール発動を防ぐ
       isDragging = true;
       startX = e.clientX - currentX;
       startY = e.clientY - currentY;
@@ -899,7 +864,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       if (!isDragging) return;
       isDragging = false;
       
-      // ブラックホールに吸い込まれている場合は物理シミュレーションを回さない
       var suckTarget = suckTargets.find(function(t) { return t.el === el; });
       if (suckTarget && suckTarget.sucked) return;
 
@@ -908,18 +872,17 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       var floor = window.innerHeight - el.getBoundingClientRect().height - 20;
 
       function physicsLoop() {
-        if (suckTarget && suckTarget.sucked) return; // 吸い込まれたら中断
+        if (suckTarget && suckTarget.sucked) return; 
 
         vy += gravity;
         currentX += vx;
         currentY += vy;
 
-        // 床判定 (ざっくりViewport下部)
         var rect = el.getBoundingClientRect();
         if (rect.top + currentY > floor) {
           currentY = floor - rect.top;
           vy *= bounce;
-          vx *= 0.8; // 摩擦
+          vx *= 0.8; 
         }
 
         el.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px) rotate(' + (vx * 1.5) + 'deg)';
@@ -940,14 +903,12 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var crashedClickCount = 0;
 
     rocketWord.addEventListener('click', function(e) {
-      if (isBlackhole) return; // ブラックホール発動中は無効
+      if (isBlackhole) return; 
 
-      // 1. 通常状態からの打ち上げ
       if (!rocketWord.classList.contains('rocket-go') && !rocketWord.classList.contains('rocket-crashed') && !rocketWord.classList.contains('rocket-recover')) {
         rocketWord.classList.add('rocket-go');
         crashedClickCount = 0; 
         
-        // 8秒アニメの約95% (7600ms) の着弾に合わせて画面を揺らす
         setTimeout(function() {
           document.body.style.animation = 'crashShake 0.4s ease-out';
           
@@ -958,21 +919,17 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           }, 400);
         }, 7600);
       }
-      // 2. 墜落後（ひっくり返った状態）のクリック
       else if (rocketWord.classList.contains('rocket-crashed')) {
-        // 重複実行を防ぐ
         if (rocketWord.classList.contains('rocket-bump')) return;
 
         crashedClickCount++;
 
         if (crashedClickCount < 3) {
-          // 軽くジャンプ（向きはそのまま）
           rocketWord.classList.add('rocket-bump');
           setTimeout(function() {
             rocketWord.classList.remove('rocket-bump');
           }, 300);
         } else {
-          // 3回目で大きく跳ねて元に戻る
           rocketWord.classList.remove('rocket-crashed');
           rocketWord.classList.add('rocket-recover');
           
@@ -1020,14 +977,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   var shakeCard  = document.getElementById('proj-shake');
   var shakeInner = document.getElementById('shake-inner');
   if (shakeCard && !reduce) {
-    shakeCard.parentElement.addEventListener('mousemove', function (e) {
+    shakeCard.parentElement.addEventListener('pointermove', function (e) {
       var r = shakeCard.getBoundingClientRect();
       var px = (e.clientX - r.left) / r.width;
       var py = (e.clientY - r.top)  / r.height;
       shakeCard.style.transform = 'rotateY(' + ((px - 0.5) * 13) + 'deg) rotateX(' + (-(py - 0.5) * 10) + 'deg)';
     });
-    shakeCard.parentElement.addEventListener('mouseenter', function () { shakeInner.classList.add('rattle-active'); });
-    shakeCard.parentElement.addEventListener('mouseleave', function () { shakeCard.style.transform = ''; shakeInner.classList.remove('rattle-active'); });
+    shakeCard.parentElement.addEventListener('pointerenter', function () { shakeInner.classList.add('rattle-active'); });
+    shakeCard.parentElement.addEventListener('pointerleave', function () { shakeCard.style.transform = ''; shakeInner.classList.remove('rattle-active'); });
   }
 
   /* --------------------------------------------------
