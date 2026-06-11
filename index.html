@@ -104,7 +104,7 @@ img { display: block; max-width: 100%; }
   border: 2px solid var(--ink);
   box-shadow: 0 2px 0 0 rgba(27,30,43,0.8);
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99999; /* Lightboxより上に表示 */
   transform: translate(-50%, -50%);
   transition: width .2s cubic-bezier(.2,1.4,.4,1), height .2s cubic-bezier(.2,1.4,.4,1), opacity .15s, background .3s;
   will-change: transform;
@@ -184,7 +184,6 @@ nav a:hover { background: var(--haze); }
 /* =====================================================
    COMPONENTS (Chip, Badge, Button, Text)
    ===================================================== */
-/* 装飾のない通常のタグ */
 .chip {
   display: inline-block; padding: 5px 14px; border-radius: 6px;
   background: var(--haze); color: var(--sumi);
@@ -241,6 +240,9 @@ nav a:hover { background: var(--haze); }
 .img-frame .img-path { font-family: var(--font-dot); font-size: 10px; color: #aaa; background: var(--white); padding: 2px 8px; border-radius: 4px; }
 .img-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
+/* 複数画像のリストは非表示で保持 */
+.slides-data { display: none; }
+
 .pressable { transition: transform .14s cubic-bezier(.2,1.4,.4,1); }
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):hover { transform: scale(1.02); }
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):active { transform: scale(.95); }
@@ -248,74 +250,28 @@ nav a:hover { background: var(--haze); }
 /* =====================================================
    INTERACTION: ROCKET WORD
    ===================================================== */
-.rocket-go {
-  position: relative;
-  animation: rocketPath 8s forwards;
-  z-index: 50;
-  display: inline-block;
-}
-
+.rocket-go { position: relative; animation: rocketPath 8s forwards; z-index: 50; display: inline-block; }
 .rocket-go::before {
-  content: '';
-  position: absolute;
-  top: 100%; left: 50%;
-  width: 24px; height: 24px;
-  background: #888;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  animation: launchSmoke 8s forwards;
-  z-index: -1;
+  content: ''; position: absolute; top: 100%; left: 50%; width: 24px; height: 24px; background: #888;
+  border-radius: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; animation: launchSmoke 8s forwards; z-index: -1;
 }
-
 @keyframes launchSmoke {
   0% { opacity: 0; box-shadow: 0 0 0 0 transparent; }
-  8% { 
-    opacity: 1; 
-    transform: translateX(-50%) scale(1);
-    box-shadow: 0 15px 0 5px #777, -15px 25px 0 8px #666, 15px 25px 0 6px #555;
-  }
-  15% { 
-    opacity: 1; 
-    transform: translateX(-50%) scale(1.2);
-    box-shadow: 0 20px 0 5px #777, -20px 40px 0 10px #666, 20px 45px 0 8px #555, 0 70px 0 15px #444, -25px 100px 0 20px #555, 25px 110px 0 18px #333;
-  }
-  33% { 
-    opacity: 1; 
-    transform: translateX(-50%) scale(1.5);
-    box-shadow: 0 20px 0 5px #777, -25px 50px 0 10px #666, 25px 60px 0 12px #555, 0 100px 0 18px #444, -35px 150px 0 25px #555, 35px 170px 0 22px #333, 0 230px 0 30px #444, -45px 300px 0 35px #555, 45px 330px 0 32px #222, 0 420px 0 45px #333, -55px 520px 0 50px #444, 55px 550px 0 48px #222, 0 680px 0 60px #333, -65px 820px 0 70px #444, 65px 860px 0 65px #222, 0 1050px 0 85px #111, -80px 1250px 0 100px #222, 80px 1300px 0 90px #111;
-  }
+  8% { opacity: 1; transform: translateX(-50%) scale(1); box-shadow: 0 15px 0 5px #777, -15px 25px 0 8px #666, 15px 25px 0 6px #555; }
+  15% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 20px 0 5px #777, -20px 40px 0 10px #666, 20px 45px 0 8px #555, 0 70px 0 15px #444, -25px 100px 0 20px #555, 25px 110px 0 18px #333; }
+  33% { opacity: 1; transform: translateX(-50%) scale(1.5); box-shadow: 0 20px 0 5px #777, -25px 50px 0 10px #666, 25px 60px 0 12px #555, 0 100px 0 18px #444, -35px 150px 0 25px #555, 35px 170px 0 22px #333, 0 230px 0 30px #444, -45px 300px 0 35px #555, 45px 330px 0 32px #222, 0 420px 0 45px #333, -55px 520px 0 50px #444, 55px 550px 0 48px #222, 0 680px 0 60px #333, -65px 820px 0 70px #444, 65px 860px 0 65px #222, 0 1050px 0 85px #111, -80px 1250px 0 100px #222, 80px 1300px 0 90px #111; }
   35% { opacity: 0; }
   100% { opacity: 0; }
 }
 
 .rocket-go::after {
-  content: '';
-  position: absolute;
-  top: 100%; left: 50%;
-  width: 20px; height: 20px;
-  background: #333;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  animation: crashSmoke 8s forwards;
-  z-index: -1;
+  content: ''; position: absolute; top: 100%; left: 50%; width: 20px; height: 20px; background: #333;
+  border-radius: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; animation: crashSmoke 8s forwards; z-index: -1;
 }
-
 @keyframes crashSmoke {
   0%, 74% { opacity: 0; box-shadow: 0 0 0 0 transparent; }
-  75% { 
-    opacity: 1; 
-    transform: translateX(-50%) scale(1); 
-    box-shadow: 8px 15px 0 4px #222, -8px 25px 0 6px #111, 0 35px 0 8px #000; 
-  }
-  94% { 
-    opacity: 1; 
-    transform: translateX(-50%) scale(1.3); 
-    box-shadow: 10px 20px 0 4px #222, -15px 40px 0 8px #111, 0 70px 0 12px #000, -20px 110px 0 18px #111, 25px 150px 0 22px #222, 0 210px 0 28px #000, 15px 280px 0 35px #111, -25px 360px 0 40px #222, 20px 460px 0 50px #000, -30px 580px 0 60px #111, 0 720px 0 75px #000, 35px 880px 0 90px #111, -40px 1050px 0 110px #000; 
-  }
+  75% { opacity: 1; transform: translateX(-50%) scale(1); box-shadow: 8px 15px 0 4px #222, -8px 25px 0 6px #111, 0 35px 0 8px #000; }
+  94% { opacity: 1; transform: translateX(-50%) scale(1.3); box-shadow: 10px 20px 0 4px #222, -15px 40px 0 8px #111, 0 70px 0 12px #000, -20px 110px 0 18px #111, 25px 150px 0 22px #222, 0 210px 0 28px #000, 15px 280px 0 35px #111, -25px 360px 0 40px #222, 20px 460px 0 50px #000, -30px 580px 0 60px #111, 0 720px 0 75px #000, 35px 880px 0 90px #111, -40px 1050px 0 110px #000; }
   96% { opacity: 0; }
   100% { opacity: 0; }
 }
@@ -362,6 +318,59 @@ nav a:hover { background: var(--haze); }
   80% { transform: translate(5px, -5px); }
   100% { transform: translate(0,0); }
 }
+
+/* =====================================================
+   LIGHTBOX (GALLERY)
+   ===================================================== */
+#lightbox {
+  position: fixed; inset: 0; z-index: 50000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .3s cubic-bezier(.2,1.4,.4,1);
+}
+#lightbox.active { opacity: 1; pointer-events: auto; }
+
+/* 白背景に変更 */
+#lightbox-bg { position: absolute; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+/* 落書きエフェクト（背景） */
+#lb-doodles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; opacity: 0.2; }
+.doodle { position: absolute; stroke: var(--ink); stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; animation: floatDoodle 20s infinite ease-in-out alternate; }
+@keyframes floatDoodle {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate(20px, -30px) rotate(10deg) scale(1.05); }
+}
+
+.lb-wrap { position: relative; z-index: 1; display: flex; align-items: center; gap: clamp(10px, 3vw, 24px); width: 92vw; max-width: 1000px; justify-content: center; }
+.lb-content { display: flex; flex-direction: column; align-items: center; gap: 14px; position: relative; }
+#lb-img { border-radius: var(--r-md); box-shadow: 0 10px 40px rgba(0,0,0,0.15); max-height: 75vh; max-width: 100%; object-fit: contain; background: var(--paper); transition: opacity .2s; }
+#lb-label { color: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
+.lb-nav {
+  background: rgba(0,0,0,0.03); border: 2px solid rgba(0,0,0,0.1); color: var(--ink);
+  width: 52px; height: 52px; border-radius: 50%; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0;
+}
+.lb-nav:hover { background: rgba(0,0,0,0.08); border-color: var(--ink); transform: scale(1.08); }
+.lb-nav:active { transform: scale(0.95); }
+#lb-close {
+  position: absolute; top: -48px; right: 0; background: none; border: none; color: var(--ink); font-size: 40px; line-height: 1;
+  cursor: pointer; opacity: 0.6; transition: opacity .2s, transform .3s; padding: 0;
+}
+#lb-close:hover { opacity: 1; transform: rotate(90deg); }
+
+.img-frame.lb-trigger { cursor: pointer; }
+.img-frame.lb-trigger::after {
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .2s; pointer-events: none;
+}
+.img-frame.lb-trigger:hover::after { background: rgba(0,0,0,0.05); }
+
+/* =====================================================
+   OTHERS LAYOUT (Left: Davinci, Right: Design/Photo)
+   ===================================================== */
+.others-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; align-items: stretch; }
+.others-left { display: flex; flex-direction: column; }
+.others-right { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+.card-davinci { flex: 1; display: flex; flex-direction: column; }
+.card-davinci .project-summary { flex: 1; }
 
 /* =====================================================
    PROJECT CARD BASE
@@ -429,7 +438,9 @@ nav a:hover { background: var(--haze); }
 }
 .rattle-active { animation: rattle 0.08s linear infinite; }
 
-#about { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); }
+#others { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); border-bottom: 1px solid var(--haze); }
+
+#about { padding-block: clamp(60px, 10vw, 100px); }
 .about-grid { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; margin-top: 40px; }
 .profile-img-frame { aspect-ratio: 3/4; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-card); }
 .about-dl { display: flex; flex-direction: column; gap: 24px; }
@@ -442,6 +453,10 @@ footer { padding-block: 32px; border-top: 1px solid var(--haze); text-align: cen
 footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--sumi); }
 
 /* SP向けサイズ調整 */
+@media (max-width: 768px) {
+  .others-layout { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 480px) {
   .hero-bg-letter { display: none; }
   .hero-btns { gap: 10px; }
@@ -471,6 +486,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       <ul>
         <li><a href="#philosophy" data-mag>Philosophy</a></li>
         <li><a href="#works" data-mag>Works</a></li>
+        <li><a href="#others" data-mag>Others</a></li>
         <li><a href="#about" data-mag>About</a></li>
       </ul>
     </nav>
@@ -491,7 +507,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       <span class="accent pressable" id="rocket-word" data-mag>面白さ</span>を見つける。
     </h1>
     
-    <!-- スマホでは自然な折り返しにするため、pc-only / sp-only を活用 -->
     <p class="hero-lead reveal reveal-delay-2">
       独自の物理コントローラーと<br class="sp-only">アフォーダンス設計で、<br class="pc-only">
       プレイヤーの直感的な行動そのものを<br class="sp-only">「遊び」に変える<br class="pc-only">
@@ -504,6 +519,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </div>
     
     <div class="hero-visual img-frame reveal reveal-delay-3" style="aspect-ratio:16/7;">
+      <ul class="slides-data">
+        <li data-src="images/hero.gif" data-label="プレイヤーがデバイスで遊ぶ様子"></li>
+      </ul>
       <span class="img-label">プレイヤーがデバイスで遊ぶ様子</span>
       <span class="img-path">images/hero.gif</span>
     </div>
@@ -521,11 +539,10 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         展示において、ユーザーが私の制作したコントローラーを<br class="pc-only">想定外の持ち方や遊び方で扱う場面に何度も直面した。<br class="pc-only">しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。<br class="pc-only">この経験から、作り手の「こう遊ぶべき」という無意識のバイアスを自覚し、<br class="pc-only">初見プレイヤーの直感的な行動を観察・予測して、<br class="pc-only">自然な形で面白さへ導くアフォーダンスとルール設計の重要性を学んだ。
       </blockquote>
       <div class="philosophy-keywords reveal reveal-delay-2">
-        <div class="kw-item"><div class="kw-icon" aria-hidden="true">👁</div><span>初見観察・行動予測</span></div>
-        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🤲</div><span>アフォーダンス設計</span></div>
-        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🎮</div><span>物理入力とゲームフィール</span></div>
-        <div class="kw-item"><div class="kw-icon" aria-hidden="true">🔁</div><span>展示 → 観察 → 再設計</span></div>
-        <div class="img-frame" style="aspect-ratio:4/3; margin-top:6px;">
+        <div class="img-frame" style="aspect-ratio:4/3; margin-top:0;">
+          <ul class="slides-data">
+            <li data-src="images/philosophy.jpg" data-label="展示会でのユーザー観察風景"></li>
+          </ul>
           <span class="img-label">展示会でのユーザー観察風景</span>
           <span class="img-path">images/philosophy.jpg</span>
         </div>
@@ -550,9 +567,18 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           <h3 class="project-title">汲・撒・響</h3>
           <p class="project-summary">柄杓型・桶型の独自デバイスで、水を「汲む・撒く」物理的な解放感をそのままゲームに写し取る作品。床へモニターを水平配置することで、2人のプレイヤーが画面を挟んで自然と向かい合い、対面コミュニケーションが誘発される空間設計を狙っている。</p>
           <div class="grid-3">
-            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">デバイス外観</span><span class="img-path">images/kumi-device.jpg</span></div>
-            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">テストプレイ風景</span><span class="img-path">images/kumi-play.jpg</span></div>
-            <div class="img-frame" style="aspect-ratio:4/3;"><span class="img-label">ゲームループ図解</span><span class="img-path">images/kumi-loop.jpg</span></div>
+            <div class="img-frame" style="aspect-ratio:4/3;">
+              <ul class="slides-data"><li data-src="images/kumi-device.jpg" data-label="デバイス外観"></li></ul>
+              <span class="img-label">デバイス外観</span><span class="img-path">images/kumi-device.jpg</span>
+            </div>
+            <div class="img-frame" style="aspect-ratio:4/3;">
+              <ul class="slides-data"><li data-src="images/kumi-play.jpg" data-label="テストプレイ風景"></li></ul>
+              <span class="img-label">テストプレイ風景</span><span class="img-path">images/kumi-play.jpg</span>
+            </div>
+            <div class="img-frame" style="aspect-ratio:4/3;">
+              <ul class="slides-data"><li data-src="images/kumi-loop.jpg" data-label="ゲームループ図解"></li></ul>
+              <span class="img-label">ゲームループ図解</span><span class="img-path">images/kumi-loop.jpg</span>
+            </div>
           </div>
         </div>
       </article>
@@ -565,8 +591,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           <h3 class="project-title">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</h3>
           <p class="project-summary">「握り込む」という一動作の手応えを、ゲーム内アクションへ直接連動させた専用コントローラー。握る強さ・速さがそのままスライムの変形に反映され、入力と結果のあいだに翻訳を挟まないダイレクトな体験を設計した。</p>
           <div class="grid-2">
-            <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">BitSummit展示風景</span><span class="img-path">images/nigicon-bitsummit.jpg</span></div>
-            <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">コントローラー構造図</span><span class="img-path">images/nigicon-structure.jpg</span></div>
+            <div class="img-frame" style="aspect-ratio:16/9;">
+              <ul class="slides-data"><li data-src="images/nigicon-bitsummit.jpg" data-label="BitSummit展示風景"></li></ul>
+              <span class="img-label">BitSummit展示風景</span><span class="img-path">images/nigicon-bitsummit.jpg</span>
+            </div>
+            <div class="img-frame" style="aspect-ratio:16/9;">
+              <ul class="slides-data"><li data-src="images/nigicon-structure.jpg" data-label="コントローラー構造図"></li></ul>
+              <span class="img-label">コントローラー構造図</span><span class="img-path">images/nigicon-structure.jpg</span>
+            </div>
           </div>
         </article>
       </div>
@@ -578,8 +610,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
             <h3 class="project-title">ShakeCon</h3>
             <p class="project-summary">内部に独立稼働するパーツを組み込み、振るとカチャカチャと物理的な音が鳴るコントローラー。「振る」行為そのもののプリミティブな面白さを起点に、音と手応えがゲーム体験へ還流する設計を探求している。</p>
             <div class="grid-2">
-              <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">マイコン内部ギミック</span><span class="img-path">images/shakecon-inside.jpg</span></div>
-              <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span></div>
+              <div class="img-frame" style="aspect-ratio:16/9;">
+                <ul class="slides-data"><li data-src="images/shakecon-inside.jpg" data-label="マイコン内部ギミック"></li></ul>
+                <span class="img-label">マイコン内部ギミック</span><span class="img-path">images/shakecon-inside.jpg</span>
+              </div>
+              <div class="img-frame" style="aspect-ratio:16/9;">
+                <ul class="slides-data"><li data-src="images/shakecon-spec.jpg" data-label="シリアル通信連携仕様書"></li></ul>
+                <span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span>
+              </div>
             </div>
             <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* このカードにマウスを乗せると実機のように傾き、カチャカチャ震えます</p>
           </div>
@@ -591,10 +629,77 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <h3 class="project-title">トリ合い譲り合い</h3>
         <p class="project-summary">焼き鳥の最後の1本をテーマにした、譲り合いの駆け引きを楽しむ社会人向けカードゲーム。「奪う」ではなく「譲る」をプレイの主語に置くことで、場の空気の読み合いがそのままゲームメカニクスになる構造を設計した。デジタルに限らない遊びの幅を示す制作実績。</p>
         <div class="grid-2">
-          <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">カードデザイン</span><span class="img-path">images/toriai-cards.jpg</span></div>
-          <div class="img-frame" style="aspect-ratio:16/9;"><span class="img-label">プレイ風景</span><span class="img-path">images/toriai-play.jpg</span></div>
+          <div class="img-frame pressable" style="aspect-ratio:16/9;">
+            <ul class="slides-data"><li data-src="images/toriai-cards.jpg" data-label="カードデザイン"></li></ul>
+            <span class="img-label">カードデザイン</span><span class="img-path">images/toriai-cards.jpg</span>
+          </div>
+          <div class="img-frame pressable" style="aspect-ratio:16/9;">
+            <ul class="slides-data"><li data-src="images/toriai-play.jpg" data-label="プレイ風景"></li></ul>
+            <span class="img-label">プレイ風景</span><span class="img-path">images/toriai-play.jpg</span>
+          </div>
         </div>
       </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="others">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">OTHERS</p>
+      <h2 class="section-title">その他の活動</h2>
+    </div>
+    <div class="others-layout" style="margin-top: 40px;">
+      
+      <!-- 左側：大きくダヴィンチマスターズ -->
+      <div class="others-left">
+        <article class="project-card reveal card-davinci" style="height: 100%;">
+          <h3 class="project-title" style="font-size: 20px;">ダヴィンチマスターズ</h3>
+          <p class="project-summary">小学生を対象とした漫画を”作る”ワークショップの企画。漫画のアセットをあらかじめ用意し、参加者はそれを切りはりして物語を構成していく。</p>
+          
+          <!-- サムネイルで複数画像が自動的に切り替わり、クリックでこのリストだけがポップアップする -->
+          <div class="img-frame pressable lb-trigger" style="flex: 1; min-height: 280px; margin-top: 18px;">
+            <ul class="slides-data">
+              <li data-src="images/davinci-1.jpg" data-label="ワークショップ風景 1"></li>
+              <li data-src="images/davinci-2.jpg" data-label="ワークショップ風景 2"></li>
+              <li data-src="images/davinci-3.jpg" data-label="子供たちの制作物"></li>
+            </ul>
+            <span class="img-label">ワークショップ風景 1</span>
+            <span class="img-path">images/davinci-1.jpg</span>
+          </div>
+        </article>
+      </div>
+
+      <!-- 右側：デザイン・写真 -->
+      <div class="others-right">
+        <article class="project-card reveal reveal-delay-1">
+          <h3 class="project-title" style="font-size: 18px;">デザイン</h3>
+          <p class="project-summary" style="font-size: 13px;">ポスターやUI、グラフィックデザインなどのクリエイティブ制作。</p>
+          <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
+            <ul class="slides-data">
+              <li data-src="images/design-1.jpg" data-label="ポスターデザイン"></li>
+              <li data-src="images/design-2.jpg" data-label="UIデザインモックアップ"></li>
+            </ul>
+            <span class="img-label">ポスターデザイン</span>
+            <span class="img-path">images/design-1.jpg</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal reveal-delay-2">
+          <h3 class="project-title" style="font-size: 18px;">写真</h3>
+          <p class="project-summary" style="font-size: 13px;">趣味の写真。デジタル・フィルムの両方を使用して撮影する。</p>
+          <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
+            <ul class="slides-data">
+              <li data-src="images/photo-1.jpg" data-label="スナップ写真（デジタル）"></li>
+              <li data-src="images/photo-2.jpg" data-label="風景写真（フィルム）"></li>
+              <li data-src="images/photo-3.jpg" data-label="ポートレート"></li>
+            </ul>
+            <span class="img-label">スナップ写真（デジタル）</span>
+            <span class="img-path">images/photo-1.jpg</span>
+          </div>
+        </article>
+      </div>
 
     </div>
   </div>
@@ -605,6 +710,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     <div class="reveal"><p class="eyebrow">ABOUT ME</p><h2 class="section-title">吉川 柚希</h2></div>
     <div class="about-grid">
       <div class="profile-img-frame img-frame reveal" style="aspect-ratio:3/4;">
+        <ul class="slides-data"><li data-src="images/profile.jpg" data-label="ポートレート / 作業風景"></li></ul>
         <span class="img-label">ポートレート / 作業風景</span><span class="img-path">images/profile.jpg</span>
       </div>
       <dl class="about-dl reveal reveal-delay-1">
@@ -632,6 +738,34 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   <p style="margin-top:6px; font-size:9px; letter-spacing:.2em;">© 2026 Yuzuki Yoshikawa</p>
 </footer>
 
+<!-- Lightbox Modal -->
+<div id="lightbox" aria-hidden="true">
+  <div id="lightbox-bg"></div>
+  
+  <!-- 背景の落書きアニメーション -->
+  <div id="lb-doodles">
+    <svg viewBox="0 0 200 200" class="doodle" style="top: 10%; left: 10%; width: 180px;">
+      <path d="M 100 50 C 130 50 150 70 140 100 C 130 130 90 140 70 110 C 50 80 80 40 120 40 C 160 40 180 90 150 130 C 120 170 60 160 40 120 C 20 80 60 30 110 20 C 160 10 200 70 170 120 C 140 170 70 180 30 130 C -10 80 40 10 100 10" />
+    </svg>
+    <svg viewBox="0 0 200 200" class="doodle" style="top: 60%; right: 10%; width: 220px; animation-delay: -5s;">
+      <path d="M 50 150 C 40 110 70 80 110 90 C 150 100 170 140 140 170 C 110 200 60 180 50 140 C 40 100 80 50 130 60 C 180 70 200 130 160 180 C 120 230 40 190 20 130 C 0 70 60 10 120 30" />
+    </svg>
+    <svg viewBox="0 0 200 200" class="doodle" style="bottom: 15%; left: 15%; width: 150px; animation-delay: -10s;">
+      <path d="M 80 80 C 120 60 160 100 140 140 C 120 180 60 160 50 120 C 40 80 90 40 140 50 C 190 60 190 120 150 160 C 110 200 30 150 30 90 C 30 30 110 0 160 50" />
+    </svg>
+  </div>
+
+  <div class="lb-wrap">
+    <button id="lb-prev" class="lb-nav" aria-label="前の画像">◀</button>
+    <div class="lb-content">
+      <button id="lb-close" aria-label="閉じる">×</button>
+      <img id="lb-img" src="" alt="拡大画像">
+      <p id="lb-label"></p>
+    </div>
+    <button id="lb-next" class="lb-nav" aria-label="次の画像">▶</button>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -654,7 +788,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   }
 
   /* --------------------------------------------------
-     MAGNETIC CURSOR & BLACKHOLE (6s hold)
+     MAGNETIC CURSOR & BLACKHOLE
      -------------------------------------------------- */
   var cursor = document.getElementById('cursor');
   var bhParticlesContainer = document.getElementById('bh-particles');
@@ -668,18 +802,16 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   var particles = [];
   var suckTargets = [];
 
-  // スマホのコンテキストメニュー（長押しメニュー）を無効化
   window.addEventListener('contextmenu', function(e) {
     e.preventDefault();
   });
 
   if (!reduce) {
-    // fine(PC)だけでなく、スマホでもカーソル（ブラックホール）を表示させるため常にアクティブ
     cursor.style.display = 'block';
     var mags = document.querySelectorAll('[data-mag]');
 
     function collectSuckTargets() {
-      var els = document.querySelectorAll('h1, h2, h3, p, li, dt, dd, blockquote, .btn, .chip, .kw-item, .img-frame, .badge, .project-index, .eyebrow, .hero-bg-letter, footer p');
+      var els = document.querySelectorAll('h1, h2, h3, p, li:not(#lightbox li), dt, dd, blockquote, .btn, .chip, .kw-item, .img-frame, .badge, .project-index, .eyebrow, .hero-bg-letter, footer p');
       els.forEach(function(el) {
         if (!el.classList.contains('suck-target') && el.id !== 'rocket-word' && el.id !== 'bh-particles') {
           el.classList.add('suck-target');
@@ -689,13 +821,12 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
     collectSuckTargets();
 
-    // pointermove に変更（スマホのタッチ移動にも対応）
     window.addEventListener('pointermove', function (e) {
       tx = e.clientX; ty = e.clientY;
       isSnap = false;
       var best = null;
       
-      if (!isBlackhole && !isPreBlackhole && fine) { // マグネットはPCのみ
+      if (!isBlackhole && !isPreBlackhole && fine) { 
         mags.forEach(function (el) {
           var r = el.getBoundingClientRect();
           var dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
@@ -726,10 +857,8 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var pressed = false;
     
     function startBlackholeTimer(e) {
-      // ロケット文字や物理チップをタッチした場合はブラックホールを起動しない
-      if (e.target.closest('#rocket-word') || e.target.closest('.draggable')) return;
+      if (e.target.closest('#rocket-word') || e.target.closest('.draggable') || e.target.closest('.lb-trigger') || document.getElementById('lightbox').classList.contains('active')) return;
       
-      // タッチ時は座標を即座に更新
       if (e.pointerType === 'touch') {
         tx = e.clientX; ty = e.clientY;
         cx = tx; cy = ty;
@@ -778,7 +907,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       }
     }
 
-    // mousedown系からpointer系へ（PC/スマホ両対応）
     window.addEventListener('pointerdown', startBlackholeTimer);
     window.addEventListener('pointerup', stopBlackholeTimer);
     window.addEventListener('pointercancel', stopBlackholeTimer);
@@ -838,7 +966,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
     el.addEventListener('pointerdown', function(e) {
       if (isBlackhole) return;
-      e.stopPropagation(); // 背景のブラックホール発動を防ぐ
+      e.stopPropagation(); 
       isDragging = true;
       startX = e.clientX - currentX;
       startY = e.clientY - currentY;
@@ -943,7 +1071,133 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   }
 
   /* --------------------------------------------------
-     PROJECT SETUP (DOM Elements)
+     THUMBNAIL AUTO SLIDER
+     -------------------------------------------------- */
+  var imgFrames = document.querySelectorAll('.img-frame');
+  imgFrames.forEach(function(frame) {
+    var slides = frame.querySelectorAll('.slides-data li');
+    if (slides.length <= 1) return; // 1枚以下の場合は何もしない
+
+    var currentIdx = 0;
+    var labelEl = frame.querySelector('.img-label');
+    var pathEl  = frame.querySelector('.img-path');
+    var realImg = frame.querySelector('img');
+
+    setInterval(function() {
+      currentIdx = (currentIdx + 1) % slides.length;
+      var slide = slides[currentIdx];
+      var src = slide.getAttribute('data-src');
+      var label = slide.getAttribute('data-label');
+      
+      if (labelEl) labelEl.innerText = label;
+      if (pathEl)  pathEl.innerText = src;
+      if (realImg) realImg.src = src;
+    }, 3000);
+  });
+
+  /* --------------------------------------------------
+     LIGHTBOX (TOPIC SPECIFIC GALLERY)
+     -------------------------------------------------- */
+  // クラス付与
+  document.querySelectorAll('.img-frame:has(.slides-data)').forEach(function(el){ el.classList.add('lb-trigger'); });
+
+  var lightbox = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lb-img');
+  var lbLabel = document.getElementById('lb-label');
+  var lbSlides = [];
+  var lbCurrentIdx = 0;
+  var lbTimer = null;
+
+  function updateLightbox() {
+    var slide = lbSlides[lbCurrentIdx];
+    var src = slide.getAttribute('data-src');
+    var label = slide.getAttribute('data-label');
+
+    lbImg.style.opacity = 0; 
+    setTimeout(function() {
+      lbImg.src = src;
+      lbLabel.innerText = label;
+      
+      lbImg.onerror = function() {
+        this.src = "https://placehold.co/800x600/E7E8E2/7C7F8A?text=" + encodeURIComponent(label);
+      };
+      
+      lbImg.style.opacity = 1;
+    }, 200);
+  }
+
+  function nextLbSlide() {
+    if(lbSlides.length <= 1) return;
+    lbCurrentIdx = (lbCurrentIdx + 1) % lbSlides.length;
+    updateLightbox();
+    resetLbTimer();
+  }
+
+  function prevLbSlide() {
+    if(lbSlides.length <= 1) return;
+    lbCurrentIdx = (lbCurrentIdx - 1 + lbSlides.length) % lbSlides.length;
+    updateLightbox();
+    resetLbTimer();
+  }
+
+  function resetLbTimer() {
+    clearInterval(lbTimer);
+    if(lbSlides.length > 1) {
+      lbTimer = setInterval(nextLbSlide, 4000); // 4秒ごとに自動送り
+    }
+  }
+
+  function openLightbox(slidesNodeList, startIndex) {
+    if (isBlackhole) return; 
+    lbSlides = Array.from(slidesNodeList);
+    if(lbSlides.length === 0) return;
+    lbCurrentIdx = startIndex || 0;
+    updateLightbox();
+    
+    // 画像が1枚だけなら矢印ボタンを隠す
+    var navs = document.querySelectorAll('.lb-nav');
+    navs.forEach(function(nav) { nav.style.display = lbSlides.length > 1 ? 'flex' : 'none'; });
+
+    lightbox.classList.add('active');
+    resetLbTimer();
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    clearInterval(lbTimer);
+  }
+
+  document.querySelectorAll('.img-frame.lb-trigger').forEach(function(frame) {
+    frame.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      // クリックされたフレームが属するトピック（プロジェクト記事全体）を取得
+      var topicContainer = frame.closest('article, section');
+      if (!topicContainer) topicContainer = document;
+
+      // そのトピック内の全ての画像情報を収集
+      var allSlidesInTopic = topicContainer.querySelectorAll('.slides-data li');
+      
+      // クリックした画像が配列の何番目かを取得
+      var myFirstSlide = frame.querySelector('.slides-data li');
+      var startIndex = 0;
+      var slidesArray = Array.from(allSlidesInTopic);
+      if (myFirstSlide) {
+        startIndex = slidesArray.indexOf(myFirstSlide);
+      }
+      
+      openLightbox(slidesArray, startIndex);
+    });
+  });
+
+  document.getElementById('lb-next').addEventListener('click', function(e) { e.stopPropagation(); nextLbSlide(); });
+  document.getElementById('lb-prev').addEventListener('click', function(e) { e.stopPropagation(); prevLbSlide(); });
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-bg').addEventListener('click', closeLightbox);
+
+  /* --------------------------------------------------
+     PROJECT SETUP (DOM Elements - Parallax & Squeeze)
      -------------------------------------------------- */
   var dropsLayer = document.getElementById('drops-layer');
   var projKumi   = document.getElementById('proj-kumi');
