@@ -2,20 +2,39 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>吉川柚希 | Game Planner Portfolio</title>
 <meta name="description" content="独自の物理コントローラーとアフォーダンス設計で「遊び」をつくるゲームプランナー、吉川柚希のポートフォリオ。">
 
-<!-- Google Fonts -->
+<script>
+  // 起動判定: ハッシュなし(通常起動)ならタイトル画面モード。
+  if (!location.hash) {
+    document.documentElement.classList.add('boot');
+  } else {
+    // 直リンク時は一瞬も見えないようCSSを動的挿入
+    document.write('<style>#intro { display: none !important; }</style>');
+  }
+</script>
+
+<!-- ライト/ダーク両対応を宣言: OSやアプリ内ビューアによる「強制色反転」(配色崩壊の原因)を無効化 -->
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F7F3">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14161E">
+
+<!-- favicon: カーソルと同じ「柚子色のボタン」 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='17' r='12' fill='%231B1E2B'/%3E%3Ccircle cx='16' cy='14' r='12' fill='%23F2A91F' stroke='%231B1E2B' stroke-width='2.5'/%3E%3C/svg%3E">
+
+<!-- Google Fonts: タイトル画面のランダム切り替え用に追加フォントを読み込み -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=DotGothic16&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=Noto+Serif+JP:wght@700&family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 <style>
 /* =====================================================
-   DESIGN TOKENS
+   DESIGN TOKENS & BASE
    ===================================================== */
 :root {
+  color-scheme: light dark;
   --paper:  #F7F7F3;
   --ink:    #1B1E2B;
   --yuzu:   #F2A91F;
@@ -37,13 +56,9 @@
   --font-dot:  'DotGothic16', monospace;
 }
 
-/* =====================================================
-   RESET & BASE
-   ===================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; background: var(--paper); }
 
-/* ギミック成立のため、サイト全体のテキスト選択と長押しメニューを禁止 */
 body {
   font-family: var(--font-body);
   background: var(--paper);
@@ -51,9 +66,11 @@ body {
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
   overflow-x: hidden;
+  width: 100%;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  word-break: auto-phrase;
 }
 
 @media (pointer: fine) {
@@ -61,153 +78,127 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
 }
+
+/* 本文・連絡先はコピー可能に */
+.philosophy-quote, .project-summary, .about-dd, .hero-lead, .section-lead, .project-title, .section-title {
+  -webkit-user-select: text; user-select: text;
+}
+
+/* 起動制御 */
+html.boot { overflow: hidden; }
+html.boot body > *:not(#intro) { visibility: hidden; }
 
 ::selection { background: var(--yuzu); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--mizu); outline-offset: 3px; border-radius: 4px; }
 img { display: block; max-width: 100%; }
 
 /* =====================================================
-   LAYOUT HELPERS & RESPONSIVE TYPOGRAPHY
+   LAYOUT HELPERS
    ===================================================== */
 .wrap {
   max-width: var(--site-max);
   margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 48px);
+  padding-inline: clamp(16px, 5vw, 48px);
 }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
-@media (min-width: 769px) {
-  .sp-only { display: none !important; }
-}
-
 @media (max-width: 768px) {
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .pc-only { display: none !important; }
+  .grid-2, .grid-3, .others-layout { grid-template-columns: 1fr; gap: 24px; }
+  .philosophy-grid { grid-template-columns: 1fr !important; gap: 24px; display: grid; }
+  .about-grid { grid-template-columns: 1fr !important; gap: 24px; display: grid; }
 }
 
 /* =====================================================
    CUSTOM CURSOR & BLACKHOLE
    ===================================================== */
 #cursor {
-  position: fixed;
-  top: 0; left: 0;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: var(--yuzu);
-  border: 2px solid var(--ink);
+  position: fixed; top: 0; left: 0;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--yuzu); border: 2px solid var(--ink);
   box-shadow: 0 2px 0 0 rgba(27,30,43,0.8);
-  pointer-events: none;
-  z-index: 99999; /* Lightboxより上に表示 */
+  pointer-events: none; z-index: 99999; 
   transform: translate(-50%, -50%);
   transition: width .2s cubic-bezier(.2,1.4,.4,1), height .2s cubic-bezier(.2,1.4,.4,1), opacity .15s, background .3s;
-  will-change: transform;
-  display: none;
+  will-change: transform; display: none;
 }
 #cursor.snap { width: 42px; height: 42px; opacity: .82; }
 #cursor.press { transform: translate(-50%,-50%) scale(.76); }
 
-/* ブラックホール発動時のカーソル */
 #cursor.blackhole {
-  background: #000;
-  border-color: #000;
-  mix-blend-mode: normal; 
+  background: #000; border-color: #000; mix-blend-mode: normal; 
   animation: bh-pulse 0.5s alternate infinite ease-in-out;
 }
+
+@media (pointer: coarse) {
+  #cursor:not(.blackhole) {
+    opacity: 0 !important;
+  }
+}
+
 @keyframes bh-pulse {
   0% { width: 80px; height: 80px; box-shadow: 0 0 40px 20px rgba(0,0,0,0.8), inset 0 0 20px #fff; }
   100% { width: 88px; height: 88px; box-shadow: 0 0 60px 30px rgba(0,0,0,0.9), inset 0 0 25px #fff; }
 }
 
-/* 予兆エフェクト（黒い粒の回転） */
 #bh-particles {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  pointer-events: none;
-  z-index: 9998;
-  overflow: hidden;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  pointer-events: none; z-index: 9998; overflow: hidden;
 }
-.bh-ptc {
-  position: absolute;
-  width: 4px; height: 4px;
-  background: #000;
-  border-radius: 50%;
-  will-change: transform;
-}
-
-/* ブラックホールに吸い込まれる要素のアニメーション */
-.sucking {
-  transition: transform 0.5s cubic-bezier(.5,0,1,.5), opacity 0.5s, filter 0.5s !important;
-  pointer-events: none !important;
-  opacity: 0;
-  filter: blur(4px);
-}
-.suck-target {
-  display: inline-block; 
-  transition: opacity 0.4s, filter 0.4s; 
-}
+.bh-ptc { position: absolute; width: 4px; height: 4px; background: #000; border-radius: 50%; will-change: transform; }
+.sucking { transition: transform 0.5s cubic-bezier(.5,0,1,.5), opacity 0.5s, filter 0.5s !important; pointer-events: none !important; opacity: 0; filter: blur(4px); }
+.suck-target { transition: opacity 0.4s, filter 0.4s; }
 
 /* =====================================================
    HEADER / NAV
    ===================================================== */
 #site-header {
-  position: fixed; top: 0; inset-inline: 0; z-index: 100;
+  position: fixed; top: 0; inset-inline: 0; z-index: 1000;
   border-bottom: 1px solid transparent;
   transition: background .3s, border-color .3s, backdrop-filter .3s;
 }
 #site-header.scrolled {
-  background: rgba(247,247,243,0.88);
-  border-color: var(--haze);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(247,247,243,0.92); border-color: var(--haze);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
-#site-header .wrap { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+#site-header .wrap {
+  display: flex; align-items: center; justify-content: space-between; padding-block: 14px;
+}
 .site-logo { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: inherit; }
-.site-logo .name { font-size: 17px; font-weight: 900; }
-.site-logo .role { font-family: var(--font-dot); font-size: 10px; letter-spacing: .22em; color: var(--sumi); }
+.site-logo .name { font-size: 17px; font-weight: 900; white-space: nowrap; }
+.site-logo .role { font-family: var(--font-dot); font-size: 10px; letter-spacing: .22em; color: var(--sumi); white-space: nowrap; }
 
 nav ul { list-style: none; display: flex; gap: 4px; }
 nav a {
   display: block; padding: 7px 14px; border-radius: var(--r-pill);
   font-size: 13px; font-weight: 500; text-decoration: none; color: var(--ink);
-  transition: background .15s;
+  transition: background .15s; white-space: nowrap;
 }
 nav a:hover { background: var(--haze); }
+
+@media (max-width: 600px) {
+  #site-header .wrap { flex-direction: column; gap: 8px; padding-block: 10px; }
+  .site-logo { justify-content: center; }
+  nav ul { justify-content: center; flex-wrap: wrap; }
+  nav a { font-size: 12px; padding: 6px 12px; }
+}
 
 /* =====================================================
    COMPONENTS (Chip, Badge, Button, Text)
    ===================================================== */
-.chip {
-  display: inline-block; padding: 5px 14px; border-radius: 6px;
-  background: var(--haze); color: var(--sumi);
-  font-size: 12px; font-weight: 700;
-}
-
-/* ドラッグ可能な物理タグ */
+.chip { display: inline-block; padding: 5px 14px; border-radius: 6px; background: var(--haze); color: var(--sumi); font-size: 12px; font-weight: 700; }
 .chip.draggable {
-  border: none; background: var(--haze); color: var(--sumi);
-  border-radius: 6px; padding: 5px 14px; font-size: 12px;
-  box-shadow: none;
-  cursor: grab; 
-  touch-action: none;
-  user-select: none;
-  will-change: transform;
+  border: none; background: var(--haze); color: var(--sumi); border-radius: 6px; padding: 5px 14px; font-size: 12px; box-shadow: none; cursor: grab; touch-action: none; user-select: none; will-change: transform; display: inline-block;
 }
 @media (pointer: fine) { .chip.draggable { cursor: none; } }
 .chip.draggable:active { opacity: 0.8; }
 
 .badge { display: inline-block; padding: 3px 12px; border-radius: var(--r-pill); background: rgba(242,169,31,.2); color: #6b4a0e; font-size: 11px; font-weight: 700; }
-
 .btn {
-  display: inline-block; padding: 12px 26px; border-radius: var(--r-pill);
-  font-family: var(--font-body); font-size: 14px; font-weight: 700; text-decoration: none;
+  display: inline-block; padding: 12px 26px; border-radius: var(--r-pill); font-family: var(--font-body); font-size: 14px; font-weight: 700; text-decoration: none;
   border: 2px solid var(--ink); transition: transform .12s cubic-bezier(.2,1.4,.4,1), box-shadow .12s; box-shadow: var(--shadow-stamp);
 }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--ink); }
@@ -220,7 +211,7 @@ nav a:hover { background: var(--haze); }
 .section-lead { margin-top: 12px; max-width: 560px; color: var(--sumi); font-size: 15px; }
 
 /* =====================================================
-   SCROLL-REVEAL
+   SCROLL-REVEAL & IMAGE FRAME
    ===================================================== */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
 .reveal.in { opacity: 1; transform: none; }
@@ -228,24 +219,21 @@ nav a:hover { background: var(--haze); }
 .reveal-delay-2 { transition-delay: .2s; }
 .reveal-delay-3 { transition-delay: .3s; }
 
-/* =====================================================
-   IMAGE FRAME & INTERACTION
-   ===================================================== */
 .img-frame {
   position: relative; border-radius: var(--r-md); background: var(--haze); border: 1px solid var(--haze);
-  overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; text-align: center;
+  overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; text-align: center; width: 100%;
 }
 .img-frame::before { content: "IMAGE"; font-family: var(--font-dot); font-size: 10px; letter-spacing: .2em; color: #b0b2aa; display: block; }
 .img-frame .img-label { font-size: 12px; font-weight: 500; color: var(--sumi); }
 .img-frame .img-path { font-family: var(--font-dot); font-size: 10px; color: #aaa; background: var(--white); padding: 2px 8px; border-radius: 4px; }
 .img-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-
-/* 複数画像のリストは非表示で保持 */
 .slides-data { display: none; }
 
-.pressable { transition: transform .14s cubic-bezier(.2,1.4,.4,1); }
+.pressable { transition: transform .14s cubic-bezier(.2,1.4,.4,1); display: inline-block; }
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):hover { transform: scale(1.02); }
 .pressable:not(.rocket-go):not(.rocket-crashed):not(.rocket-bump):not(.rocket-recover):active { transform: scale(.95); }
+
+div.pressable, article.pressable { display: flex; }
 
 /* =====================================================
    INTERACTION: ROCKET WORD
@@ -263,7 +251,6 @@ nav a:hover { background: var(--haze); }
   35% { opacity: 0; }
   100% { opacity: 0; }
 }
-
 .rocket-go::after {
   content: ''; position: absolute; top: 100%; left: 50%; width: 20px; height: 20px; background: #333;
   border-radius: 50%; transform: translateX(-50%); opacity: 0; pointer-events: none; animation: crashSmoke 8s forwards; z-index: -1;
@@ -275,7 +262,6 @@ nav a:hover { background: var(--haze); }
   96% { opacity: 0; }
   100% { opacity: 0; }
 }
-
 @keyframes rocketPath {
   0%   { transform: translateY(0) rotate(0deg); }
   1%   { transform: translate(-2px, 1px) rotate(-1deg); }
@@ -294,7 +280,6 @@ nav a:hover { background: var(--haze); }
   97%  { transform: translateY(-8px) rotate(180deg); } 
   100% { transform: translateY(0) rotate(180deg); } 
 }
-
 .rocket-crashed { transform: rotate(180deg); display: inline-block; cursor: pointer; }
 .rocket-bump { display: inline-block; animation: rocketBump 0.3s ease-out; }
 @keyframes rocketBump {
@@ -302,14 +287,12 @@ nav a:hover { background: var(--haze); }
   50% { transform: translateY(-15px) rotate(180deg); }
   100% { transform: translateY(0) rotate(180deg); }
 }
-
 .rocket-recover { display: inline-block; animation: rocketRecover 0.6s forwards; }
 @keyframes rocketRecover {
   0% { transform: translateY(0) rotate(180deg); }
   40% { transform: translateY(-60px) rotate(180deg); }
   100% { transform: translateY(0) rotate(360deg); }
 }
-
 @keyframes crashShake {
   0% { transform: translate(0,0); }
   20% { transform: translate(-10px, 15px); }
@@ -323,48 +306,35 @@ nav a:hover { background: var(--haze); }
    LIGHTBOX (GALLERY)
    ===================================================== */
 #lightbox {
-  position: fixed; inset: 0; z-index: 50000;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 50000; display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; transition: opacity .3s cubic-bezier(.2,1.4,.4,1);
 }
 #lightbox.active { opacity: 1; pointer-events: auto; }
-
-/* 白背景に変更 */
 #lightbox-bg { position: absolute; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-
-/* 落書きエフェクト（背景） */
 #lb-doodles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; opacity: 0.2; }
 .doodle { position: absolute; stroke: var(--ink); stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; animation: floatDoodle 20s infinite ease-in-out alternate; }
 @keyframes floatDoodle {
   0% { transform: translate(0, 0) rotate(0deg) scale(1); }
   100% { transform: translate(20px, -30px) rotate(10deg) scale(1.05); }
 }
-
 .lb-wrap { position: relative; z-index: 1; display: flex; align-items: center; gap: clamp(10px, 3vw, 24px); width: 92vw; max-width: 1000px; justify-content: center; }
 .lb-content { display: flex; flex-direction: column; align-items: center; gap: 14px; position: relative; }
 #lb-img { border-radius: var(--r-md); box-shadow: 0 10px 40px rgba(0,0,0,0.15); max-height: 75vh; max-width: 100%; object-fit: contain; background: var(--paper); transition: opacity .2s; }
 #lb-label { color: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
 .lb-nav {
-  background: rgba(0,0,0,0.03); border: 2px solid rgba(0,0,0,0.1); color: var(--ink);
-  width: 52px; height: 52px; border-radius: 50%; font-size: 18px; cursor: pointer;
+  background: rgba(0,0,0,0.03); border: 2px solid rgba(0,0,0,0.1); color: var(--ink); width: 52px; height: 52px; border-radius: 50%; font-size: 18px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0;
 }
 .lb-nav:hover { background: rgba(0,0,0,0.08); border-color: var(--ink); transform: scale(1.08); }
 .lb-nav:active { transform: scale(0.95); }
-#lb-close {
-  position: absolute; top: -48px; right: 0; background: none; border: none; color: var(--ink); font-size: 40px; line-height: 1;
-  cursor: pointer; opacity: 0.6; transition: opacity .2s, transform .3s; padding: 0;
-}
+#lb-close { position: absolute; top: -48px; right: 0; background: none; border: none; color: var(--ink); font-size: 40px; line-height: 1; cursor: pointer; opacity: 0.6; transition: opacity .2s, transform .3s; padding: 0; }
 #lb-close:hover { opacity: 1; transform: rotate(90deg); }
-
 .img-frame.lb-trigger { cursor: pointer; }
-.img-frame.lb-trigger::after {
-  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .2s; pointer-events: none;
-}
+.img-frame.lb-trigger::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .2s; pointer-events: none; }
 .img-frame.lb-trigger:hover::after { background: rgba(0,0,0,0.05); }
 
 /* =====================================================
-   OTHERS LAYOUT (Left: Davinci, Right: Design/Photo)
+   OTHERS LAYOUT & CARDS
    ===================================================== */
 .others-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; align-items: stretch; }
 .others-left { display: flex; flex-direction: column; }
@@ -372,9 +342,6 @@ nav a:hover { background: var(--haze); }
 .card-davinci { flex: 1; display: flex; flex-direction: column; }
 .card-davinci .project-summary { flex: 1; }
 
-/* =====================================================
-   PROJECT CARD BASE
-   ===================================================== */
 .project-card { background: var(--white); border-radius: var(--r-lg); border: 1px solid var(--haze); padding: clamp(20px, 4vw, 36px); box-shadow: var(--shadow-card); }
 .project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
 .project-index { font-family: var(--font-dot); font-size: 11px; letter-spacing: .18em; color: var(--sumi); }
@@ -384,11 +351,11 @@ nav a:hover { background: var(--haze); }
 /* =====================================================
    HERO
    ===================================================== */
-#hero { min-height: 100svh; display: flex; align-items: center; padding-top: 80px; padding-bottom: 60px; position: relative; overflow: hidden; }
+#hero { min-height: 100svh; display: flex; align-items: center; padding-top: 100px; padding-bottom: 60px; position: relative; overflow: hidden; }
 #hero::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
 #hero .wrap { position: relative; z-index: 1; width: 100%; }
 .hero-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; position: relative; z-index: 10; }
-.hero-h1 { font-size: clamp(40px, 8vw, 72px); font-weight: 900; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 20px; }
+.hero-h1 { font-size: clamp(32px, 8vw, 72px); font-weight: 900; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 20px; }
 .hero-h1 .accent { color: var(--mizu); display: inline-block; }
 .hero-lead { max-width: 480px; font-size: 15px; color: var(--sumi); margin-bottom: 32px; line-height: 1.85; }
 .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 48px; }
@@ -403,21 +370,14 @@ nav a:hover { background: var(--haze); }
 #philosophy { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); border-bottom: 1px solid var(--haze); }
 .philosophy-grid { display: grid; grid-template-columns: 1fr 300px; gap: 48px; align-items: start; margin-top: 40px; }
 .philosophy-quote { border-left: 4px solid var(--yuzu); padding-left: 22px; font-size: clamp(15px, 2.2vw, 18px); line-height: 2.1; font-weight: 500; }
-.philosophy-keywords { display: flex; flex-direction: column; gap: 14px; }
-.kw-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); border: 1px solid var(--haze); font-size: 13px; font-weight: 700; transition: transform .14s cubic-bezier(.2,1.4,.4,1), box-shadow .14s; }
-.kw-item:hover { transform: translateX(6px); box-shadow: -4px 0 0 0 var(--yuzu); }
-.kw-icon { width: 32px; height: 32px; border-radius: var(--r-sm); background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
 
 #works { padding-block: clamp(60px, 10vw, 100px); }
 .works-list { display: flex; flex-direction: column; gap: 28px; margin-top: 48px; }
-
-/* Project A */
 #proj-kumi { position: relative; overflow: hidden; }
 .drops-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .drop { position: absolute; will-change: transform; }
 #proj-kumi .project-inner { position: relative; z-index: 1; }
 
-/* Project B */
 #proj-nigi-outer { position: relative; }
 .finger-bar-wrap { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
 .finger-bar-wrap.left { left: -4px; }
@@ -426,19 +386,79 @@ nav a:hover { background: var(--haze); }
 .finger-bar-wrap.right .finger-bar { border-radius: var(--r-pill) 0 0 var(--r-pill); }
 #proj-nigi { transform-origin: center; will-change: transform; }
 
-/* Project C: ShakeCon Animation */
 #proj-shake { transform-style: preserve-3d; will-change: transform; }
 #shake-inner { will-change: transform; }
+#shake-inner.rattle-active { animation: rattle .32s linear infinite; }
+.shake-burst { animation: shakeBurst .6s ease-out; }
+@keyframes shakeBurst {
+  0% { transform: rotate(0); } 18% { transform: rotate(1.8deg); } 36% { transform: rotate(-1.8deg); }
+  54% { transform: rotate(1.1deg); } 72% { transform: rotate(-1.1deg); } 100% { transform: rotate(0); }
+}
 @keyframes rattle {
   0%   { transform: translate(0, 0); }
-  25%  { transform: translate(-2px, 1px); }
-  50%  { transform: translate(1.5px, -1.5px); }
-  75%  { transform: translate(-1px, 2px); }
-  100% { transform: translate(2px, -1px); }
+  15%  { transform: translate(-1.5px, 1px); }
+  30%  { transform: translate(2px, -1.5px); }
+  45%  { transform: translate(-2px, 1px); }
+  60%  { transform: translate(1px, -2px); }
+  75%  { transform: translate(-1px, 1.5px); }
+  90%  { transform: translate(1.5px, -1px); }
+  100% { transform: translate(0, 0); }
 }
-.rattle-active { animation: rattle 0.08s linear infinite; }
 
 #others { padding-block: clamp(60px, 10vw, 100px); background: var(--white); border-top: 1px solid var(--haze); border-bottom: 1px solid var(--haze); }
+
+/* =====================================================
+   PROJECT SPECS (制作情報メタ行)
+   ===================================================== */
+.project-specs {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--haze); border: 1px solid var(--haze);
+  border-radius: var(--r-sm); overflow: hidden; margin-bottom: 18px;
+}
+.spec-cell { background: var(--paper); padding: 9px 12px; }
+.spec-label { font-family: var(--font-dot); font-size: 9px; letter-spacing: .2em; color: var(--mizu); display: block; margin-bottom: 2px; }
+.spec-value { font-size: 12px; font-weight: 700; color: var(--ink); line-height: 1.5; }
+@media (max-width: 600px) {
+  .project-specs { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* =====================================================
+   HISTORY (出展・受賞歴タイムライン)
+   ===================================================== */
+#history { padding-block: clamp(60px, 10vw, 100px); }
+.timeline { position: relative; margin-top: 44px; padding-left: 8px; }
+.timeline::before {
+  content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px;
+  width: 2px; background: var(--haze); border-radius: 2px;
+}
+.tl-item { position: relative; padding: 0 0 32px 32px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tl-item::before {
+  content: ''; position: absolute; left: 0; top: 5px;
+  width: 15px; height: 15px; border-radius: 3px;
+  background: var(--mizu); border: 3px solid var(--ink);
+  transform: rotate(45deg);
+  box-shadow: 2px 2px 0 0 rgba(27,30,43,.3);
+  transition: transform .15s cubic-bezier(.2,1.4,.4,1);
+}
+.tl-item:hover::before { transform: rotate(45deg) scale(1.15); }
+.tl-item.future::before { background: var(--paper); border-style: dashed; border-width: 2px; box-shadow: none; }
+.tl-item.pop::before { animation: nodePop .5s cubic-bezier(.2,1.6,.4,1); }
+@keyframes nodePop {
+  0%   { transform: rotate(45deg) scale(1); }
+  40%  { transform: rotate(45deg) scale(1.6); }
+  70%  { transform: rotate(45deg) scale(.85); }
+  100% { transform: rotate(45deg) scale(1); }
+}
+.px-burst {
+  position: fixed; width: 7px; height: 7px; border-radius: 2px;
+  pointer-events: none; z-index: 9997; will-change: transform, opacity;
+}
+.tl-date { font-family: var(--font-dot); font-size: 11px; letter-spacing: .18em; color: var(--sumi); }
+.tl-title { font-size: 16px; font-weight: 900; margin-top: 2px; }
+.tl-desc { font-size: 13px; color: var(--sumi); margin-top: 2px; line-height: 1.7; }
+.tl-badge { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: var(--r-pill); background: rgba(47,111,237,.12); color: var(--mizu); font-size: 10px; font-weight: 700; vertical-align: 2px; }
 
 #about { padding-block: clamp(60px, 10vw, 100px); }
 .about-grid { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; margin-top: 40px; }
@@ -452,21 +472,174 @@ nav a:hover { background: var(--haze); }
 footer { padding-block: 32px; border-top: 1px solid var(--haze); text-align: center; }
 footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--sumi); }
 
-/* SP向けサイズ調整 */
-@media (max-width: 768px) {
-  .others-layout { grid-template-columns: 1fr; }
+/* =====================================================
+   INTRO (タイトル画面: TOUCH TO START)
+   ===================================================== */
+#intro {
+  position: fixed; inset: 0; z-index: 60000;
+  background: var(--paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+@media (pointer: fine) { #intro { cursor: none; } }
+#intro::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+.intro-inner { text-align: center; padding: 0 24px; position: relative; }
+.intro-eyebrow {
+  font-family: var(--font-dot); font-size: 10px; letter-spacing: .3em; color: var(--sumi);
+}
+.intro-name-wrap {
+  height: clamp(60px, 15vw, 120px);
+  display: flex; align-items: center; justify-content: center;
+  margin: 14px 0 10px;
+}
+.intro-name {
+  font-size: clamp(44px, 11vw, 96px); font-weight: 900;
+  letter-spacing: -.02em; line-height: 1.1; color: var(--ink);
+  white-space: nowrap; /* 長いローマ字でも改行させない */
+  transition: opacity 0.2s ease-in-out; /* フォント切り替え時のフェード用 */
+  margin: 0;
+}
+.intro-sub {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: clamp(14px, 3vw, 18px); color: var(--ink);
+}
+.intro-dot {
+  width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
+  background: var(--yuzu); border: 2.5px solid var(--ink);
+  animation: introDot 1.6s infinite ease-in-out;
+}
+@keyframes introDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(.68); } }
+.intro-start {
+  margin-top: clamp(40px, 8vh, 70px);
+  font-family: var(--font-dot); font-size: 13px; letter-spacing: .4em;
+  color: var(--ink);
+  animation: startBlink 1.1s steps(2, jump-none) infinite; 
+}
+.intro-copy {
+  position: absolute; bottom: 26px;
+  font-family: var(--font-dot); font-size: 9px; letter-spacing: .25em; color: var(--sumi);
+}
+@keyframes startBlink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: .12; } }
+#intro.closing .intro-start { animation: none; opacity: 1; }
+#intro::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 100%;
+  height: 26px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,.22), transparent);
+  opacity: 0; transition: opacity .2s;
+}
+#intro.closing::after { opacity: 1; }
+
+.mk {
+  background-image: linear-gradient(transparent 58%, rgba(242,169,31,.55) 58%, rgba(242,169,31,.55) 92%, transparent 92%);
+  background-size: 0% 100%; background-repeat: no-repeat; background-position: left center;
+  transition: background-size .9s cubic-bezier(.4,0,.2,1);
+}
+.mk.on { background-size: 100% 100%; }
+
+.dz-bubble {
+  position: absolute; padding: 5px 12px; z-index: 3;
+  background: var(--white); border: 2px solid var(--ink); border-radius: 10px;
+  box-shadow: 2px 2px 0 0 var(--ink);
+  font-size: 12px; font-weight: 900; color: var(--ink);
+  white-space: nowrap; pointer-events: none; will-change: transform, opacity;
 }
 
+.title-link {
+  background: none; border: none; padding: 0;
+  font: inherit; color: inherit; cursor: pointer;
+  display: inline-flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  text-align: left;
+}
+.title-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--yuzu);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+}
+.title-arrow {
+  font-family: var(--font-dot); font-size: 10px; letter-spacing: .15em;
+  color: var(--mizu); white-space: nowrap;
+}
+
+#work-detail {
+  position: fixed; inset: 0; z-index: 40000;
+  background: var(--paper);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .45s cubic-bezier(.3,1,.3,1), visibility 0s .45s;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#work-detail.open {
+  transform: translateX(0); visibility: visible;
+  transition: transform .45s cubic-bezier(.3,1,.3,1);
+}
+.wd-inner {
+  max-width: var(--site-max); margin-inline: auto;
+  padding: 84px clamp(20px, 5vw, 48px) 90px;
+}
+#wd-back {
+  position: fixed; top: 16px; left: clamp(16px, 4vw, 40px); z-index: 5;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--r-pill);
+  background: var(--paper); color: var(--ink);
+  border: 2px solid var(--ink); box-shadow: var(--shadow-stamp);
+  font-family: var(--font-body); font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: transform .12s cubic-bezier(.2,1.4,.4,1);
+}
+#wd-back:hover { transform: translateY(-2px); }
+#wd-back:active { transform: scale(.94); }
+.wd-step { margin-top: 44px; }
+.wd-step-num {
+  font-family: var(--font-dot); font-size: 11px; letter-spacing: .25em; color: var(--mizu);
+}
+.wd-step h3 { font-size: 20px; font-weight: 900; margin: 4px 0 12px; }
+.wd-step p { font-size: 14px; color: var(--sumi); line-height: 1.9; user-select: text; -webkit-user-select: text; }
+.wd-step .img-frame { margin-top: 16px; }
+.wd-lead { margin-top: 16px; font-size: 15px; line-height: 2; user-select: text; -webkit-user-select: text; }
+
+/* SP向けサイズ調整 */
 @media (max-width: 480px) {
   .hero-bg-letter { display: none; }
   .hero-btns { gap: 10px; }
   .btn { padding: 11px 20px; font-size: 13px; }
-  
-  .hero-h1 { font-size: clamp(32px, 8vw, 44px); }
   .hero-lead { font-size: 14px; line-height: 1.7; }
   .philosophy-quote { font-size: 14px; line-height: 1.9; }
   .project-summary { font-size: 13px; line-height: 1.7; }
   .about-dd { font-size: 13px; line-height: 1.7; }
+  .lb-wrap { gap: 10px; }
+  .lb-nav { width: 40px; height: 40px; font-size: 14px; }
+  #lb-close { right: 10px; }
+}
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14161E;  
+    --ink:   #ECEDE6;  
+    --yuzu:  #F2A91F;
+    --mizu:  #6B96F7;  
+    --sumi:  #9AA0AC;
+    --haze:  #262A35;
+    --white: #1C1F2A;  
+    --shadow-card:  0 2px 24px 0 rgba(0,0,0,0.45);
+    --shadow-stamp: 0 4px 0 0 rgba(0,0,0,0.55);
+  }
+  .badge {
+    background: rgba(242,169,31,0.16);
+    color: #F5C76B;
+    border: 1px solid rgba(242,169,31,0.4);
+  }
+  .tl-badge { background: rgba(107,150,247,0.18); }
+  #site-header.scrolled { background: rgba(20,22,30,0.9); }
+  #lightbox-bg { background: rgba(16,18,26,0.92); }
+  .hero-bg-letter { color: rgba(236,237,230,0.05); }
+  .img-frame::before { color: #6f7480; }
+  .img-frame .img-path { color: #9aa0ac; }
 }
 </style>
 </head>
@@ -475,6 +648,19 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 <div id="progress-bar" aria-hidden="true"></div>
 <div id="cursor" aria-hidden="true"></div>
 <div id="bh-particles"></div>
+
+<!-- タイトル画面: どこを触ってもそこから世界が開く -->
+<div id="intro" role="button" tabindex="0" aria-label="タッチしてポートフォリオを開く">
+  <div class="intro-inner">
+    <p class="intro-eyebrow">PLAY / INTERACTION / EXPERIENCE DESIGN</p>
+    <div class="intro-name-wrap">
+      <p class="intro-name">吉川柚希</p>
+    </div>
+    <p class="intro-sub"><span class="intro-dot" aria-hidden="true"></span>さわれるポートフォリオ</p>
+    <p class="intro-start">TOUCH TO START</p>
+  </div>
+  <p class="intro-copy">© 2026 YUZUKI YOSHIKAWA</p>
+</div>
 
 <header id="site-header">
   <div class="wrap">
@@ -487,6 +673,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <li><a href="#philosophy" data-mag>Philosophy</a></li>
         <li><a href="#works" data-mag>Works</a></li>
         <li><a href="#others" data-mag>Others</a></li>
+        <li><a href="#history" data-mag>History</a></li>
         <li><a href="#about" data-mag>About</a></li>
       </ul>
     </nav>
@@ -508,9 +695,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </h1>
     
     <p class="hero-lead reveal reveal-delay-2">
-      独自の物理コントローラーと<br class="sp-only">アフォーダンス設計で、<br class="pc-only">
-      プレイヤーの直感的な行動そのものを<br class="sp-only">「遊び」に変える<br class="pc-only">
-      体験をつくっています。
+      独自の物理コントローラーとアフォーダンス設計で、プレイヤーの直感的な行動そのものを「遊び」に変える体験をつくっています。
     </p>
     
     <div class="hero-btns reveal reveal-delay-2">
@@ -536,10 +721,10 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </div>
     <div class="philosophy-grid">
       <blockquote class="philosophy-quote reveal reveal-delay-1">
-        展示において、ユーザーが私の制作したコントローラーを<br class="pc-only">想定外の持ち方や遊び方で扱う場面に何度も直面した。<br class="pc-only">しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。<br class="pc-only">この経験から、作り手の「こう遊ぶべき」という無意識のバイアスを自覚し、<br class="pc-only">初見プレイヤーの直感的な行動を観察・予測して、<br class="pc-only">自然な形で面白さへ導くアフォーダンスとルール設計の重要性を学んだ。
+        展示において、ユーザーが私の制作したコントローラーを想定外の持ち方や遊び方で扱う場面に何度も直面した。しかし客観的に観察すると、それらの行動は極めて自然で理にかなっていた。この経験から、作り手の「こう遊ぶべき」という<span class="mk">無意識のバイアス</span>を自覚し、<span class="mk">初見プレイヤーの直感的な行動</span>を観察・予測して、自然な形で面白さへ導く<span class="mk">アフォーダンスとルール設計</span>の重要性を学んだ。
       </blockquote>
       <div class="philosophy-keywords reveal reveal-delay-2">
-        <div class="img-frame" style="aspect-ratio:4/3; margin-top:0;">
+        <div class="img-frame lb-trigger" style="aspect-ratio:4/3; margin-top:0;">
           <ul class="slides-data">
             <li data-src="images/philosophy.jpg" data-label="展示会でのユーザー観察風景"></li>
           </ul>
@@ -564,22 +749,29 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div class="drops-layer" id="drops-layer" aria-hidden="true"></div>
         <div class="project-inner">
           <div class="project-meta"><span class="project-index">PROJECT A</span><span class="badge">ISCA2026 提出目標</span></div>
-          <h3 class="project-title">汲・撒・響</h3>
+          <h3 class="project-title"><button class="title-link" data-detail="kumi" data-mag>汲・撒・響<span class="title-arrow">PROCESS →</span></button></h3>
           <p class="project-summary">柄杓型・桶型の独自デバイスで、水を「汲む・撒く」物理的な解放感をそのままゲームに写し取る作品。床へモニターを水平配置することで、2人のプレイヤーが画面を挟んで自然と向かい合い、対面コミュニケーションが誘発される空間設計を狙っている。</p>
+          <div class="project-specs">
+            <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 制作中</span></div>
+            <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
+            <div class="spec-cell"><span class="spec-label">ROLE</span><span class="spec-value">企画 / デバイス制作</span></div>
+            <div class="spec-cell"><span class="spec-label">TOOLS</span><span class="spec-value">Unity / Arduino / Fusion</span></div>
+          </div>
           <div class="grid-3">
-            <div class="img-frame" style="aspect-ratio:4/3;">
+            <div class="img-frame lb-trigger" style="aspect-ratio:4/3;">
               <ul class="slides-data"><li data-src="images/kumi-device.jpg" data-label="デバイス外観"></li></ul>
               <span class="img-label">デバイス外観</span><span class="img-path">images/kumi-device.jpg</span>
             </div>
-            <div class="img-frame" style="aspect-ratio:4/3;">
+            <div class="img-frame lb-trigger" style="aspect-ratio:4/3;">
               <ul class="slides-data"><li data-src="images/kumi-play.jpg" data-label="テストプレイ風景"></li></ul>
               <span class="img-label">テストプレイ風景</span><span class="img-path">images/kumi-play.jpg</span>
             </div>
-            <div class="img-frame" style="aspect-ratio:4/3;">
+            <div class="img-frame lb-trigger" style="aspect-ratio:4/3;">
               <ul class="slides-data"><li data-src="images/kumi-loop.jpg" data-label="ゲームループ図解"></li></ul>
               <span class="img-label">ゲームループ図解</span><span class="img-path">images/kumi-loop.jpg</span>
             </div>
           </div>
+          <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* カードの余白をタップ/クリックすると、水しぶきと波紋が広がります</p>
         </div>
       </article>
 
@@ -588,52 +780,71 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div class="finger-bar-wrap right" id="fingers-right" aria-hidden="true"></div>
         <article class="project-card" id="proj-nigi">
           <div class="project-meta"><span class="project-index">PROJECT B</span><span class="badge">BitSummit2026 出展</span></div>
-          <h3 class="project-title">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</h3>
+          <h3 class="project-title"><button class="title-link" data-detail="nigi" data-mag>『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」<span class="title-arrow">PROCESS →</span></button></h3>
           <p class="project-summary">「握り込む」という一動作の手応えを、ゲーム内アクションへ直接連動させた専用コントローラー。握る強さ・速さがそのままスライムの変形に反映され、入力と結果のあいだに翻訳を挟まないダイレクトな体験を設計した。</p>
+          <div class="project-specs">
+            <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 20XX.XX</span></div>
+            <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
+            <div class="spec-cell"><span class="spec-label">ROLE</span><span class="spec-value">企画 / デバイス制作</span></div>
+            <div class="spec-cell"><span class="spec-label">TOOLS</span><span class="spec-value">Unity / Arduino / Fusion</span></div>
+          </div>
           <div class="grid-2">
-            <div class="img-frame" style="aspect-ratio:16/9;">
+            <div class="img-frame lb-trigger" style="aspect-ratio:16/9;">
               <ul class="slides-data"><li data-src="images/nigicon-bitsummit.jpg" data-label="BitSummit展示風景"></li></ul>
               <span class="img-label">BitSummit展示風景</span><span class="img-path">images/nigicon-bitsummit.jpg</span>
             </div>
-            <div class="img-frame" style="aspect-ratio:16/9;">
+            <div class="img-frame lb-trigger" style="aspect-ratio:16/9;">
               <ul class="slides-data"><li data-src="images/nigicon-structure.jpg" data-label="コントローラー構造図"></li></ul>
               <span class="img-label">コントローラー構造図</span><span class="img-path">images/nigicon-structure.jpg</span>
             </div>
           </div>
+          <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* カードを長押しすると「握り込め」ます。離すと元に戻ります</p>
         </article>
       </div>
 
-      <article class="project-card reveal" style="perspective: 900px;">
+      <article class="project-card reveal" id="proj-shake-card" style="perspective: 900px;">
         <div id="proj-shake">
           <div id="shake-inner">
             <div class="project-meta"><span class="project-index">PROJECT C</span><span class="badge">遊創研/GCCP・BitSummit2027 出展目標</span></div>
-            <h3 class="project-title">ShakeCon</h3>
+            <h3 class="project-title"><button class="title-link" data-detail="shake" data-mag>ShakeCon<span class="title-arrow">PROCESS →</span></button></h3>
             <p class="project-summary">内部に独立稼働するパーツを組み込み、振るとカチャカチャと物理的な音が鳴るコントローラー。「振る」行為そのもののプリミティブな面白さを起点に、音と手応えがゲーム体験へ還流する設計を探求している。</p>
+          <div class="project-specs">
+            <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 制作中</span></div>
+            <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
+            <div class="spec-cell"><span class="spec-label">ROLE</span><span class="spec-value">企画 / 設計</span></div>
+            <div class="spec-cell"><span class="spec-label">TOOLS</span><span class="spec-value">Unity / マイコン(シリアル通信)</span></div>
+          </div>
             <div class="grid-2">
-              <div class="img-frame" style="aspect-ratio:16/9;">
+              <div class="img-frame lb-trigger" style="aspect-ratio:16/9;">
                 <ul class="slides-data"><li data-src="images/shakecon-inside.jpg" data-label="マイコン内部ギミック"></li></ul>
                 <span class="img-label">マイコン内部ギミック</span><span class="img-path">images/shakecon-inside.jpg</span>
               </div>
-              <div class="img-frame" style="aspect-ratio:16/9;">
+              <div class="img-frame lb-trigger" style="aspect-ratio:16/9;">
                 <ul class="slides-data"><li data-src="images/shakecon-spec.jpg" data-label="シリアル通信連携仕様書"></li></ul>
                 <span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span>
               </div>
             </div>
-            <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* このカードにマウスを乗せると実機のように傾き、カチャカチャ震えます</p>
+            <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* マウスを乗せる / タップすると、実機のようにカチャカチャ震えます</p>
           </div>
         </div>
       </article>
 
-      <article class="project-card reveal">
+      <article class="project-card reveal" id="proj-tori">
         <div class="project-meta"><span class="project-index">PROJECT D</span><span class="badge">授業内制作（アナログ）</span></div>
-        <h3 class="project-title">トリ合い譲り合い</h3>
+        <h3 class="project-title"><button class="title-link" data-detail="tori" data-mag>トリ合い譲り合い<span class="title-arrow">PROCESS →</span></button></h3>
         <p class="project-summary">焼き鳥の最後の1本をテーマにした、譲り合いの駆け引きを楽しむ社会人向けカードゲーム。「奪う」ではなく「譲る」をプレイの主語に置くことで、場の空気の読み合いがそのままゲームメカニクスになる構造を設計した。デジタルに限らない遊びの幅を示す制作実績。</p>
+          <div class="project-specs">
+            <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 20XX.XX</span></div>
+            <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
+            <div class="spec-cell"><span class="spec-label">ROLE</span><span class="spec-value">企画 / カードデザイン</span></div>
+            <div class="spec-cell"><span class="spec-label">TOOLS</span><span class="spec-value">グラフィックツール / 紙プロト</span></div>
+          </div>
         <div class="grid-2">
-          <div class="img-frame pressable" style="aspect-ratio:16/9;">
+          <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9;">
             <ul class="slides-data"><li data-src="images/toriai-cards.jpg" data-label="カードデザイン"></li></ul>
             <span class="img-label">カードデザイン</span><span class="img-path">images/toriai-cards.jpg</span>
           </div>
-          <div class="img-frame pressable" style="aspect-ratio:16/9;">
+          <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9;">
             <ul class="slides-data"><li data-src="images/toriai-play.jpg" data-label="プレイ風景"></li></ul>
             <span class="img-label">プレイ風景</span><span class="img-path">images/toriai-play.jpg</span>
           </div>
@@ -652,13 +863,11 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     </div>
     <div class="others-layout" style="margin-top: 40px;">
       
-      <!-- 左側：大きくダヴィンチマスターズ -->
       <div class="others-left">
         <article class="project-card reveal card-davinci" style="height: 100%;">
           <h3 class="project-title" style="font-size: 20px;">ダヴィンチマスターズ</h3>
           <p class="project-summary">小学生を対象とした漫画を”作る”ワークショップの企画。漫画のアセットをあらかじめ用意し、参加者はそれを切りはりして物語を構成していく。</p>
           
-          <!-- サムネイルで複数画像が自動的に切り替わり、クリックでこのリストだけがポップアップする -->
           <div class="img-frame pressable lb-trigger" style="flex: 1; min-height: 280px; margin-top: 18px;">
             <ul class="slides-data">
               <li data-src="images/davinci-1.jpg" data-label="ワークショップ風景 1"></li>
@@ -671,9 +880,8 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         </article>
       </div>
 
-      <!-- 右側：デザイン・写真 -->
       <div class="others-right">
-        <article class="project-card reveal reveal-delay-1">
+        <article class="project-card reveal reveal-delay-1" id="card-design">
           <h3 class="project-title" style="font-size: 18px;">デザイン</h3>
           <p class="project-summary" style="font-size: 13px;">ポスターやUI、グラフィックデザインなどのクリエイティブ制作。</p>
           <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
@@ -686,7 +894,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           </div>
         </article>
 
-        <article class="project-card reveal reveal-delay-2">
+        <article class="project-card reveal reveal-delay-2" id="card-photo">
           <h3 class="project-title" style="font-size: 18px;">写真</h3>
           <p class="project-summary" style="font-size: 13px;">趣味の写真。デジタル・フィルムの両方を使用して撮影する。</p>
           <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
@@ -705,11 +913,48 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   </div>
 </section>
 
+<section id="history">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">HISTORY</p>
+      <h2 class="section-title">出展・受賞歴</h2>
+    </div>
+
+    <div class="timeline reveal reveal-delay-1">
+
+      <div class="tl-item">
+        <span class="tl-date">2025.10</span>
+        <p class="tl-title">JUNCAREE EIZO JUNCTION×キャリアフェア2025 出展</p>
+        <p class="tl-desc">「ナイトフィッシング イズ グッド」— 手触りをテーマとしたアナログゲームと、ゲームを補助するデジタルツールを制作（学部イベント）</p>
+      </div>
+
+      <div class="tl-item">
+        <span class="tl-date">2026.05</span>
+        <p class="tl-title">BitSummit 2026 出展</p>
+        <p class="tl-desc">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</p>
+      </div>
+
+      <div class="tl-item future">
+        <span class="tl-date">2026 (提出目標)</span>
+        <p class="tl-title">ISCA 2026 提出</p>
+        <p class="tl-desc">「汲・撒・響」</p>
+      </div>
+
+      <div class="tl-item future">
+        <span class="tl-date">2027.05 (目標)</span>
+        <p class="tl-title">BitSummit 2027 出展目標</p>
+        <p class="tl-desc">「ShakeCon」(遊創研/GCCP)</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section id="about">
   <div class="wrap">
     <div class="reveal"><p class="eyebrow">ABOUT ME</p><h2 class="section-title">吉川 柚希</h2></div>
     <div class="about-grid">
-      <div class="profile-img-frame img-frame reveal" style="aspect-ratio:3/4;">
+      <div class="profile-img-frame img-frame reveal lb-trigger" style="aspect-ratio:3/4;">
         <ul class="slides-data"><li data-src="images/profile.jpg" data-label="ポートレート / 作業風景"></li></ul>
         <span class="img-label">ポートレート / 作業風景</span><span class="img-path">images/profile.jpg</span>
       </div>
@@ -738,11 +983,189 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   <p style="margin-top:6px; font-size:9px; letter-spacing:.2em;">© 2026 Yuzuki Yoshikawa</p>
 </footer>
 
+<!-- 制作過程 詳細ページ -->
+<div id="work-detail" aria-hidden="true">
+  <button id="wd-back" data-mag>← 戻る</button>
+  <div class="wd-inner" id="wd-content"></div>
+</div>
+
+  <template id="wd-kumi">
+    <p class="eyebrow">MAKING PROCESS</p>
+    <h2 class="section-title">汲・撒・響</h2>
+    <p style="margin-top:10px;"><span class="badge">ISCA2026 提出目標</span></p>
+    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 01</p>
+        <h3>課題と狙い</h3>
+        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 02</p>
+        <h3>プロトタイピング</h3>
+        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">初期スケッチ / プロトタイプ</span>
+          <span class="img-path">images/process/kumi-proc-01.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 03</p>
+        <h3>テストプレイでの観察</h3>
+        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">テストプレイの記録</span>
+          <span class="img-path">images/process/kumi-proc-02.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 04</p>
+        <h3>想定外から得た改善</h3>
+        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">改善後の仕様 / 比較</span>
+          <span class="img-path">images/process/kumi-proc-03.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 05</p>
+        <h3>学び</h3>
+        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+      </div>
+  </template>
+  <template id="wd-nigi">
+    <p class="eyebrow">MAKING PROCESS</p>
+    <h2 class="section-title">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</h2>
+    <p style="margin-top:10px;"><span class="badge">BitSummit2026 出展</span></p>
+    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 01</p>
+        <h3>課題と狙い</h3>
+        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 02</p>
+        <h3>プロトタイピング</h3>
+        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">初期スケッチ / プロトタイプ</span>
+          <span class="img-path">images/process/nigi-proc-01.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 03</p>
+        <h3>テストプレイでの観察</h3>
+        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">テストプレイの記録</span>
+          <span class="img-path">images/process/nigi-proc-02.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 04</p>
+        <h3>想定外から得た改善</h3>
+        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">改善後の仕様 / 比較</span>
+          <span class="img-path">images/process/nigi-proc-03.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 05</p>
+        <h3>学び</h3>
+        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+      </div>
+  </template>
+  <template id="wd-shake">
+    <p class="eyebrow">MAKING PROCESS</p>
+    <h2 class="section-title">ShakeCon</h2>
+    <p style="margin-top:10px;"><span class="badge">遊創研/GCCP・BitSummit2027 出展目標</span></p>
+    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 01</p>
+        <h3>課題と狙い</h3>
+        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 02</p>
+        <h3>プロトタイピング</h3>
+        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">初期スケッチ / プロトタイプ</span>
+          <span class="img-path">images/process/shake-proc-01.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 03</p>
+        <h3>テストプレイでの観察</h3>
+        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">テストプレイの記録</span>
+          <span class="img-path">images/process/shake-proc-02.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 04</p>
+        <h3>想定外から得た改善</h3>
+        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">改善後の仕様 / 比較</span>
+          <span class="img-path">images/process/shake-proc-03.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 05</p>
+        <h3>学び</h3>
+        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+      </div>
+  </template>
+  <template id="wd-tori">
+    <p class="eyebrow">MAKING PROCESS</p>
+    <h2 class="section-title">トリ合い譲り合い</h2>
+    <p style="margin-top:10px;"><span class="badge">授業内制作（アナログ）</span></p>
+    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 01</p>
+        <h3>課題と狙い</h3>
+        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 02</p>
+        <h3>プロトタイピング</h3>
+        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">初期スケッチ / プロトタイプ</span>
+          <span class="img-path">images/process/tori-proc-01.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 03</p>
+        <h3>テストプレイでの観察</h3>
+        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">テストプレイの記録</span>
+          <span class="img-path">images/process/tori-proc-02.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 04</p>
+        <h3>想定外から得た改善</h3>
+        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
+        <div class="img-frame" style="aspect-ratio:16/9;">
+          <span class="img-label">改善後の仕様 / 比較</span>
+          <span class="img-path">images/process/tori-proc-03.jpg</span>
+        </div>
+      </div>
+      <div class="wd-step">
+        <p class="wd-step-num">STEP 05</p>
+        <h3>学び</h3>
+        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+      </div>
+  </template>
+
 <!-- Lightbox Modal -->
 <div id="lightbox" aria-hidden="true">
   <div id="lightbox-bg"></div>
   
-  <!-- 背景の落書きアニメーション -->
   <div id="lb-doodles">
     <svg viewBox="0 0 200 200" class="doodle" style="top: 10%; left: 10%; width: 180px;">
       <path d="M 100 50 C 130 50 150 70 140 100 C 130 130 90 140 70 110 C 50 80 80 40 120 40 C 160 40 180 90 150 130 C 120 170 60 160 40 120 C 20 80 60 30 110 20 C 160 10 200 70 170 120 C 140 170 70 180 30 130 C -10 80 40 10 100 10" />
@@ -813,7 +1236,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     function collectSuckTargets() {
       var els = document.querySelectorAll('h1, h2, h3, p, li:not(#lightbox li), dt, dd, blockquote, .btn, .chip, .kw-item, .img-frame, .badge, .project-index, .eyebrow, .hero-bg-letter, footer p');
       els.forEach(function(el) {
-        if (!el.classList.contains('suck-target') && el.id !== 'rocket-word' && el.id !== 'bh-particles') {
+        if (!el.classList.contains('suck-target') && el.id !== 'rocket-word' && el.id !== 'bh-particles' && !el.closest('#intro')) {
           el.classList.add('suck-target');
           suckTargets.push({ el: el, sucked: false });
         }
@@ -826,7 +1249,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       isSnap = false;
       var best = null;
       
-      if (!isBlackhole && !isPreBlackhole && fine) { 
+      if (!isBlackhole && !isPreBlackhole && fine && !introOpen) { 
         mags.forEach(function (el) {
           var r = el.getBoundingClientRect();
           var dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
@@ -857,7 +1280,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var pressed = false;
     
     function startBlackholeTimer(e) {
-      if (e.target.closest('#rocket-word') || e.target.closest('.draggable') || e.target.closest('.lb-trigger') || document.getElementById('lightbox').classList.contains('active')) return;
+      if (e.target.closest('#intro') || e.target.closest('#rocket-word') || e.target.closest('.draggable') || e.target.closest('.lb-trigger') || document.getElementById('lightbox').classList.contains('active')) return;
       
       if (e.pointerType === 'touch') {
         tx = e.clientX; ty = e.clientY;
@@ -997,7 +1420,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
       var gravity = 0.8;
       var bounce = -0.5;
-      var floor = window.innerHeight - el.getBoundingClientRect().height - 20;
+      var rectNow = el.getBoundingClientRect();
+      var baseTop = rectNow.top - currentY;
+      var floorY  = window.innerHeight - rectNow.height - 20;
 
       function physicsLoop() {
         if (suckTarget && suckTarget.sucked) return; 
@@ -1006,16 +1431,15 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         currentX += vx;
         currentY += vy;
 
-        var rect = el.getBoundingClientRect();
-        if (rect.top + currentY > floor) {
-          currentY = floor - rect.top;
+        if (baseTop + currentY > floorY) {
+          currentY = floorY - baseTop;
           vy *= bounce;
           vx *= 0.8; 
         }
 
         el.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px) rotate(' + (vx * 1.5) + 'deg)';
 
-        if (Math.abs(vy) > 0.5 || Math.abs(vx) > 0.5 || rect.top + currentY < floor) {
+        if (Math.abs(vy) > 0.5 || Math.abs(vx) > 0.5 || baseTop + currentY < floorY - 1) {
           raf = requestAnimationFrame(physicsLoop);
         }
       }
@@ -1076,7 +1500,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   var imgFrames = document.querySelectorAll('.img-frame');
   imgFrames.forEach(function(frame) {
     var slides = frame.querySelectorAll('.slides-data li');
-    if (slides.length <= 1) return; // 1枚以下の場合は何もしない
+    if (slides.length <= 1) return; 
 
     var currentIdx = 0;
     var labelEl = frame.querySelector('.img-label');
@@ -1098,8 +1522,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   /* --------------------------------------------------
      LIGHTBOX (TOPIC SPECIFIC GALLERY)
      -------------------------------------------------- */
-  // クラス付与
-  document.querySelectorAll('.img-frame:has(.slides-data)').forEach(function(el){ el.classList.add('lb-trigger'); });
+  document.querySelectorAll('.img-frame .slides-data').forEach(function(ul){ ul.parentElement.classList.add('lb-trigger'); });
 
   var lightbox = document.getElementById('lightbox');
   var lbImg = document.getElementById('lb-img');
@@ -1115,10 +1538,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
     lbImg.style.opacity = 0; 
     setTimeout(function() {
+      lbImg.dataset.fallback = '';
       lbImg.src = src;
       lbLabel.innerText = label;
       
       lbImg.onerror = function() {
+        if (this.dataset.fallback === '1') return; 
+        this.dataset.fallback = '1';
         this.src = "https://placehold.co/800x600/E7E8E2/7C7F8A?text=" + encodeURIComponent(label);
       };
       
@@ -1143,7 +1569,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   function resetLbTimer() {
     clearInterval(lbTimer);
     if(lbSlides.length > 1) {
-      lbTimer = setInterval(nextLbSlide, 4000); // 4秒ごとに自動送り
+      lbTimer = setInterval(nextLbSlide, 4000); 
     }
   }
 
@@ -1154,7 +1580,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     lbCurrentIdx = startIndex || 0;
     updateLightbox();
     
-    // 画像が1枚だけなら矢印ボタンを隠す
     var navs = document.querySelectorAll('.lb-nav');
     navs.forEach(function(nav) { nav.style.display = lbSlides.length > 1 ? 'flex' : 'none'; });
 
@@ -1172,14 +1597,11 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       e.stopPropagation();
       e.preventDefault();
       
-      // クリックされたフレームが属するトピック（プロジェクト記事全体）を取得
       var topicContainer = frame.closest('article, section');
       if (!topicContainer) topicContainer = document;
 
-      // そのトピック内の全ての画像情報を収集
       var allSlidesInTopic = topicContainer.querySelectorAll('.slides-data li');
       
-      // クリックした画像が配列の何番目かを取得
       var myFirstSlide = frame.querySelector('.slides-data li');
       var startIndex = 0;
       var slidesArray = Array.from(allSlidesInTopic);
@@ -1195,6 +1617,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   document.getElementById('lb-prev').addEventListener('click', function(e) { e.stopPropagation(); prevLbSlide(); });
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
   document.getElementById('lightbox-bg').addEventListener('click', closeLightbox);
+
+  window.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') nextLbSlide();
+    else if (e.key === 'ArrowLeft') prevLbSlide();
+  });
 
   /* --------------------------------------------------
      PROJECT SETUP (DOM Elements - Parallax & Squeeze)
@@ -1242,8 +1671,717 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   }
 
   /* --------------------------------------------------
-     SCROLL EVENT CONTROLLER
+     RICH INTERACTIONS
      -------------------------------------------------- */
+  var canAnimate = (typeof Element !== 'undefined') && !!Element.prototype.animate;
+
+  function makeLayer(card) {
+    if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
+    var l = document.createElement('div');
+    l.style.cssText = 'position:absolute; inset:0; pointer-events:none; z-index:2; overflow:hidden;';
+    l.setAttribute('aria-hidden', 'true');
+    card.appendChild(l);
+    return l;
+  }
+
+  function pixelBurst(x, y) {
+    if (reduce || !canAnimate) return;
+    var colors = ['#F2A91F', '#2F6FED', 'var(--ink)'];
+    for (var i = 0; i < 8; i++) {
+      var p = document.createElement('div');
+      p.className = 'px-burst';
+      p.style.background = colors[i % 3];
+      p.style.left = x + 'px';
+      p.style.top  = y + 'px';
+      document.body.appendChild(p);
+      var ang  = (Math.PI * 2 / 8) * i + Math.random() * 0.6;
+      var dist = 26 + Math.random() * 30;
+      var dx = Math.cos(ang) * dist;
+      var dy = Math.sin(ang) * dist - 14;
+      p.animate([
+        { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 1 },
+        { transform: 'translate(' + dx + 'px,' + (dy + 36) + 'px) rotate(' + (dx * 8) + 'deg) scale(.3)', opacity: 0 }
+      ], { duration: 520 + Math.random() * 200, easing: 'cubic-bezier(.2,.6,.4,1)' })
+       .onfinish = (function (el) { return function () { el.remove(); }; })(p);
+    }
+  }
+
+  document.querySelectorAll('.tl-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      if (isBlackhole || reduce) return;
+      item.classList.remove('pop');
+      void item.offsetWidth; 
+      item.classList.add('pop');
+      var r = item.getBoundingClientRect();
+      pixelBurst(r.left + 11, r.top + 13);
+    });
+  });
+
+  var projKumiCard = projKumi;
+  if (projKumiCard && !reduce) {
+    var kCanvas = document.createElement('canvas');
+    kCanvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2;';
+    kCanvas.setAttribute('aria-hidden', 'true');
+    projKumiCard.appendChild(kCanvas);
+    var kCtx = kCanvas.getContext('2d');
+    var kDpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function sizeKCanvas() {
+      var r = projKumiCard.getBoundingClientRect();
+      kCanvas.width = Math.max(1, Math.round(r.width * kDpr));
+      kCanvas.height = Math.max(1, Math.round(r.height * kDpr));
+    }
+    sizeKCanvas();
+    if ('ResizeObserver' in window) { new ResizeObserver(sizeKCanvas).observe(projKumiCard); }
+    else { window.addEventListener('resize', sizeKCanvas); }
+
+    var kDrops = [], kRipples = [], kFlashes = [];
+    var kRunning = false, kLast = 0;
+
+    function newDrop(x, y, vx, vy, r, floorY) {
+      return { x: x, y: y, vx: vx, vy: vy, r: r, floorY: floorY, a: 0.95 };
+    }
+
+    function drawDrop(d) {
+      var sp = Math.hypot(d.vx, d.vy);
+      var ang = Math.atan2(d.vy, d.vx);
+      var stretch = 1 + Math.min(sp / 13, 0.95); 
+      kCtx.save();
+      kCtx.translate(d.x, d.y);
+      kCtx.rotate(ang);
+      kCtx.scale(stretch, 1);
+      var g = kCtx.createRadialGradient(-d.r * 0.32, -d.r * 0.32, d.r * 0.12, 0, 0, d.r);
+      g.addColorStop(0, 'rgba(198,221,255,' + d.a + ')');   
+      g.addColorStop(0.55, 'rgba(74,134,243,' + d.a + ')');
+      g.addColorStop(1, 'rgba(33,88,208,' + (d.a * 0.88) + ')');
+      kCtx.fillStyle = g;
+      kCtx.beginPath();
+      kCtx.arc(0, 0, d.r, 0, Math.PI * 2);
+      kCtx.fill();
+      kCtx.restore();
+    }
+
+    function drawRipple(rp) {
+      if (rp.t < 0) return; 
+      var p = Math.min(rp.t / rp.dur, 1);
+      var ease = 1 - Math.pow(1 - p, 3);
+      var rad = rp.max * ease;
+      var alpha = (1 - p) * rp.a0;
+      kCtx.save();
+      kCtx.translate(rp.x, rp.y);
+      kCtx.scale(1, 0.42); 
+      kCtx.strokeStyle = 'rgba(47,111,237,' + alpha + ')';
+      kCtx.lineWidth = rp.lw * (1 - p * 0.6);
+      kCtx.beginPath(); kCtx.arc(0, 0, rad, 0, Math.PI * 2); kCtx.stroke();
+      kCtx.strokeStyle = 'rgba(255,255,255,' + (alpha * 0.5) + ')'; 
+      kCtx.lineWidth = 1;
+      kCtx.beginPath(); kCtx.arc(0, 0, rad * 0.85, 0, Math.PI * 2); kCtx.stroke();
+      kCtx.restore();
+    }
+
+    function kLoop(ts) {
+      if (!kLast) kLast = ts;
+      var dt = Math.min((ts - kLast) / 16.7, 2.2); 
+      kLast = ts;
+      var w = kCanvas.width / kDpr, h = kCanvas.height / kDpr;
+      kCtx.clearRect(0, 0, kCanvas.width, kCanvas.height);
+      kCtx.save();
+      kCtx.scale(kDpr, kDpr);
+
+      for (var f = kFlashes.length - 1; f >= 0; f--) {
+        var fl = kFlashes[f];
+        var fp = fl.t / fl.dur;
+        if (fp <= 1) {
+          var fr = 6 + fl.max * fp;
+          var g0 = kCtx.createRadialGradient(fl.x, fl.y, 0, fl.x, fl.y, fr);
+          g0.addColorStop(0, 'rgba(255,255,255,' + (0.95 * (1 - fp)) + ')');
+          g0.addColorStop(1, 'rgba(170,200,255,0)');
+          kCtx.fillStyle = g0;
+          kCtx.beginPath(); kCtx.arc(fl.x, fl.y, fr, 0, Math.PI * 2); kCtx.fill();
+        }
+        fl.t += dt * 16.7;
+        if (fl.t >= fl.dur) kFlashes.splice(f, 1);
+      }
+
+      for (var q = kRipples.length - 1; q >= 0; q--) {
+        var rp = kRipples[q];
+        drawRipple(rp);
+        rp.t += dt * 16.7;
+        if (rp.t >= rp.dur) kRipples.splice(q, 1);
+      }
+
+      for (var i = kDrops.length - 1; i >= 0; i--) {
+        var d = kDrops[i];
+        d.vy += 0.34 * dt;                 
+        d.vx *= Math.pow(0.986, dt);       
+        d.x += d.vx * dt;
+        d.y += d.vy * dt;
+
+        if (d.vy > 0 && d.y >= d.floorY) {
+          kRipples.push({ x: d.x, y: d.floorY, t: 0, dur: 460 + Math.random() * 220, max: 8 + d.r * 3.4, a0: 0.5, lw: 1.5 });
+          if (d.r > 3 && Math.random() < 0.5) {
+            kDrops.push(newDrop(d.x, d.floorY, d.vx * 0.4 + (Math.random() - 0.5) * 1.2, -d.vy * 0.32, d.r * 0.5, d.floorY + 4 + Math.random() * 8));
+          }
+          kDrops.splice(i, 1);
+          continue;
+        }
+        if (d.y > h + 40 || d.x < -40 || d.x > w + 40) { kDrops.splice(i, 1); continue; }
+        drawDrop(d);
+      }
+
+      kCtx.restore();
+      if (kDrops.length || kRipples.length || kFlashes.length) {
+        requestAnimationFrame(kLoop);
+      } else {
+        kRunning = false;
+        kLast = 0;
+        kCtx.clearRect(0, 0, kCanvas.width, kCanvas.height);
+      }
+    }
+
+    projKumiCard.addEventListener('click', function (e) {
+      if (isBlackhole) return;
+      if (e.target.closest('.img-frame')) return; 
+      if (kDrops.length > 110) return;            
+
+      var r = projKumiCard.getBoundingClientRect();
+      var x = e.clientX - r.left, y = e.clientY - r.top;
+
+      kFlashes.push({ x: x, y: y, t: 0, dur: 260, max: 30 });
+
+      kRipples.push({ x: x, y: y, t: 0,    dur: 680, max: 52,  a0: 0.65, lw: 2.4 });
+      kRipples.push({ x: x, y: y, t: -110, dur: 820, max: 78,  a0: 0.45, lw: 1.8 });
+      kRipples.push({ x: x, y: y, t: -230, dur: 960, max: 102, a0: 0.28, lw: 1.3 });
+
+      for (var s = 0; s < 3; s++) {
+        kDrops.push(newDrop(x, y, (Math.random() - 0.5) * 1.6, -(7.2 + Math.random() * 2.6), 2.2 + Math.random() * 1.6, y + 4 + Math.random() * 10));
+      }
+      var n = 11;
+      for (var c = 0; c < n; c++) {
+        var ang = -Math.PI * (0.18 + 0.64 * (c / (n - 1))) + (Math.random() - 0.5) * 0.18;
+        var sp = 3.4 + Math.random() * 3.6;
+        kDrops.push(newDrop(x, y, Math.cos(ang) * sp, Math.sin(ang) * sp, 1.6 + Math.random() * 2.6, y + 2 + Math.random() * 26));
+      }
+      for (var b = 0; b < 4; b++) {
+        var ang2 = -Math.PI * (0.25 + Math.random() * 0.5);
+        var sp2 = 4.5 + Math.random() * 3.2;
+        kDrops.push(newDrop(x, y, Math.cos(ang2) * sp2, Math.sin(ang2) * sp2, 3.4 + Math.random() * 2.4, y + 6 + Math.random() * 30));
+      }
+
+      if (!kRunning) { kRunning = true; kLast = 0; requestAnimationFrame(kLoop); }
+    });
+  }
+
+  var mks = document.querySelectorAll('.mk');
+  if (mks.length) {
+    if (!reduce && 'IntersectionObserver' in window) {
+      var mkObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var idx = Array.prototype.indexOf.call(mks, en.target);
+          setTimeout(function () { en.target.classList.add('on'); }, idx * 380);
+          mkObs.unobserve(en.target);
+        });
+      }, { threshold: 0.6 });
+      mks.forEach(function (m) { mkObs.observe(m); });
+    } else {
+      mks.forEach(function (m) { m.classList.add('on'); });
+    }
+  }
+
+  var toriCard = document.getElementById('proj-tori');
+  if (toriCard && !reduce && canAnimate) {
+    var toriLayer = makeLayer(toriCard);
+    var dzTexts = ['どうぞ', 'いや、どうぞ', 'どうぞどうぞ'];
+    var dzIdx = 0;
+    toriCard.addEventListener('click', function (e) {
+      if (isBlackhole) return;
+      if (e.target.closest('.img-frame')) return;
+      var r = toriCard.getBoundingClientRect();
+      var b = document.createElement('div');
+      b.className = 'dz-bubble';
+      b.textContent = dzTexts[dzIdx % dzTexts.length];
+      var side = (dzIdx % 2 === 0) ? 1 : -1; 
+      dzIdx++;
+      toriLayer.appendChild(b);
+      b.style.left = (e.clientX - r.left - b.offsetWidth / 2) + 'px';
+      b.style.top  = (e.clientY - r.top  - b.offsetHeight / 2) + 'px';
+      b.animate([
+        { transform: 'translate(0,6px) scale(.4) rotate(' + (side * -6) + 'deg)', opacity: 0 },
+        { transform: 'translate(' + (side * 8)  + 'px,-30px) scale(1) rotate(' + (side * 4) + 'deg)', opacity: 1, offset: 0.28 },
+        { transform: 'translate(' + (side * 30) + 'px,-68px) scale(1) rotate(' + (side * 7) + 'deg)', opacity: 0 }
+      ], { duration: 1100, easing: 'cubic-bezier(.2,1,.4,1)' }).onfinish = function () { b.remove(); };
+    });
+  }
+
+  var davCard = document.querySelector('.card-davinci');
+  if (davCard && !reduce && canAnimate) {
+    var davLayer = makeLayer(davCard);
+    var davBusy = false;
+    var PANEL_W = 60, PANEL_H = 46, PANEL_GAP = 6, PANEL_N = 4;
+    var panelArts = [
+      '<svg viewBox="0 0 40 30" width="100%" height="100%"><circle cx="20" cy="15" r="9" fill="none" stroke="#1B1E2B" stroke-width="2"/><circle cx="17" cy="13" r="1.3" fill="#1B1E2B"/><circle cx="23" cy="13" r="1.3" fill="#1B1E2B"/><path d="M16 18 Q20 21 24 18" fill="none" stroke="#1B1E2B" stroke-width="1.6" stroke-linecap="round"/></svg>',
+      '<svg viewBox="0 0 40 30" width="100%" height="100%"><path d="M8 6 h22 a3 3 0 0 1 3 3 v9 a3 3 0 0 1 -3 3 h-12 l-5 5 v-5 h-5 a3 3 0 0 1 -3 -3 v-9 a3 3 0 0 1 3 -3 z" fill="none" stroke="#1B1E2B" stroke-width="2"/><text x="19" y="17" text-anchor="middle" font-size="11" font-weight="900" fill="#1B1E2B">!</text></svg>',
+      '<svg viewBox="0 0 40 30" width="100%" height="100%"><path d="M20 4 L23 12 L31 15 L23 18 L20 26 L17 18 L9 15 L17 12 Z" fill="#F2A91F" stroke="#1B1E2B" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+      '<svg viewBox="0 0 40 30" width="100%" height="100%"><text x="20" y="21" text-anchor="middle" font-size="15" font-weight="900" fill="#1B1E2B">完</text></svg>'
+    ];
+
+    davCard.addEventListener('click', function (e) {
+      if (isBlackhole || davBusy) return;
+      if (e.target.closest('.img-frame')) return;
+      davBusy = true;
+
+      var r = davCard.getBoundingClientRect();
+      var stripH = PANEL_N * PANEL_H + (PANEL_N - 1) * PANEL_GAP;
+      var sx = Math.max(8, Math.min(e.clientX - r.left - PANEL_W / 2, r.width - PANEL_W - 8));
+      var sy = Math.max(8, Math.min(e.clientY - r.top - stripH / 2, r.height - stripH - 8));
+
+      var strip = document.createElement('div');
+      strip.style.cssText = 'position:absolute; left:' + sx + 'px; top:' + sy + 'px; width:' + PANEL_W + 'px; height:' + stripH + 'px; will-change:transform,opacity;';
+      davLayer.appendChild(strip);
+
+      for (var i = 0; i < PANEL_N; i++) {
+        var pn = document.createElement('div');
+        var tilt = (Math.random() - 0.5) * 5;
+        pn.style.cssText = 'position:absolute; left:0; top:' + (i * (PANEL_H + PANEL_GAP)) + 'px;'
+          + 'width:' + PANEL_W + 'px; height:' + PANEL_H + 'px; background:#fff;'
+          + 'border:2px solid #1B1E2B; border-radius:3px; box-shadow:2px 3px 0 rgba(27,30,43,.18);'
+          + 'display:flex; align-items:center; justify-content:center; padding:3px;'
+          + 'will-change:transform,opacity;';
+        pn.innerHTML = panelArts[i];
+        strip.appendChild(pn);
+
+        var fromX = (Math.random() < 0.5 ? -1 : 1) * (70 + Math.random() * 70);
+        var fromY = (Math.random() - 0.5) * 90;
+        var fromR = (Math.random() - 0.5) * 70;
+        pn.animate([
+          { transform: 'translate(' + fromX + 'px,' + fromY + 'px) rotate(' + fromR + 'deg) scale(.6)', opacity: 0 },
+          { transform: 'translate(0,0) rotate(' + tilt + 'deg) scale(1.06)', opacity: 1, offset: 0.7 },
+          { transform: 'translate(0,0) rotate(' + tilt + 'deg) scale(1)', opacity: 1 }
+        ], { duration: 430, delay: i * 110, easing: 'cubic-bezier(.2,1.1,.4,1)', fill: 'backwards' });
+      }
+
+      var assembleEnd = (PANEL_N - 1) * 110 + 430;
+      setTimeout(function () {
+        strip.animate([
+          { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+          { transform: 'translateY(-30px) rotate(-2deg)', opacity: 0 }
+        ], { duration: 380, easing: 'ease-in' }).onfinish = function () {
+          strip.remove();
+          davBusy = false;
+        };
+      }, assembleEnd + 700);
+    });
+  }
+
+  var designCard = document.getElementById('card-design');
+  if (designCard && !reduce && canAnimate) {
+    var designLayer = makeLayer(designCard);
+    designCard.addEventListener('click', function (e) {
+      if (isBlackhole) return;
+      if (e.target.closest('.img-frame')) return;
+      var r = designCard.getBoundingClientRect();
+      var ox = e.clientX - r.left, oy = e.clientY - r.top;
+      var inks = ['#2F6FED', '#F2A91F', 'var(--ink)', '#FFFFFF'];
+      for (var i = 0; i < 8; i++) {
+        var dot = document.createElement('div');
+        var s = 6 + Math.random() * 9;
+        dot.style.cssText = 'position:absolute; left:' + ox + 'px; top:' + oy + 'px;'
+          + 'width:' + s + 'px; height:' + s + 'px; margin:' + (-s / 2) + 'px 0 0 ' + (-s / 2) + 'px;'
+          + 'border-radius:50%; background:' + inks[i % 4] + '; border:1.5px solid var(--ink);'
+          + 'will-change:transform,opacity;';
+        designLayer.appendChild(dot);
+        var ang = (Math.PI * 2 / 8) * i + Math.random() * 0.5;
+        var dist = 30 + Math.random() * 38;
+        var dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist;
+        dot.animate([
+          { transform: 'translate(0,0) scale(0)', opacity: 1 },
+          { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(1.15)', opacity: 1, offset: 0.55 },
+          { transform: 'translate(' + (dx * 1.2) + 'px,' + (dy * 1.2 + 16) + 'px) scale(.85)', opacity: 0 }
+        ], { duration: 620 + Math.random() * 200, easing: 'cubic-bezier(.2,.8,.4,1)' })
+         .onfinish = (function (el) { return function () { el.remove(); }; })(dot);
+      }
+    });
+  }
+
+  var photoCard = document.getElementById('card-photo');
+  if (photoCard && !reduce && canAnimate) {
+    var photoLayer = makeLayer(photoCard);
+    var shutterBusy = false;
+
+    photoCard.addEventListener('click', function (e) {
+      if (isBlackhole || shutterBusy) return;
+      if (e.target.closest('.img-frame')) return;
+      shutterBusy = true;
+
+      var vf = document.createElement('div');
+      vf.style.cssText = 'position:absolute; inset:8%; will-change:opacity;';
+      [
+        'top:0; left:0; border-top:2.5px solid var(--ink); border-left:2.5px solid var(--ink);',
+        'top:0; right:0; border-top:2.5px solid var(--ink); border-right:2.5px solid var(--ink);',
+        'bottom:0; left:0; border-bottom:2.5px solid var(--ink); border-left:2.5px solid var(--ink);',
+        'bottom:0; right:0; border-bottom:2.5px solid var(--ink); border-right:2.5px solid var(--ink);'
+      ].forEach(function (c) {
+        var corner = document.createElement('div');
+        corner.style.cssText = 'position:absolute; width:18px; height:18px;' + c;
+        vf.appendChild(corner);
+      });
+      var focus = document.createElement('div');
+      focus.style.cssText = 'position:absolute; left:50%; top:50%; width:26px; height:26px; margin:-13px 0 0 -13px; border:2px solid var(--ink); will-change:transform;';
+      vf.appendChild(focus);
+      photoLayer.appendChild(vf);
+
+      vf.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 90, fill: 'forwards' });
+      focus.animate(
+        [{ transform: 'scale(1.5)' }, { transform: 'scale(1)' }],
+        { duration: 200, easing: 'cubic-bezier(.2,1.2,.4,1)', fill: 'forwards' }
+      );
+      setTimeout(function () { focus.style.borderColor = '#F2A91F'; }, 210); 
+
+      function mkCurtain(top) {
+        var c = document.createElement('div');
+        c.style.cssText = 'position:absolute; left:0; right:0; height:51%; background:#0B0D15;'
+          + (top ? 'top:0;' : 'bottom:0;')
+          + 'transform:translateY(' + (top ? '-101%' : '101%') + '); will-change:transform;';
+        photoLayer.appendChild(c);
+        return c;
+      }
+      var ct = mkCurtain(true), cb = mkCurtain(false);
+
+      setTimeout(function () {
+        [ct, cb].forEach(function (c, idx) {
+          var open = 'translateY(' + (idx === 0 ? '-101%' : '101%') + ')';
+          c.animate([
+            { transform: open },
+            { transform: 'translateY(0)', offset: 0.32 },
+            { transform: 'translateY(0)', offset: 0.55 },
+            { transform: open }
+          ], { duration: 430, easing: 'cubic-bezier(.6,0,.3,1)' }).onfinish = function () { c.remove(); };
+        });
+
+        setTimeout(function () {
+          var glow = document.createElement('div');
+          glow.style.cssText = 'position:absolute; inset:0; background:#fff; will-change:opacity;';
+          photoLayer.appendChild(glow);
+          glow.animate([{ opacity: 0.55 }, { opacity: 0 }], { duration: 230, easing: 'ease-out' })
+            .onfinish = function () { glow.remove(); };
+        }, 230);
+      }, 300);
+
+      setTimeout(function () {
+        vf.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' })
+          .onfinish = function () { vf.remove(); shutterBusy = false; };
+      }, 850);
+    });
+  }
+
+  var lastPNigi = 0;
+  var nigiSqueezeCur = 0, nigiSqueezeTarget = 0, nigiRaf = null;
+
+  function applyNigiTransform() {
+    if (!nigiCard) return;
+    var sx = (1 - lastPNigi * 0.036) * (1 - nigiSqueezeCur * 0.06);
+    var sy = 1 + nigiSqueezeCur * 0.035;
+    nigiCard.style.transform = 'scaleX(' + sx + ') scaleY(' + sy + ')';
+    var grip = nigiSqueezeCur * 10; 
+    if (fingL) fingL.style.transform = 'translateY(-50%) translateX(' + (-78 + lastPNigi * 78 + grip) + 'px)';
+    if (fingR) fingR.style.transform = 'translateY(-50%) translateX(' + ( 78 - lastPNigi * 78 - grip) + 'px)';
+  }
+
+  function nigiAnimStep() {
+    nigiSqueezeCur += (nigiSqueezeTarget - nigiSqueezeCur) * 0.18;
+    applyNigiTransform();
+    if (Math.abs(nigiSqueezeTarget - nigiSqueezeCur) > 0.005) {
+      nigiRaf = requestAnimationFrame(nigiAnimStep);
+    } else {
+      nigiSqueezeCur = nigiSqueezeTarget;
+      applyNigiTransform();
+      nigiRaf = null;
+    }
+  }
+
+  function setNigiSqueeze(t) {
+    nigiSqueezeTarget = t;
+    if (!nigiRaf) nigiRaf = requestAnimationFrame(nigiAnimStep);
+  }
+
+  if (nigiCard && !reduce) {
+    nigiCard.addEventListener('pointerdown', function () { if (!isBlackhole) setNigiSqueeze(1); });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+      nigiCard.addEventListener(ev, function () { setNigiSqueeze(0); });
+    });
+  }
+
+  if (shakeCard && !reduce) {
+    var shakeTapT = null;
+    shakeCard.parentElement.addEventListener('click', function (e) {
+      if (isBlackhole) return;
+      if (e.target.closest('.img-frame')) return;
+      shakeInner.classList.add('rattle-active');
+      shakeCard.classList.remove('shake-burst');
+      void shakeCard.offsetWidth;
+      shakeCard.classList.add('shake-burst');
+      clearTimeout(shakeTapT);
+      shakeTapT = setTimeout(function () {
+        shakeCard.classList.remove('shake-burst');
+        var hovering = false;
+        try { hovering = shakeCard.parentElement.matches(':hover'); } catch (err) {}
+        if (!hovering) shakeInner.classList.remove('rattle-active');
+      }, 650);
+    });
+  }
+
+  var wdOverlay = document.getElementById('work-detail');
+  var wdContent = document.getElementById('wd-content');
+  var WD_KEYS = ['kumi', 'nigi', 'shake', 'tori'];
+  var WD_ANCHORS = { kumi: 'proj-kumi', nigi: 'proj-nigi-outer', shake: 'proj-shake-card', tori: 'proj-tori' };
+  var wdCurrentKey = null;
+  var wdSavedY = null;     
+  var wdFromClick = false; 
+
+  function jumpTo(y) {
+    var de = document.documentElement;
+    var prev = de.style.scrollBehavior;
+    de.style.scrollBehavior = 'auto';
+    window.scrollTo(0, y);
+    de.style.scrollBehavior = prev;
+  }
+
+  function openDetail(key) {
+    var tpl = document.getElementById('wd-' + key);
+    if (!tpl || !tpl.content || !wdOverlay) return;
+    wdCurrentKey = key;
+    wdContent.innerHTML = '';
+    wdContent.appendChild(tpl.content.cloneNode(true));
+    wdOverlay.classList.add('open');
+    wdOverlay.setAttribute('aria-hidden', 'false');
+    wdOverlay.scrollTop = 0;
+    document.body.style.overflow = 'hidden'; 
+  }
+
+  function closeDetail() {
+    if (!wdOverlay || !wdOverlay.classList.contains('open')) return;
+    wdOverlay.classList.remove('open');
+    wdOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+
+    if (wdFromClick && wdSavedY !== null) {
+      jumpTo(wdSavedY); 
+    } else if (wdCurrentKey && WD_ANCHORS[wdCurrentKey]) {
+      var card = document.getElementById(WD_ANCHORS[wdCurrentKey]);
+      if (card) jumpTo(card.getBoundingClientRect().top + window.scrollY - 80); 
+    }
+    wdFromClick = false;
+    wdSavedY = null;
+    wdCurrentKey = null;
+  }
+
+  function wdRoute() {
+    var m = (location.hash || '').match(/^#detail-([a-z]+)$/);
+    if (m && WD_KEYS.indexOf(m[1]) !== -1) openDetail(m[1]);
+    else closeDetail();
+  }
+  window.addEventListener('hashchange', wdRoute);
+  wdRoute(); 
+
+  document.querySelectorAll('.title-link').forEach(function (t) {
+    t.addEventListener('click', function (e) {
+      e.stopPropagation(); 
+      wdFromClick = true;
+      wdSavedY = window.scrollY; 
+      location.hash = 'detail-' + t.getAttribute('data-detail');
+    });
+  });
+
+  function wdGoBack() {
+    if (wdFromClick) {
+      history.back(); 
+    } else {
+      var key = wdCurrentKey;
+      location.hash = (key && WD_ANCHORS[key]) ? WD_ANCHORS[key] : 'works';
+    }
+  }
+
+  var wdBack = document.getElementById('wd-back');
+  if (wdBack) wdBack.addEventListener('click', wdGoBack);
+
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && wdOverlay && wdOverlay.classList.contains('open')) wdGoBack();
+  });
+
+  var intro = document.getElementById('intro');
+  var introOpen = false;
+
+  if (intro) {
+    if (!document.documentElement.classList.contains('boot')) {
+      intro.parentNode.removeChild(intro);
+    } else {
+      introOpen = true;
+      var introDismissed = false;
+
+      // ============================================================
+      // タイトル画面: 名前とフォントのランダム切り替えギミック
+      // ============================================================
+      var introName = document.querySelector('.intro-name');
+      var nameTexts = ['吉川柚希', 'よしかわゆずき', 'ヨシカワユズキ', 'YoshikawaYuzuki', 'yoshikawayuzuki'];
+      var nameFonts = [
+        "'Zen Kaku Gothic New', sans-serif", // 標準ゴシック
+        "'DotGothic16', monospace",          // ドット絵風
+        "'Noto Serif JP', serif",            // 明朝体
+        "'Yusei Magic', sans-serif",         // 手書き風
+        "'Dela Gothic One', display"         // 極太ディスプレイ
+      ];
+      
+      // 配列をシャッフルする関数
+      function shuffleArray(array) {
+        var a = array.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        return a;
+      }
+
+      var textQueue = [];
+      var fontQueue = [];
+      
+      var nameTimer = setInterval(function() {
+        if (!introOpen) {
+          clearInterval(nameTimer);
+          return;
+        }
+        
+        introName.style.opacity = 0; // 一旦フェードアウト
+        
+        setTimeout(function() {
+          // キューが空になったら新しくシャッフルして補充
+          if (textQueue.length === 0) textQueue = shuffleArray(nameTexts);
+          if (fontQueue.length === 0) fontQueue = shuffleArray(nameFonts);
+
+          // キューから1つ取り出す
+          var currentText = textQueue.pop();
+          var currentFont = fontQueue.pop();
+          
+          // 極太ディスプレイ体が漢字表記で選ばれた場合の回避処理
+          if (currentText === '吉川柚希' && currentFont.indexOf('Dela Gothic One') !== -1) {
+            if (fontQueue.length > 0) {
+              // キューの次のフォントと入れ替える
+              var nextFont = fontQueue.pop();
+              fontQueue.unshift(currentFont); // Dela Gothicはキューの底(後回し)へ
+              currentFont = nextFont;
+            } else {
+              // キューが空で入れ替え先がない場合は標準ゴシックで代用
+              currentFont = "'Zen Kaku Gothic New', sans-serif";
+            }
+          }
+          
+          introName.textContent = currentText;
+          introName.style.fontFamily = currentFont;
+          
+          // 文字数によってサイズを調整 (長いローマ字がスマホからはみ出すのを防ぐ)
+          if (currentText.length > 10) {
+            introName.style.fontSize = 'clamp(24px, 6.5vw, 64px)';
+          } else if (currentText.length > 6) {
+            introName.style.fontSize = 'clamp(32px, 8vw, 80px)';
+          } else {
+            introName.style.fontSize = ''; // デフォルト値に戻す
+          }
+          
+          introName.style.opacity = 1; // フェードイン
+        }, 200); // 0.2秒暗転してから切り替え
+        
+      }, 4000); // 4秒ごとに実行
+
+      var finishIntro = function () {
+        introOpen = false;
+        document.body.style.overflow = '';
+        if (intro.parentNode) intro.parentNode.removeChild(intro);
+      };
+
+      var pressX = 0, pressY = 0;
+      var prepared = false;
+
+      var prepareMain = function () {
+        if (prepared) return;
+        prepared = true;
+        document.documentElement.classList.remove('boot');
+        document.body.style.overflow = 'hidden';
+      };
+
+      var launchIntro = function () {
+        if (introDismissed) return;
+        introDismissed = true;
+        intro.classList.add('closing');
+        prepareMain();
+        pixelBurst(pressX, pressY); 
+
+        if (reduce) {
+          finishIntro();
+          return;
+        }
+
+        var DUR = 640;
+        var t0 = null;
+        var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+        var easeInOut = function (t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        var step = function (ts) {
+          if (t0 === null) {
+            t0 = ts;
+            requestAnimationFrame(step);
+            return;
+          }
+          var p = Math.min((ts - t0) / DUR, 1);
+          var tf;
+          if (p < 0.22) {
+            var q = easeOut(p / 0.22);
+            tf = 'scale(' + (0.965 + 0.047 * q).toFixed(4) + ')';
+          } else if (p < 0.30) {
+            tf = 'scale(1.012)';
+          } else {
+            var r = easeInOut((p - 0.30) / 0.70);
+            tf = 'translateY(' + (-104 * r).toFixed(2) + '%) scale(' + (1.012 - 0.012 * r).toFixed(4) + ')';
+          }
+          intro.style.transition = 'none';
+          intro.style.transform = tf;
+          if (p < 1) requestAnimationFrame(step);
+          else finishIntro();
+        };
+        requestAnimationFrame(step);
+      };
+
+      intro.addEventListener('pointerdown', function (e) {
+        e.preventDefault(); 
+        if (introDismissed) return;
+        pressX = e.clientX; pressY = e.clientY;
+        intro.style.transition = 'transform .1s ease-out';
+        intro.style.transform = 'scale(.965)';
+        prepareMain();
+      });
+      ['pointerup', 'pointercancel'].forEach(function (ev) {
+        window.addEventListener(ev, function () {
+          if (introOpen && !introDismissed && prepared) launchIntro();
+        });
+      });
+
+      window.addEventListener('keydown', function onIntroKey(e) {
+        if (introDismissed) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          pressX = window.innerWidth / 2;
+          pressY = window.innerHeight * 0.62;
+          intro.style.transition = 'transform .1s ease-out';
+          intro.style.transform = 'scale(.965)';
+          prepareMain();
+          setTimeout(launchIntro, 110);
+          window.removeEventListener('keydown', onIntroKey);
+        }
+      });
+    }
+  }
+
   var bar = document.getElementById('progress-bar');
   var hdr = document.getElementById('site-header');
   var isScrolling = false;
@@ -1264,10 +2402,8 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
     if (nigiOuter) {
       var rNigi = nigiOuter.getBoundingClientRect();
-      var pNigi = Math.max(0, Math.min(1, 1 - (rNigi.top / (vh * 0.82))));
-      fingL.style.transform = 'translateY(-50%) translateX(' + (-78 + pNigi * 78) + 'px)';
-      fingR.style.transform = 'translateY(-50%) translateX(' + ( 78 - pNigi * 78) + 'px)';
-      nigiCard.style.transform = 'scaleX(' + (1 - pNigi * 0.036) + ')';
+      lastPNigi = Math.max(0, Math.min(1, 1 - (rNigi.top / (vh * 0.82))));
+      applyNigiTransform();
     }
     isScrolling = false;
   }
