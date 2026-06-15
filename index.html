@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>吉川柚希 | Game Planner Portfolio</title>
-<meta name="description" content="独自の物理コントローラーとアフォーダンス設計で「遊び」をつくるゲームプランナー、吉川柚希のポートフォリオ。">
 
 <script>
   // 起動判定: ハッシュなし(通常起動)ならタイトル画面モード。
@@ -15,6 +14,7 @@
     document.write('<style>#intro { display: none !important; }</style>');
   }
 </script>
+<meta name="description" content="独自の物理コントローラーとアフォーダンス設計で「遊び」をつくるゲームプランナー、吉川柚希のポートフォリオ。">
 
 <!-- ライト/ダーク両対応を宣言: OSやアプリ内ビューアによる「強制色反転」(配色崩壊の原因)を無効化 -->
 <meta name="color-scheme" content="light dark">
@@ -24,9 +24,20 @@
 <!-- favicon: カーソルと同じ「柚子色のボタン」 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='17' r='12' fill='%231B1E2B'/%3E%3Ccircle cx='16' cy='14' r='12' fill='%23F2A91F' stroke='%231B1E2B' stroke-width='2.5'/%3E%3C/svg%3E">
 
-<!-- Google Fonts: タイトル画面のランダム切り替え用に追加フォントを読み込み -->
+<!-- OGP: 公開URLが決まったら下の2か所を書き換えてコメントを外す(SNSやSlackでURL共有時にカードが出ます) -->
+<!--
+<meta property="og:title" content="吉川柚希 | Game Planner Portfolio">
+<meta property="og:description" content="独自の物理コントローラーとアフォーダンス設計で「遊び」をつくるゲームプランナーのポートフォリオ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://あなたのユーザー名.github.io/リポジトリ名/">
+<meta property="og:image" content="https://あなたのユーザー名.github.io/リポジトリ名/images/ogp.jpg">
+<meta name="twitter:card" content="summary_large_image">
+-->
+
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Google Fonts: タイトル画面のランダム切り替え用に追加フォントを読み込み -->
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=Noto+Serif+JP:wght@700&family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 <style>
@@ -82,14 +93,17 @@ body {
   html { scroll-behavior: auto; }
 }
 
-/* 本文・連絡先はコピー可能に */
+/* 本文・連絡先はコピー可能に(採用担当者がメールアドレス等を選択できるように) */
 .philosophy-quote, .project-summary, .about-dd, .hero-lead, .section-lead, .project-title, .section-title {
   -webkit-user-select: text; user-select: text;
 }
 
-/* 起動制御 */
+/* 起動制御:
+   - boot中(通常起動) … タイトル画面以外は最初の描画から不可視、スクロールもロック
+   - boot外(直リンク or JS無効) … タイトル画面を最初から出さない(チラつきゼロ・JS無効でも閲覧可能) */
 html.boot { overflow: hidden; }
 html.boot body > *:not(#intro) { visibility: hidden; }
+html:not(.boot) #intro { display: none; }
 
 ::selection { background: var(--yuzu); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--mizu); outline-offset: 3px; border-radius: 4px; }
@@ -133,6 +147,7 @@ img { display: block; max-width: 100%; }
   animation: bh-pulse 0.5s alternate infinite ease-in-out;
 }
 
+/* スマホ等、タッチデバイスでは通常カーソルを非表示（ブラックホール発動時のみ表示） */
 @media (pointer: coarse) {
   #cursor:not(.blackhole) {
     opacity: 0 !important;
@@ -342,10 +357,18 @@ div.pressable, article.pressable { display: flex; }
 .card-davinci { flex: 1; display: flex; flex-direction: column; }
 .card-davinci .project-summary { flex: 1; }
 
-.project-card { background: var(--white); border-radius: var(--r-lg); border: 1px solid var(--haze); padding: clamp(20px, 4vw, 36px); box-shadow: var(--shadow-card); }
+.project-card { position: relative; background: var(--white); border-radius: var(--r-lg); border: 1px solid var(--haze); padding: clamp(20px, 4vw, 36px); box-shadow: var(--shadow-card); }
 .project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
 .project-index { font-family: var(--font-dot); font-size: 11px; letter-spacing: .18em; color: var(--sumi); }
-.project-title { font-size: clamp(18px, 3vw, 22px); font-weight: 900; line-height: 1.35; margin-bottom: 10px; }
+.project-title {
+  font-size: clamp(18px, 3vw, 22px); font-weight: 900; line-height: 1.35; margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.project-title .title-link { flex: 1; min-width: 0; } /* タイトルが伸び、サインを右端へ押す */
+.project-title .afd {
+  position: static; flex-shrink: 0; margin-left: auto;
+  width: 26px; height: 26px; margin-top: -2px; /* 行内・右端。タイトル先頭行に高さを合わせる */
+}
 .project-summary { font-size: 14px; color: var(--sumi); line-height: 1.8; margin-bottom: 18px; }
 
 /* =====================================================
@@ -423,7 +446,7 @@ div.pressable, article.pressable { display: flex; }
 }
 
 /* =====================================================
-   HISTORY (出展・受賞歴タイムライン)
+   HISTORY (出展歴タイムライン)
    ===================================================== */
 #history { padding-block: clamp(60px, 10vw, 100px); }
 .timeline { position: relative; margin-top: 44px; padding-left: 8px; }
@@ -434,6 +457,7 @@ div.pressable, article.pressable { display: flex; }
 .tl-item { position: relative; padding: 0 0 32px 32px; }
 .tl-item:last-child { padding-bottom: 0; }
 .tl-item { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* ステージノード: ワールドマップの面セレクト風ひし形(カーソルの丸ボタンとは別物に) */
 .tl-item::before {
   content: ''; position: absolute; left: 0; top: 5px;
   width: 15px; height: 15px; border-radius: 3px;
@@ -451,6 +475,7 @@ div.pressable, article.pressable { display: flex; }
   70%  { transform: rotate(45deg) scale(.85); }
   100% { transform: rotate(45deg) scale(1); }
 }
+/* タップ時に飛散するピクセル片 */
 .px-burst {
   position: fixed; width: 7px; height: 7px; border-radius: 2px;
   pointer-events: none; z-index: 9997; will-change: transform, opacity;
@@ -470,6 +495,30 @@ div.pressable, article.pressable { display: flex; }
 .skills-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
 footer { padding-block: 32px; border-top: 1px solid var(--haze); text-align: center; }
+#finale {
+  position: relative; height: 64px; margin-bottom: 18px;
+  display: flex; align-items: center; justify-content: center; gap: clamp(10px, 4vw, 28px);
+}
+.fin-sign {
+  width: 34px; height: 34px; color: var(--yuzu);
+  opacity: 0; transform: translateY(16px) scale(.6);
+}
+.fin-sign svg { width: 100%; height: 100%; overflow: visible; }
+.fin-sign.in {
+  opacity: .9; transform: translateY(0) scale(1);
+  transition: opacity .4s ease, transform .5s cubic-bezier(.2,1.4,.4,1);
+}
+.fin-sign.bow { animation: finBow .6s ease-in-out; } /* 最後の一礼 */
+@keyframes finBow {
+  0% { transform: translateY(0) scale(1) rotate(0); }
+  40% { transform: translateY(4px) scale(.92) rotate(0); }
+  100% { transform: translateY(0) scale(1) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fin-sign { transition: opacity .3s ease; transform: none; }
+  .fin-sign.in { transform: none; }
+  .fin-sign.bow { animation: none; }
+}
 footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em; color: var(--sumi); }
 
 /* =====================================================
@@ -480,7 +529,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   background: var(--paper);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  touch-action: none;
+  touch-action: none; /* 押下中にOSがジェスチャを奪う(スクロール化)のを防ぐ */
 }
 @media (pointer: fine) { #intro { cursor: none; } }
 #intro::before {
@@ -492,7 +541,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   font-family: var(--font-dot); font-size: 10px; letter-spacing: .3em; color: var(--sumi);
 }
 .intro-name-wrap {
-  height: clamp(60px, 15vw, 120px);
+  height: clamp(60px, 15vw, 120px); /* 高さ固定: 文字が変わってもレイアウトが揺れない */
   display: flex; align-items: center; justify-content: center;
   margin: 14px 0 10px;
 }
@@ -500,9 +549,41 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   font-size: clamp(44px, 11vw, 96px); font-weight: 900;
   letter-spacing: -.02em; line-height: 1.1; color: var(--ink);
   white-space: nowrap; /* 長いローマ字でも改行させない */
-  transition: opacity 0.2s ease-in-out; /* フォント切り替え時のフェード用 */
   margin: 0;
 }
+.intro-name.pop { animation: namePop .26s cubic-bezier(.2,1.4,.4,1); }
+@keyframes namePop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(.9); }
+  100% { transform: scale(1); }
+}
+
+/* 名前を「触れるオブジェクト」として見せるアフォーダンス
+   ゲームの「選択中メニュー項目」の作法: 両脇の柚子色ブラケットを常時表示 */
+.intro-name-wrap {
+  position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  display: inline-flex; align-items: center; gap: clamp(12px, 3vw, 24px);
+}
+@media (pointer: fine) { .intro-name-wrap { cursor: none; } }
+.intro-name-wrap::before, .intro-name-wrap::after {
+  font-family: var(--font-dot); font-weight: 400;
+  font-size: clamp(20px, 5vw, 40px); color: var(--yuzu); line-height: 1;
+  animation: selBlink 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.intro-name-wrap::before { content: "▶"; animation-name: selNudgeL, selBlink; }
+.intro-name-wrap::after  { content: "◀"; animation-name: selNudgeR, selBlink; }
+.intro-name-wrap::before, .intro-name-wrap::after {
+  animation-duration: 1.6s, 1.4s; animation-timing-function: ease-in-out, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+}
+@keyframes selBlink { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes selNudgeL { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-4px); } }
+@keyframes selNudgeR { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+.intro-name-wrap:active { transform: scale(.97); }
+/* 切り替え発進中はブラケットを消す */
+#intro.closing .intro-name-wrap::before, #intro.closing .intro-name-wrap::after { opacity: 0; }
+
 .intro-sub {
   display: inline-flex; align-items: center; gap: 10px;
   font-weight: 700; font-size: clamp(14px, 3vw, 18px); color: var(--ink);
@@ -517,13 +598,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   margin-top: clamp(40px, 8vh, 70px);
   font-family: var(--font-dot); font-size: 13px; letter-spacing: .4em;
   color: var(--ink);
-  animation: startBlink 1.1s steps(2, jump-none) infinite; 
+  animation: startBlink 1.1s steps(2, jump-none) infinite; /* レトロゲームの点滅 */
 }
 .intro-copy {
   position: absolute; bottom: 26px;
   font-family: var(--font-dot); font-size: 9px; letter-spacing: .25em; color: var(--sumi);
 }
 @keyframes startBlink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: .12; } }
+/* 閉じるアニメ中もタイトル画面がポインタイベントを吸収し続ける(下の要素への誤爆防止) */
 #intro.closing .intro-start { animation: none; opacity: 1; }
 #intro::after {
   content: ""; position: absolute; left: 0; right: 0; top: 100%;
@@ -531,8 +613,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   background: linear-gradient(180deg, rgba(0,0,0,.22), transparent);
   opacity: 0; transition: opacity .2s;
 }
-#intro.closing::after { opacity: 1; }
+#intro.closing::after { opacity: 1; } /* パネルが持ち上がる時だけ下端に影 */
 
+/* スクロールで引かれる柚子色マーカー(Philosophy) *//* スクロールで引かれる柚子色マーカー(Philosophy) */
 .mk {
   background-image: linear-gradient(transparent 58%, rgba(242,169,31,.55) 58%, rgba(242,169,31,.55) 92%, transparent 92%);
   background-size: 0% 100%; background-repeat: no-repeat; background-position: left center;
@@ -540,6 +623,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 }
 .mk.on { background-size: 100% 100%; }
 
+/* 「どうぞ」吹き出し(トリ合い譲り合い) */
 .dz-bubble {
   position: absolute; padding: 5px 12px; z-index: 3;
   background: var(--white); border: 2px solid var(--ink); border-radius: 10px;
@@ -548,6 +632,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   white-space: nowrap; pointer-events: none; will-change: transform, opacity;
 }
 
+/* 作品タイトル → 制作過程ページへのリンク */
 .title-link {
   background: none; border: none; padding: 0;
   font: inherit; color: inherit; cursor: pointer;
@@ -565,6 +650,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   color: var(--mizu); white-space: nowrap;
 }
 
+/* 制作過程の詳細ページ(右からスライドインする別画面) */
 #work-detail {
   position: fixed; inset: 0; z-index: 40000;
   background: var(--paper);
@@ -600,7 +686,143 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 .wd-step .img-frame { margin-top: 16px; }
 .wd-lead { margin-top: 16px; font-size: 15px; line-height: 2; user-select: text; -webkit-user-select: text; }
 
-/* SP向けサイズ調整 */
+/* =====================================================
+   AFFORDANCE HINTS (各インタラクションの「予告編」)
+   ※汎用記号ではなく、そのカードで実際に起こる演出の
+     ミニチュアを右下に常時ループ再生する。これにより
+     「何が起こるか」が触る前に視覚的にリンクする
+   ===================================================== */
+.afd {
+  position: absolute; right: 14px; bottom: 14px; z-index: 4;
+  width: 32px; height: 32px; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  opacity: .9;
+}
+/* .afd-tr(旧・右上配置)は廃止。afdはタイトル行内に移動 */
+.afd svg { width: 100%; height: 100%; overflow: visible; }
+.afd, .afd * { will-change: transform, opacity; }
+
+/* 汲・撒・響: 水滴が落ちて着水し波紋が立つ(水しぶきの予告) */
+.afd-water .drop { animation: afdDropFall 2.6s cubic-bezier(.5,0,.8,1) infinite; }
+.afd-water .splash { transform-origin: 16px 22px; animation: afdSplash 2.6s ease-out infinite; }
+.afd-water .rip { transform-origin: 16px 22px; opacity: 0; animation: afdWaterRip 2.6s ease-out infinite; }
+@keyframes afdDropFall {
+  0% { transform: translateY(-9px); opacity: 0; }
+  12% { opacity: 1; }
+  38% { transform: translateY(0); opacity: 1; }
+  44%, 100% { transform: translateY(0); opacity: 0; }
+}
+@keyframes afdSplash {
+  0%, 40% { transform: scaleY(0); opacity: 0; }
+  48% { transform: scaleY(1); opacity: .9; }
+  62%, 100% { transform: scaleY(0); opacity: 0; }
+}
+@keyframes afdWaterRip {
+  0%, 44% { transform: scale(.2); opacity: 0; }
+  52% { opacity: .8; }
+  80%, 100% { transform: scale(1); opacity: 0; }
+}
+
+/* トリ合い譲り合い: 小さな吹き出しがポップ(「どうぞ」の予告) */
+.afd-bubble .b1 { transform-origin: center; animation: afdBub1 2.4s ease-in-out infinite; }
+.afd-bubble .b2 { transform-origin: center; animation: afdBub2 2.4s ease-in-out infinite; }
+@keyframes afdBub1 {
+  0%, 8% { transform: translate(-3px,2px) scale(0); opacity: 0; }
+  20% { transform: translate(-3px,-1px) scale(1); opacity: 1; }
+  42%, 100% { transform: translate(-3px,-4px) scale(1); opacity: 0; }
+}
+@keyframes afdBub2 {
+  0%, 48% { transform: translate(3px,2px) scale(0); opacity: 0; }
+  60% { transform: translate(3px,-1px) scale(1); opacity: 1; }
+  82%, 100% { transform: translate(3px,-4px) scale(1); opacity: 0; }
+}
+
+/* ダヴィンチ: コマ枠が順にカタッと組み上がる(4コマ漫画の予告) */
+.afd-panel .pnl { transform-origin: center; opacity: 0; animation: afdPanel 3s ease-in-out infinite; }
+.afd-panel .p2 { animation-delay: .22s; }
+.afd-panel .p3 { animation-delay: .44s; }
+.afd-panel .p4 { animation-delay: .66s; }
+@keyframes afdPanel {
+  0% { transform: scale(.4) rotate(-12deg); opacity: 0; }
+  14% { transform: scale(1) rotate(0); opacity: 1; }
+  66% { transform: scale(1) rotate(0); opacity: 1; }
+  80%, 100% { transform: scale(1) rotate(0); opacity: 0; }
+}
+
+/* デザイン: インク点が中心から飛び散る(インクドットの予告) */
+.afd-ink .ink { transform-origin: 16px 16px; animation: afdInk 2.4s ease-out infinite; }
+.afd-ink .i2 { animation-delay: .05s; }
+.afd-ink .i3 { animation-delay: .1s; }
+.afd-ink .i4 { animation-delay: .15s; }
+@keyframes afdInk {
+  0%, 30% { transform: translate(0,0) scale(0); opacity: 0; }
+  44% { transform: translate(var(--ix,0), var(--iy,0)) scale(1); opacity: 1; }
+  70%, 100% { transform: translate(var(--ix,0), var(--iy,0)) scale(.5); opacity: 0; }
+}
+
+/* 写真: シャッター羽根が開いて閉じる(撮影の予告) */
+.afd-shutter .blade { transform-origin: 16px 16px; animation: afdShutter 3s ease-in-out infinite; }
+.afd-shutter .bl2 { transform: rotate(120deg); }
+.afd-shutter .bl3 { transform: rotate(240deg); }
+@keyframes afdShutter {
+  0%, 30% { opacity: .35; }
+  46% { transform: scale(.2) rotate(var(--br,0)); opacity: 1; }
+  54% { transform: scale(.2) rotate(var(--br,0)); opacity: 1; }
+  70%, 100% { transform: scale(1) rotate(var(--br,0)); opacity: .35; }
+}
+.afd-shutter .bl2 { animation-name: afdShutter2; }
+.afd-shutter .bl3 { animation-name: afdShutter3; }
+@keyframes afdShutter2 {
+  0%, 30% { transform: rotate(120deg) scale(1); opacity: .35; }
+  46%, 54% { transform: rotate(120deg) scale(.2); opacity: 1; }
+  70%, 100% { transform: rotate(120deg) scale(1); opacity: .35; }
+}
+@keyframes afdShutter3 {
+  0%, 30% { transform: rotate(240deg) scale(1); opacity: .35; }
+  46%, 54% { transform: rotate(240deg) scale(.2); opacity: 1; }
+  70%, 100% { transform: rotate(240deg) scale(1); opacity: .35; }
+}
+
+/* ニギコン2: 指バーが内側へ食い込む(握り込みの予告・実演そのもの) */
+.afd-grip { color: var(--yuzu); }
+.afd-grip .barL, .afd-grip .barR { animation: afdGrip 2.2s ease-in-out infinite; }
+.afd-grip .barR { animation-name: afdGripR; }
+.afd-grip .core { transform-origin: center; animation: afdGripCore 2.2s ease-in-out infinite; }
+@keyframes afdGrip { 0%,100% { transform: translateX(0); } 45%,60% { transform: translateX(5px); } }
+@keyframes afdGripR { 0%,100% { transform: translateX(0); } 45%,60% { transform: translateX(-5px); } }
+@keyframes afdGripCore { 0%,100% { transform: scaleX(1); } 45%,60% { transform: scaleX(.6); } }
+
+/* ShakeCon: 本体が揺れ、揺れの弧線が明滅(振動の予告) */
+.afd-shake .body { transform-origin: center; animation: afdShakeBody 1.5s ease-in-out infinite; }
+.afd-shake .wave { animation: afdWave 1.5s ease-in-out infinite; }
+@keyframes afdShakeBody {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  20% { transform: translateX(-2.5px) rotate(-10deg); }
+  40% { transform: translateX(2.5px) rotate(10deg); }
+  60% { transform: translateX(-2px) rotate(-7deg); }
+  80% { transform: translateX(2px) rotate(7deg); }
+}
+@keyframes afdWave { 0%, 100% { opacity: .12; } 50% { opacity: .85; } }
+
+/* ロケット文字「面白さ」: 文字自体が時々ピクッと浮く(打ち上げの予感・隠し要素なので控えめ) */
+#rocket-word { position: relative; display: inline-block; }
+#rocket-word:not(.rocket-go):not(.rocket-crashed):not(.rocket-recover):not(.rocket-bump) {
+  animation: rocketHint 4.2s ease-in-out infinite;
+}
+@keyframes rocketHint {
+  0%, 88%, 100% { transform: translateY(0); }
+  91%  { transform: translateY(-5px); }   /* ピクッと浮く */
+  94%  { transform: translateY(-1px); }
+  97%  { transform: translateY(-3px); }   /* もう一度小さく */
+  99%  { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .afd, .afd *, #rocket-word { animation: none !important; }
+  .afd { opacity: .55; }
+}
+
+/* SP向けサイズ調整 *//* SP向けサイズ調整 */
 @media (max-width: 480px) {
   .hero-bg-letter { display: none; }
   .hero-btns { gap: 10px; }
@@ -615,20 +837,23 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 }
 
 /* =====================================================
-   DARK MODE
+   DARK MODE (設計された墨インディゴテーマ)
+   ※必ずスタイルシート末尾に置くこと。基本スタイルより
+     前に書くと、同詳細度の後勝ちルールで全て打ち消される
    ===================================================== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #14161E;  
-    --ink:   #ECEDE6;  
+    --paper: #14161E;  /* 紙白 → 夜の墨 */
+    --ink:   #ECEDE6;  /* 墨 → 紙白(反転) */
     --yuzu:  #F2A91F;
-    --mizu:  #6B96F7;  
+    --mizu:  #6B96F7;  /* 暗背景向けに明度アップ */
     --sumi:  #9AA0AC;
     --haze:  #262A35;
-    --white: #1C1F2A;  
+    --white: #1C1F2A;  /* カード面 */
     --shadow-card:  0 2px 24px 0 rgba(0,0,0,0.45);
     --shadow-stamp: 0 4px 0 0 rgba(0,0,0,0.55);
   }
+  /* 出展バッジ: 明るい柚子文字 + 細枠で暗いカード上でも判読できるように */
   .badge {
     background: rgba(242,169,31,0.16);
     color: #F5C76B;
@@ -653,7 +878,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 <div id="intro" role="button" tabindex="0" aria-label="タッチしてポートフォリオを開く">
   <div class="intro-inner">
     <p class="intro-eyebrow">PLAY / INTERACTION / EXPERIENCE DESIGN</p>
-    <div class="intro-name-wrap">
+    <div class="intro-name-wrap" data-mag role="button" tabindex="0" aria-label="名前をタップすると表記とフォントが変わります">
       <p class="intro-name">吉川柚希</p>
     </div>
     <p class="intro-sub"><span class="intro-dot" aria-hidden="true"></span>さわれるポートフォリオ</p>
@@ -749,8 +974,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div class="drops-layer" id="drops-layer" aria-hidden="true"></div>
         <div class="project-inner">
           <div class="project-meta"><span class="project-index">PROJECT A</span><span class="badge">ISCA2026 提出目標</span></div>
-          <h3 class="project-title"><button class="title-link" data-detail="kumi" data-mag>汲・撒・響<span class="title-arrow">PROCESS →</span></button></h3>
+          <h3 class="project-title"><button class="title-link" data-detail="kumi" data-mag>汲・撒・響<span class="title-arrow">PROCESS →</span></button><div class="afd afd-water" style="color:var(--mizu)" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path class="drop" d="M16 4 C16 4 11 12 11 16 a5 5 0 0 0 10 0 C21 12 16 4 16 4 Z" fill="currentColor"/><ellipse class="splash" cx="16" cy="22" rx="6" ry="3" stroke="currentColor" stroke-width="1.6" fill="none"/><ellipse class="rip" cx="16" cy="22" rx="10" ry="4" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></div></h3>
           <p class="project-summary">柄杓型・桶型の独自デバイスで、水を「汲む・撒く」物理的な解放感をそのままゲームに写し取る作品。床へモニターを水平配置することで、2人のプレイヤーが画面を挟んで自然と向かい合い、対面コミュニケーションが誘発される空間設計を狙っている。</p>
+          <!-- ★要編集: 期間・人数・担当・ツールを実際の値に書き換えてください -->
           <div class="project-specs">
             <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 制作中</span></div>
             <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
@@ -771,7 +997,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
               <span class="img-label">ゲームループ図解</span><span class="img-path">images/kumi-loop.jpg</span>
             </div>
           </div>
-          <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* カードの余白をタップ/クリックすると、水しぶきと波紋が広がります</p>
         </div>
       </article>
 
@@ -780,8 +1005,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div class="finger-bar-wrap right" id="fingers-right" aria-hidden="true"></div>
         <article class="project-card" id="proj-nigi">
           <div class="project-meta"><span class="project-index">PROJECT B</span><span class="badge">BitSummit2026 出展</span></div>
-          <h3 class="project-title"><button class="title-link" data-detail="nigi" data-mag>『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」<span class="title-arrow">PROCESS →</span></button></h3>
+          <h3 class="project-title"><button class="title-link" data-detail="nigi" data-mag>『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」<span class="title-arrow">PROCESS →</span></button><div class="afd afd-grip" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect class="barL" x="2" y="13" width="7" height="6" rx="2" fill="currentColor"/><rect class="barR" x="23" y="13" width="7" height="6" rx="2" fill="currentColor"/><rect class="core" x="11" y="10" width="10" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/></svg></div></h3>
           <p class="project-summary">「握り込む」という一動作の手応えを、ゲーム内アクションへ直接連動させた専用コントローラー。握る強さ・速さがそのままスライムの変形に反映され、入力と結果のあいだに翻訳を挟まないダイレクトな体験を設計した。</p>
+          <!-- ★要編集: 期間・人数・担当・ツールを実際の値に書き換えてください -->
           <div class="project-specs">
             <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 20XX.XX</span></div>
             <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
@@ -798,7 +1024,6 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
               <span class="img-label">コントローラー構造図</span><span class="img-path">images/nigicon-structure.jpg</span>
             </div>
           </div>
-          <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* カードを長押しすると「握り込め」ます。離すと元に戻ります</p>
         </article>
       </div>
 
@@ -806,8 +1031,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <div id="proj-shake">
           <div id="shake-inner">
             <div class="project-meta"><span class="project-index">PROJECT C</span><span class="badge">遊創研/GCCP・BitSummit2027 出展目標</span></div>
-            <h3 class="project-title"><button class="title-link" data-detail="shake" data-mag>ShakeCon<span class="title-arrow">PROCESS →</span></button></h3>
+            <h3 class="project-title"><button class="title-link" data-detail="shake" data-mag>ShakeCon<span class="title-arrow">PROCESS →</span></button><div class="afd afd-shake" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path class="wave" d="M4 16 Q7 10 7 16 Q7 22 4 16" stroke="currentColor" stroke-width="1.6" fill="none"/><path class="wave" d="M28 16 Q25 10 25 16 Q25 22 28 16" stroke="currentColor" stroke-width="1.6" fill="none"/><rect class="body" x="11" y="11" width="10" height="10" rx="2" fill="currentColor"/></svg></div></h3>
             <p class="project-summary">内部に独立稼働するパーツを組み込み、振るとカチャカチャと物理的な音が鳴るコントローラー。「振る」行為そのもののプリミティブな面白さを起点に、音と手応えがゲーム体験へ還流する設計を探求している。</p>
+            <!-- ★要編集: 期間・人数・担当・ツールを実際の値に書き換えてください -->
           <div class="project-specs">
             <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 制作中</span></div>
             <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
@@ -824,15 +1050,15 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
                 <span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span>
               </div>
             </div>
-            <p style="margin-top:14px; font-family:var(--font-dot); font-size:10px; letter-spacing:.15em; color:var(--sumi);">* マウスを乗せる / タップすると、実機のようにカチャカチャ震えます</p>
           </div>
         </div>
       </article>
 
       <article class="project-card reveal" id="proj-tori">
         <div class="project-meta"><span class="project-index">PROJECT D</span><span class="badge">授業内制作（アナログ）</span></div>
-        <h3 class="project-title"><button class="title-link" data-detail="tori" data-mag>トリ合い譲り合い<span class="title-arrow">PROCESS →</span></button></h3>
+        <h3 class="project-title"><button class="title-link" data-detail="tori" data-mag>トリ合い譲り合い<span class="title-arrow">PROCESS →</span></button><div class="afd afd-bubble" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><g class="b1"><rect x="3" y="8" width="13" height="9" rx="3" fill="currentColor"/><path d="M7 17 l0 4 l4 -4 Z" fill="currentColor"/></g><g class="b2"><rect x="16" y="11" width="13" height="9" rx="3" fill="currentColor"/><path d="M25 20 l0 4 l-4 -4 Z" fill="currentColor"/></g></svg></div></h3>
         <p class="project-summary">焼き鳥の最後の1本をテーマにした、譲り合いの駆け引きを楽しむ社会人向けカードゲーム。「奪う」ではなく「譲る」をプレイの主語に置くことで、場の空気の読み合いがそのままゲームメカニクスになる構造を設計した。デジタルに限らない遊びの幅を示す制作実績。</p>
+        <!-- ★要編集: 期間・人数・担当・ツールを実際の値に書き換えてください -->
           <div class="project-specs">
             <div class="spec-cell"><span class="spec-label">PERIOD</span><span class="spec-value">20XX.XX – 20XX.XX</span></div>
             <div class="spec-cell"><span class="spec-label">TEAM</span><span class="spec-value">◯名</span></div>
@@ -865,7 +1091,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       
       <div class="others-left">
         <article class="project-card reveal card-davinci" style="height: 100%;">
-          <h3 class="project-title" style="font-size: 20px;">ダヴィンチマスターズ</h3>
+          <h3 class="project-title" style="font-size: 20px;">ダヴィンチマスターズ<div class="afd afd-panel" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect class="pnl p1" x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect class="pnl p2" x="18" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect class="pnl p3" x="5" y="18" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect class="pnl p4" x="18" y="18" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg></div></h3>
           <p class="project-summary">小学生を対象とした漫画を”作る”ワークショップの企画。漫画のアセットをあらかじめ用意し、参加者はそれを切りはりして物語を構成していく。</p>
           
           <div class="img-frame pressable lb-trigger" style="flex: 1; min-height: 280px; margin-top: 18px;">
@@ -882,7 +1108,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
       <div class="others-right">
         <article class="project-card reveal reveal-delay-1" id="card-design">
-          <h3 class="project-title" style="font-size: 18px;">デザイン</h3>
+          <h3 class="project-title" style="font-size: 18px;">デザイン<div class="afd afd-ink" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><circle class="ink i1" cx="16" cy="16" r="3" fill="currentColor" style="--ix:-9px;--iy:-7px"/><circle class="ink i2" cx="16" cy="16" r="2.4" fill="var(--mizu)" style="--ix:8px;--iy:-8px"/><circle class="ink i3" cx="16" cy="16" r="2.8" fill="currentColor" style="--ix:-7px;--iy:8px"/><circle class="ink i4" cx="16" cy="16" r="2.2" fill="var(--mizu)" style="--ix:9px;--iy:7px"/></svg></div></h3>
           <p class="project-summary" style="font-size: 13px;">ポスターやUI、グラフィックデザインなどのクリエイティブ制作。</p>
           <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
             <ul class="slides-data">
@@ -895,7 +1121,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         </article>
 
         <article class="project-card reveal reveal-delay-2" id="card-photo">
-          <h3 class="project-title" style="font-size: 18px;">写真</h3>
+          <h3 class="project-title" style="font-size: 18px;">写真<div class="afd afd-shutter" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path class="blade bl1" d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor" style="--br:0deg"/><path class="blade bl2" d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor"/><path class="blade bl3" d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor"/></svg></div></h3>
           <p class="project-summary" style="font-size: 13px;">趣味の写真。デジタル・フィルムの両方を使用して撮影する。</p>
           <div class="img-frame pressable lb-trigger" style="aspect-ratio:16/9; margin-top:10px;">
             <ul class="slides-data">
@@ -917,9 +1143,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   <div class="wrap">
     <div class="reveal">
       <p class="eyebrow">HISTORY</p>
-      <h2 class="section-title">出展・受賞歴</h2>
+      <h2 class="section-title">出展歴</h2>
     </div>
 
+    <!-- ★要編集: 日付・名称を実際の値に。新しいものを上に並べる想定です。
+         予定・目標の項目には class="future" を付けると点線の丸になります。
+         受賞があれば <span class="tl-badge">AWARD</span> をタイトル末尾に追加できます。 -->
+    <!-- 時系列順(古い→新しい)。上から下へ時間が流れます -->
     <div class="timeline reveal reveal-delay-1">
 
       <div class="tl-item">
@@ -945,6 +1175,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <p class="tl-title">BitSummit 2027 出展目標</p>
         <p class="tl-desc">「ShakeCon」(遊創研/GCCP)</p>
       </div>
+
+      <!-- 項目を増やす場合は下のテンプレートをコピーしてください
+      <div class="tl-item">
+        <span class="tl-date">20XX.XX</span>
+        <p class="tl-title">イベント名・賞名 <span class="tl-badge">AWARD</span></p>
+        <p class="tl-desc">作品名や補足</p>
+      </div>
+      -->
 
     </div>
   </div>
@@ -979,16 +1217,19 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 </section>
 
 <footer>
+  <!-- 最下部の「振り返り」: 全インタラクションのサインが集合して一斉に送る -->
+  <div id="finale" aria-hidden="true"></div>
   <p>PLAY &nbsp;/&nbsp; INTERACTION &nbsp;/&nbsp; EXPERIENCE DESIGN</p>
   <p style="margin-top:6px; font-size:9px; letter-spacing:.2em;">© 2026 Yuzuki Yoshikawa</p>
 </footer>
 
-<!-- 制作過程 詳細ページ -->
+<!-- 制作過程 詳細ページ(タイトルクリックで #detail-◯◯ に遷移して表示) -->
 <div id="work-detail" aria-hidden="true">
   <button id="wd-back" data-mag>← 戻る</button>
   <div class="wd-inner" id="wd-content"></div>
 </div>
 
+<!-- ★要編集: 各作品の制作過程テンプレート。STEPごとの本文と画像を実際の内容に書き換えてください -->
   <template id="wd-kumi">
     <p class="eyebrow">MAKING PROCESS</p>
     <h2 class="section-title">汲・撒・響</h2>
@@ -1420,6 +1661,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
       var gravity = 0.8;
       var bounce = -0.5;
+      // 変形(transform)を除いた基準位置を一度だけ計算し、二重加算を防ぐ
       var rectNow = el.getBoundingClientRect();
       var baseTop = rectNow.top - currentY;
       var floorY  = window.innerHeight - rectNow.height - 20;
@@ -1522,6 +1764,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   /* --------------------------------------------------
      LIGHTBOX (TOPIC SPECIFIC GALLERY)
      -------------------------------------------------- */
+  // :has() 非対応ブラウザでも例外で全スクリプトが死なないよう、全対応の書き方に変更
   document.querySelectorAll('.img-frame .slides-data').forEach(function(ul){ ul.parentElement.classList.add('lb-trigger'); });
 
   var lightbox = document.getElementById('lightbox');
@@ -1543,7 +1786,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       lbLabel.innerText = label;
       
       lbImg.onerror = function() {
-        if (this.dataset.fallback === '1') return; 
+        if (this.dataset.fallback === '1') return; // フォールバック自体の失敗で無限ループしない
         this.dataset.fallback = '1';
         this.src = "https://placehold.co/800x600/E7E8E2/7C7F8A?text=" + encodeURIComponent(label);
       };
@@ -1618,6 +1861,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
   document.getElementById('lightbox-bg').addEventListener('click', closeLightbox);
 
+  // キーボード操作: Esc=閉じる, ←→=画像切り替え
   window.addEventListener('keydown', function(e) {
     if (!lightbox.classList.contains('active')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -1671,10 +1915,11 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
   }
 
   /* --------------------------------------------------
-     RICH INTERACTIONS
+     RICH INTERACTIONS (PC / タブレット / スマホ共通: tap & press で成立)
      -------------------------------------------------- */
   var canAnimate = (typeof Element !== 'undefined') && !!Element.prototype.animate;
 
+  // カードの上に重ねるエフェクト用レイヤー(クリック透過・カード内にクリップ)
   function makeLayer(card) {
     if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
     var l = document.createElement('div');
@@ -1684,6 +1929,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     return l;
   }
 
+  // --- 共通: ピクセル片バースト ---
   function pixelBurst(x, y) {
     if (reduce || !canAnimate) return;
     var colors = ['#F2A91F', '#2F6FED', 'var(--ink)'];
@@ -1706,17 +1952,19 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
   }
 
+  // --- タイムライン: タップでステージクリア風ポップ ---
   document.querySelectorAll('.tl-item').forEach(function (item) {
     item.addEventListener('click', function () {
       if (isBlackhole || reduce) return;
       item.classList.remove('pop');
-      void item.offsetWidth; 
+      void item.offsetWidth; // reflowでアニメ再発火
       item.classList.add('pop');
       var r = item.getBoundingClientRect();
       pixelBurst(r.left + 11, r.top + 13);
     });
   });
 
+  // --- 汲・撒・響: Canvas水しぶき(毎フレーム物理シミュレーション) ---
   var projKumiCard = projKumi;
   if (projKumiCard && !reduce) {
     var kCanvas = document.createElement('canvas');
@@ -1745,13 +1993,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     function drawDrop(d) {
       var sp = Math.hypot(d.vx, d.vy);
       var ang = Math.atan2(d.vy, d.vx);
-      var stretch = 1 + Math.min(sp / 13, 0.95); 
+      var stretch = 1 + Math.min(sp / 13, 0.95); // 速度に応じて引き伸ばし(モーションブラー的表現)
       kCtx.save();
       kCtx.translate(d.x, d.y);
       kCtx.rotate(ang);
       kCtx.scale(stretch, 1);
       var g = kCtx.createRadialGradient(-d.r * 0.32, -d.r * 0.32, d.r * 0.12, 0, 0, d.r);
-      g.addColorStop(0, 'rgba(198,221,255,' + d.a + ')');   
+      g.addColorStop(0, 'rgba(198,221,255,' + d.a + ')');   // ハイライト
       g.addColorStop(0.55, 'rgba(74,134,243,' + d.a + ')');
       g.addColorStop(1, 'rgba(33,88,208,' + (d.a * 0.88) + ')');
       kCtx.fillStyle = g;
@@ -1762,18 +2010,18 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
 
     function drawRipple(rp) {
-      if (rp.t < 0) return; 
+      if (rp.t < 0) return; // 遅延中
       var p = Math.min(rp.t / rp.dur, 1);
       var ease = 1 - Math.pow(1 - p, 3);
       var rad = rp.max * ease;
       var alpha = (1 - p) * rp.a0;
       kCtx.save();
       kCtx.translate(rp.x, rp.y);
-      kCtx.scale(1, 0.42); 
+      kCtx.scale(1, 0.42); // 床面の遠近感(楕円)
       kCtx.strokeStyle = 'rgba(47,111,237,' + alpha + ')';
       kCtx.lineWidth = rp.lw * (1 - p * 0.6);
       kCtx.beginPath(); kCtx.arc(0, 0, rad, 0, Math.PI * 2); kCtx.stroke();
-      kCtx.strokeStyle = 'rgba(255,255,255,' + (alpha * 0.5) + ')'; 
+      kCtx.strokeStyle = 'rgba(255,255,255,' + (alpha * 0.5) + ')'; // 内側の白いきらめき
       kCtx.lineWidth = 1;
       kCtx.beginPath(); kCtx.arc(0, 0, rad * 0.85, 0, Math.PI * 2); kCtx.stroke();
       kCtx.restore();
@@ -1781,13 +2029,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
     function kLoop(ts) {
       if (!kLast) kLast = ts;
-      var dt = Math.min((ts - kLast) / 16.7, 2.2); 
+      var dt = Math.min((ts - kLast) / 16.7, 2.2); // 60fps基準で正規化
       kLast = ts;
       var w = kCanvas.width / kDpr, h = kCanvas.height / kDpr;
       kCtx.clearRect(0, 0, kCanvas.width, kCanvas.height);
       kCtx.save();
       kCtx.scale(kDpr, kDpr);
 
+      // 水柱の閃き
       for (var f = kFlashes.length - 1; f >= 0; f--) {
         var fl = kFlashes[f];
         var fp = fl.t / fl.dur;
@@ -1803,6 +2052,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         if (fl.t >= fl.dur) kFlashes.splice(f, 1);
       }
 
+      // 波紋
       for (var q = kRipples.length - 1; q >= 0; q--) {
         var rp = kRipples[q];
         drawRipple(rp);
@@ -1810,14 +2060,16 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         if (rp.t >= rp.dur) kRipples.splice(q, 1);
       }
 
+      // 飛沫(重力・空気抵抗・着水)
       for (var i = kDrops.length - 1; i >= 0; i--) {
         var d = kDrops[i];
-        d.vy += 0.34 * dt;                 
-        d.vx *= Math.pow(0.986, dt);       
+        d.vy += 0.34 * dt;                 // 重力
+        d.vx *= Math.pow(0.986, dt);       // 空気抵抗
         d.x += d.vx * dt;
         d.y += d.vy * dt;
 
         if (d.vy > 0 && d.y >= d.floorY) {
+          // 着水: 二次波紋 + たまに小さな跳ね返り
           kRipples.push({ x: d.x, y: d.floorY, t: 0, dur: 460 + Math.random() * 220, max: 8 + d.r * 3.4, a0: 0.5, lw: 1.5 });
           if (d.r > 3 && Math.random() < 0.5) {
             kDrops.push(newDrop(d.x, d.floorY, d.vx * 0.4 + (Math.random() - 0.5) * 1.2, -d.vy * 0.32, d.r * 0.5, d.floorY + 4 + Math.random() * 8));
@@ -1841,27 +2093,32 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
     projKumiCard.addEventListener('click', function (e) {
       if (isBlackhole) return;
-      if (e.target.closest('.img-frame')) return; 
-      if (kDrops.length > 110) return;            
+      if (e.target.closest('.img-frame')) return; // 画像はライトボックス優先
+      if (kDrops.length > 110) return;            // 連打しても破綻しない上限
 
       var r = projKumiCard.getBoundingClientRect();
       var x = e.clientX - r.left, y = e.clientY - r.top;
 
+      // ① 水柱の閃き
       kFlashes.push({ x: x, y: y, t: 0, dur: 260, max: 30 });
 
+      // ② 波紋3重(時間差)
       kRipples.push({ x: x, y: y, t: 0,    dur: 680, max: 52,  a0: 0.65, lw: 2.4 });
       kRipples.push({ x: x, y: y, t: -110, dur: 820, max: 78,  a0: 0.45, lw: 1.8 });
       kRipples.push({ x: x, y: y, t: -230, dur: 960, max: 102, a0: 0.28, lw: 1.3 });
 
+      // ③ 中央の水柱(ほぼ真上へ高く)
       for (var s = 0; s < 3; s++) {
         kDrops.push(newDrop(x, y, (Math.random() - 0.5) * 1.6, -(7.2 + Math.random() * 2.6), 2.2 + Math.random() * 1.6, y + 4 + Math.random() * 10));
       }
+      // ④ クラウン(扇形に開く中粒)
       var n = 11;
       for (var c = 0; c < n; c++) {
         var ang = -Math.PI * (0.18 + 0.64 * (c / (n - 1))) + (Math.random() - 0.5) * 0.18;
         var sp = 3.4 + Math.random() * 3.6;
         kDrops.push(newDrop(x, y, Math.cos(ang) * sp, Math.sin(ang) * sp, 1.6 + Math.random() * 2.6, y + 2 + Math.random() * 26));
       }
+      // ⑤ 大粒(少数・遠くへ)
       for (var b = 0; b < 4; b++) {
         var ang2 = -Math.PI * (0.25 + Math.random() * 0.5);
         var sp2 = 4.5 + Math.random() * 3.2;
@@ -1872,6 +2129,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // --- Philosophy: スクロールで重要語にマーカーが引かれる ---
   var mks = document.querySelectorAll('.mk');
   if (mks.length) {
     if (!reduce && 'IntersectionObserver' in window) {
@@ -1889,6 +2147,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
   }
 
+  // --- トリ合い譲り合い: タップで「どうぞ」の譲り合い吹き出し ---
   var toriCard = document.getElementById('proj-tori');
   if (toriCard && !reduce && canAnimate) {
     var toriLayer = makeLayer(toriCard);
@@ -1901,7 +2160,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       var b = document.createElement('div');
       b.className = 'dz-bubble';
       b.textContent = dzTexts[dzIdx % dzTexts.length];
-      var side = (dzIdx % 2 === 0) ? 1 : -1; 
+      var side = (dzIdx % 2 === 0) ? 1 : -1; // 左右交互に譲り合う
       dzIdx++;
       toriLayer.appendChild(b);
       b.style.left = (e.clientX - r.left - b.offsetWidth / 2) + 'px';
@@ -1914,6 +2173,8 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // --- Others: 各カードのテーマに沿ったタップ演出 ---
+  // ダヴィンチ(切り貼り): タップ位置に4コマ漫画がコラージュ風に組み上がる
   var davCard = document.querySelector('.card-davinci');
   if (davCard && !reduce && canAnimate) {
     var davLayer = makeLayer(davCard);
@@ -1940,6 +2201,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       strip.style.cssText = 'position:absolute; left:' + sx + 'px; top:' + sy + 'px; width:' + PANEL_W + 'px; height:' + stripH + 'px; will-change:transform,opacity;';
       davLayer.appendChild(strip);
 
+      // 各コマが四方から飛んできて、手貼りのわずかな傾きで吸着する
       for (var i = 0; i < PANEL_N; i++) {
         var pn = document.createElement('div');
         var tilt = (Math.random() - 0.5) * 5;
@@ -1961,6 +2223,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         ], { duration: 430, delay: i * 110, easing: 'cubic-bezier(.2,1.1,.4,1)', fill: 'backwards' });
       }
 
+      // 物語が完成したら一拍置いて、ふわっと上へ消える
       var assembleEnd = (PANEL_N - 1) * 110 + 430;
       setTimeout(function () {
         strip.animate([
@@ -1974,6 +2237,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // デザイン: インクドットが弾ける
   var designCard = document.getElementById('card-design');
   if (designCard && !reduce && canAnimate) {
     var designLayer = makeLayer(designCard);
@@ -2004,6 +2268,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // 写真: フォーカス → シャッター幕が切られる
   var photoCard = document.getElementById('card-photo');
   if (photoCard && !reduce && canAnimate) {
     var photoLayer = makeLayer(photoCard);
@@ -2014,6 +2279,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       if (e.target.closest('.img-frame')) return;
       shutterBusy = true;
 
+      // ① ファインダー: 四隅ブラケット + 中央フォーカス枠
       var vf = document.createElement('div');
       vf.style.cssText = 'position:absolute; inset:8%; will-change:opacity;';
       [
@@ -2036,8 +2302,9 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         [{ transform: 'scale(1.5)' }, { transform: 'scale(1)' }],
         { duration: 200, easing: 'cubic-bezier(.2,1.2,.4,1)', fill: 'forwards' }
       );
-      setTimeout(function () { focus.style.borderColor = '#F2A91F'; }, 210); 
+      setTimeout(function () { focus.style.borderColor = '#F2A91F'; }, 210); // フォーカスロック
 
+      // ② シャッター幕: 上下から閉じて黒で一拍、そして開く
       function mkCurtain(top) {
         var c = document.createElement('div');
         c.style.cssText = 'position:absolute; left:0; right:0; height:51%; background:#0B0D15;'
@@ -2059,6 +2326,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           ], { duration: 430, easing: 'cubic-bezier(.6,0,.3,1)' }).onfinish = function () { c.remove(); };
         });
 
+        // ③ 幕が開く瞬間の残光
         setTimeout(function () {
           var glow = document.createElement('div');
           glow.style.cssText = 'position:absolute; inset:0; background:#fff; will-change:opacity;';
@@ -2068,6 +2336,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         }, 230);
       }, 300);
 
+      // ④ ファインダー消灯
       setTimeout(function () {
         vf.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' })
           .onfinish = function () { vf.remove(); shutterBusy = false; };
@@ -2075,6 +2344,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // --- ニギコン2: 押している間「握り込む」(スクロール連動と合成) ---
   var lastPNigi = 0;
   var nigiSqueezeCur = 0, nigiSqueezeTarget = 0, nigiRaf = null;
 
@@ -2083,7 +2353,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var sx = (1 - lastPNigi * 0.036) * (1 - nigiSqueezeCur * 0.06);
     var sy = 1 + nigiSqueezeCur * 0.035;
     nigiCard.style.transform = 'scaleX(' + sx + ') scaleY(' + sy + ')';
-    var grip = nigiSqueezeCur * 10; 
+    var grip = nigiSqueezeCur * 10; // 握ると指バーがさらに食い込む
     if (fingL) fingL.style.transform = 'translateY(-50%) translateX(' + (-78 + lastPNigi * 78 + grip) + 'px)';
     if (fingR) fingR.style.transform = 'translateY(-50%) translateX(' + ( 78 - lastPNigi * 78 - grip) + 'px)';
   }
@@ -2112,6 +2382,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // --- ShakeCon: タップでも振動(スマホ対応) ---
   if (shakeCard && !reduce) {
     var shakeTapT = null;
     shakeCard.parentElement.addEventListener('click', function (e) {
@@ -2131,15 +2402,17 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     });
   }
 
+  // --- 制作過程の詳細ページ: ハッシュルーティング(元の位置に戻る・直リンク対応) ---
   var wdOverlay = document.getElementById('work-detail');
   var wdContent = document.getElementById('wd-content');
   var WD_KEYS = ['kumi', 'nigi', 'shake', 'tori'];
   var WD_ANCHORS = { kumi: 'proj-kumi', nigi: 'proj-nigi-outer', shake: 'proj-shake-card', tori: 'proj-tori' };
   var wdCurrentKey = null;
-  var wdSavedY = null;     
-  var wdFromClick = false; 
+  var wdSavedY = null;     // 開く直前のスクロール位置
+  var wdFromClick = false; // ページ内クリックで開いたか(直リンクとの区別)
 
   function jumpTo(y) {
+    // scroll-behavior:smooth を一時無効化して瞬間移動(「戻った」感を出す)
     var de = document.documentElement;
     var prev = de.style.scrollBehavior;
     de.style.scrollBehavior = 'auto';
@@ -2156,7 +2429,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     wdOverlay.classList.add('open');
     wdOverlay.setAttribute('aria-hidden', 'false');
     wdOverlay.scrollTop = 0;
-    document.body.style.overflow = 'hidden'; 
+    document.body.style.overflow = 'hidden'; // 背面のスクロールを止める
   }
 
   function closeDetail() {
@@ -2165,11 +2438,12 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     wdOverlay.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
 
+    // 元いた作品の場所へ戻す
     if (wdFromClick && wdSavedY !== null) {
-      jumpTo(wdSavedY); 
+      jumpTo(wdSavedY); // クリックで開いた場合: 開く直前の位置をそのまま復元
     } else if (wdCurrentKey && WD_ANCHORS[wdCurrentKey]) {
       var card = document.getElementById(WD_ANCHORS[wdCurrentKey]);
-      if (card) jumpTo(card.getBoundingClientRect().top + window.scrollY - 80); 
+      if (card) jumpTo(card.getBoundingClientRect().top + window.scrollY - 80); // 直リンクの場合: その作品カードへ
     }
     wdFromClick = false;
     wdSavedY = null;
@@ -2182,20 +2456,20 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     else closeDetail();
   }
   window.addEventListener('hashchange', wdRoute);
-  wdRoute(); 
+  wdRoute(); // #detail-◯◯ への直リンクで開いた場合にも対応
 
   document.querySelectorAll('.title-link').forEach(function (t) {
     t.addEventListener('click', function (e) {
-      e.stopPropagation(); 
+      e.stopPropagation(); // カード側のタップ演出(水しぶき等)を巻き込まない
       wdFromClick = true;
-      wdSavedY = window.scrollY; 
+      wdSavedY = window.scrollY; // 開く直前の位置を記憶
       location.hash = 'detail-' + t.getAttribute('data-detail');
     });
   });
 
   function wdGoBack() {
     if (wdFromClick) {
-      history.back(); 
+      history.back(); // クリックで開いた場合: 履歴を1つ戻す → closeDetailが記憶位置へ復元
     } else {
       var key = wdCurrentKey;
       location.hash = (key && WD_ANCHORS[key]) ? WD_ANCHORS[key] : 'works';
@@ -2209,18 +2483,23 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     if (e.key === 'Escape' && wdOverlay && wdOverlay.classList.contains('open')) wdGoBack();
   });
 
+  // --- タイトル画面: 触った場所から円形に世界が開いてメインページへ ---
   var intro = document.getElementById('intro');
   var introOpen = false;
 
   if (intro) {
     if (!document.documentElement.classList.contains('boot')) {
+      // 直リンク(#detail-◯◯ や #works 等)で来た場合: head側の判定で最初から非表示なのでDOMからも除去
       intro.parentNode.removeChild(intro);
     } else {
       introOpen = true;
       var introDismissed = false;
 
       // ============================================================
-      // タイトル画面: 名前とフォントのランダム切り替えギミック
+      // タイトル画面: 名前をタップすると文字とフォントが切り替わる
+      // ※自動ローテーションは廃止。opacityトランジション中に文字を
+      //   入れ替えるとiOS WebKitが旧文字のはみ出し部分を再描画せず
+      //   ゴーストが残るバグがあるため、タップ起点+レイヤー強制破棄方式に変更
       // ============================================================
       var introName = document.querySelector('.intro-name');
       var nameTexts = ['吉川柚希', 'よしかわゆずき', 'ヨシカワユズキ', 'YoshikawaYuzuki', 'yoshikawayuzuki'];
@@ -2231,8 +2510,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         "'Yusei Magic', sans-serif",         // 手書き風
         "'Dela Gothic One', display"         // 極太ディスプレイ
       ];
-      
-      // 配列をシャッフルする関数
+
+      // 全フォントを先読み: 初回切り替え時の代替フォント→Webフォント再描画を防ぐ
+      if (document.fonts && document.fonts.load) {
+        nameFonts.forEach(function (f) {
+          document.fonts.load('900 32px ' + f.split(',')[0]);
+        });
+      }
+
       function shuffleArray(array) {
         var a = array.slice();
         for (var i = a.length - 1; i > 0; i--) {
@@ -2244,66 +2529,110 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
       var textQueue = [];
       var fontQueue = [];
-      
-      var nameTimer = setInterval(function() {
-        if (!introOpen) {
-          clearInterval(nameTimer);
-          return;
-        }
-        
-        introName.style.opacity = 0; // 一旦フェードアウト
-        
-        setTimeout(function() {
-          // キューが空になったら新しくシャッフルして補充
-          if (textQueue.length === 0) textQueue = shuffleArray(nameTexts);
-          if (fontQueue.length === 0) fontQueue = shuffleArray(nameFonts);
 
-          // キューから1つ取り出す
-          var currentText = textQueue.pop();
-          var currentFont = fontQueue.pop();
-          
-          // 極太ディスプレイ体が漢字表記で選ばれた場合の回避処理
-          if (currentText === '吉川柚希' && currentFont.indexOf('Dela Gothic One') !== -1) {
-            if (fontQueue.length > 0) {
-              // キューの次のフォントと入れ替える
-              var nextFont = fontQueue.pop();
-              fontQueue.unshift(currentFont); // Dela Gothicはキューの底(後回し)へ
-              currentFont = nextFont;
-            } else {
-              // キューが空で入れ替え先がない場合は標準ゴシックで代用
-              currentFont = "'Zen Kaku Gothic New', sans-serif";
-            }
-          }
-          
-          introName.textContent = currentText;
-          introName.style.fontFamily = currentFont;
-          
-          // 文字数によってサイズを調整 (長いローマ字がスマホからはみ出すのを防ぐ)
-          if (currentText.length > 10) {
-            introName.style.fontSize = 'clamp(24px, 6.5vw, 64px)';
-          } else if (currentText.length > 6) {
-            introName.style.fontSize = 'clamp(32px, 8vw, 80px)';
+      var swapName = function () {
+        if (textQueue.length === 0) textQueue = shuffleArray(nameTexts);
+        if (fontQueue.length === 0) fontQueue = shuffleArray(nameFonts);
+
+        var currentText = textQueue.pop();
+        // シャッフル直後に「いま表示中と同じ表記」が出たら次と入れ替える
+        if (currentText === introName.textContent && textQueue.length > 0) {
+          var nextText = textQueue.pop();
+          textQueue.unshift(currentText);
+          currentText = nextText;
+        }
+
+        var currentFont = fontQueue.pop();
+        // 極太ディスプレイ体が漢字表記で選ばれた場合の回避処理
+        if (currentText === '吉川柚希' && currentFont.indexOf('Dela Gothic One') !== -1) {
+          if (fontQueue.length > 0) {
+            var nextFont = fontQueue.pop();
+            fontQueue.unshift(currentFont); // Dela Gothicはキューの底(後回し)へ
+            currentFont = nextFont;
           } else {
-            introName.style.fontSize = ''; // デフォルト値に戻す
+            currentFont = "'Zen Kaku Gothic New', sans-serif";
           }
-          
-          introName.style.opacity = 1; // フェードイン
-        }, 200); // 0.2秒暗転してから切り替え
-        
-      }, 4000); // 4秒ごとに実行
+        }
+
+        introName.textContent = currentText;
+        introName.style.fontFamily = currentFont;
+
+        // 文字数によってサイズを調整 (長いローマ字がスマホからはみ出すのを防ぐ)
+        if (currentText.length > 10) {
+          introName.style.fontSize = 'clamp(24px, 6.5vw, 64px)';
+        } else if (currentText.length > 6) {
+          introName.style.fontSize = 'clamp(32px, 8vw, 80px)';
+        } else {
+          introName.style.fontSize = ''; // デフォルト値に戻す
+        }
+
+        // iOS再描画バグ対策: displayを一瞬切って古い描画レイヤーごと破棄する。
+        // これにより前の文字の端がゴーストとして残らない
+        introName.style.display = 'none';
+        void introName.offsetWidth;
+        introName.style.display = '';
+
+        // スタンプを押し直すような小さなポップ
+        introName.classList.remove('pop');
+        void introName.offsetWidth;
+        introName.classList.add('pop');
+
+      };
+
+      var introNameWrap = document.querySelector('.intro-name-wrap');
+      var nameTapped = false;
+
+      if (introNameWrap) {
+        introNameWrap.addEventListener('pointerdown', function (e) {
+          e.stopPropagation(); // 画面全体の「押して開始」を発火させない
+          e.preventDefault();
+          if (introDismissed) return;
+          nameTapped = true;
+          swapName();
+        });
+        // Enter/Spaceでも切り替え可(キーボード操作)
+        introNameWrap.addEventListener('keydown', function (e) {
+          if (introDismissed) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); e.stopPropagation();
+            nameTapped = true; swapName();
+          }
+        });
+      }
+
+      // 初回デモ: 起動して少し経っても触られなければ、名前が一度だけ自分でポンと弾み
+      //「押せる」ことを予告する(一度でも触られたら出さない)
+      if (!reduce) {
+        setTimeout(function () {
+          if (nameTapped || introDismissed || !introOpen) return;
+          introName.classList.remove('pop');
+          void introName.offsetWidth;
+          introName.classList.add('pop');
+        }, 2600);
+      }
 
       var finishIntro = function () {
         introOpen = false;
         document.body.style.overflow = '';
         if (intro.parentNode) intro.parentNode.removeChild(intro);
+        // ※ポップインのリプレイは廃止: スクロールバー復帰のリフローと
+        //   大型要素のアニメ開始が同一フレームに重なりカクつくため。
+        //   吸い込みで「完成した世界」が現れる方が演出としても自然。
       };
 
+      // ============================================================
+      // 遷移: 「画面全体がボタン」
+      // 押すと画面ごと沈み(サイト中の全ボタンと同じ手触り)、
+      // 離すと弾んでからパネルごと上へ持ち上がり、下の世界が現れる。
+      // 全てtransform(GPUコンポジタ)のみなので軽い。
+      // ============================================================
       var pressX = 0, pressY = 0;
       var prepared = false;
 
       var prepareMain = function () {
         if (prepared) return;
         prepared = true;
+        // 押している間(タイトルが画面を覆っている間)に、裏でメイン画面を描画させておく
         document.documentElement.classList.remove('boot');
         document.body.style.overflow = 'hidden';
       };
@@ -2313,13 +2642,27 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         introDismissed = true;
         intro.classList.add('closing');
         prepareMain();
-        pixelBurst(pressX, pressY); 
+        pixelBurst(pressX, pressY); // 触った点が弾ける
 
         if (reduce) {
-          finishIntro();
+          // 「視差効果を減らす」設定の人には、移動を伴わない短いフェードで開く
+          // (以前は即時切替だったため「演出が無い」ように見えていた)
+          var f0 = null;
+          var fstep = function (fts) {
+            if (f0 === null) { f0 = fts; requestAnimationFrame(fstep); return; }
+            var fp = Math.min((fts - f0) / 320, 1);
+            intro.style.opacity = String(1 - fp);
+            if (fp < 1) requestAnimationFrame(fstep);
+            else finishIntro();
+          };
+          requestAnimationFrame(fstep);
           return;
         }
 
+        // WAAPIやCSSトランジションは環境(アプリ内ビューア等)によって
+        // 即時完了してしまうことがあるため使わない。
+        // rAFでtransformを毎フレーム手動補間する方式は、
+        // どの環境でも確実に既定時間をかけて動く。
         var DUR = 640;
         var t0 = null;
         var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
@@ -2329,6 +2672,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 
         var step = function (ts) {
           if (t0 === null) {
+            // 初回フレームは基準時刻の記録のみ(裏でメイン画面の初回ペイントも流れる)
             t0 = ts;
             requestAnimationFrame(step);
             return;
@@ -2336,11 +2680,14 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
           var p = Math.min((ts - t0) / DUR, 1);
           var tf;
           if (p < 0.22) {
+            // 沈んだ状態(0.965)からスプリングで1.012へ弾む
             var q = easeOut(p / 0.22);
             tf = 'scale(' + (0.965 + 0.047 * q).toFixed(4) + ')';
           } else if (p < 0.30) {
+            // 一拍ため
             tf = 'scale(1.012)';
           } else {
+            // パネルごと上へ持ち上がる
             var r = easeInOut((p - 0.30) / 0.70);
             tf = 'translateY(' + (-104 * r).toFixed(2) + '%) scale(' + (1.012 - 0.012 * r).toFixed(4) + ')';
           }
@@ -2353,9 +2700,10 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       };
 
       intro.addEventListener('pointerdown', function (e) {
-        e.preventDefault(); 
+        e.preventDefault(); // 合成clickが下の要素へ飛ぶのを防ぐ
         if (introDismissed) return;
         pressX = e.clientX; pressY = e.clientY;
+        // 画面全体が「押し込まれる」。縁から下の世界がわずかに覗く
         intro.style.transition = 'transform .1s ease-out';
         intro.style.transform = 'scale(.965)';
         prepareMain();
@@ -2382,9 +2730,66 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     }
   }
 
+  /* --------------------------------------------------
+     SCROLL EVENT CONTROLLER
+     -------------------------------------------------- */
   var bar = document.getElementById('progress-bar');
   var hdr = document.getElementById('site-header');
   var isScrolling = false;
+
+  // --- 最下部の「振り返り」: 全サインが集合 → 一斉に弾けて送る ---
+  var finale = document.getElementById('finale');
+  var finaleArmed = true;   // 再発動の許可(最下部を離れると再びtrue)
+  var finalePlaying = false;
+  if (finale) {
+    // 各インタラクションのサインSVG(カードのafdと同じモチーフを再利用)
+    var finIcons = [
+      '<svg viewBox="0 0 32 32" fill="none" style="color:var(--mizu)"><path d="M16 5 C16 5 11 13 11 17 a5 5 0 0 0 10 0 C21 13 16 5 16 5 Z" fill="currentColor"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><rect x="2" y="13" width="7" height="6" rx="2" fill="currentColor"/><rect x="23" y="13" width="7" height="6" rx="2" fill="currentColor"/><rect x="11" y="10" width="10" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><path d="M5 16 Q8 9 8 16 Q8 23 5 16" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M27 16 Q24 9 24 16 Q24 23 27 16" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="11" y="11" width="10" height="10" rx="2" fill="currentColor"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><rect x="4" y="9" width="14" height="10" rx="3" fill="currentColor"/><path d="M8 19 l0 4 l4 -4 Z" fill="currentColor"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="18" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="5" y="18" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="18" y="18" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><circle cx="9" cy="10" r="3" fill="currentColor"/><circle cx="22" cy="9" r="2.6" fill="var(--mizu)"/><circle cx="10" cy="22" r="2.8" fill="currentColor"/><circle cx="23" cy="22" r="2.4" fill="var(--mizu)"/></svg>',
+      '<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor"/><path d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor" transform="rotate(120 16 16)"/><path d="M16 16 L16 6 A10 10 0 0 1 24.6 11 Z" fill="currentColor" transform="rotate(240 16 16)"/></svg>'
+    ];
+    finIcons.forEach(function (svg) {
+      var d = document.createElement('div');
+      d.className = 'fin-sign';
+      d.innerHTML = svg;
+      finale.appendChild(d);
+    });
+    var finSigns = finale.querySelectorAll('.fin-sign');
+
+    var playFinale = function () {
+      if (finalePlaying) return;
+      finalePlaying = true;
+      // ① サインが左から順に集合(下からポップイン)
+      finSigns.forEach(function (s, i) {
+        s.classList.remove('in', 'bow');
+        setTimeout(function () { s.classList.add('in'); }, i * 90);
+      });
+      var lastIn = (finSigns.length - 1) * 90 + 500;
+      // ② 全員揃ったら一礼
+      setTimeout(function () {
+        finSigns.forEach(function (s) {
+          s.classList.remove('bow'); void s.offsetWidth; s.classList.add('bow');
+        });
+      }, lastIn + 200);
+      // ③ 一斉に弾けて送り出す
+      setTimeout(function () {
+        if (reduce || !canAnimate) return;
+        finSigns.forEach(function (s) {
+          var r = s.getBoundingClientRect();
+          pixelBurst(r.left + r.width / 2, r.top + r.height / 2);
+        });
+      }, lastIn + 700);
+    };
+
+    var resetFinale = function () {
+      finalePlaying = false;
+      finSigns.forEach(function (s) { s.classList.remove('in', 'bow'); });
+    };
+  }
 
   function onScrollFrame() {
     var scrolled = window.scrollY;
@@ -2404,6 +2809,19 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       var rNigi = nigiOuter.getBoundingClientRect();
       lastPNigi = Math.max(0, Math.min(1, 1 - (rNigi.top / (vh * 0.82))));
       applyNigiTransform();
+    }
+
+    // 最下部に到達したら振り返り演出を発動。離れたら再武装(戻ると再発動)
+    if (finale) {
+      var nearBottom = (scrolled + vh) >= (document.documentElement.scrollHeight - 40);
+      if (nearBottom && finaleArmed) {
+        finaleArmed = false;
+        playFinale();
+      } else if (!nearBottom && !finaleArmed && (scrolled + vh) < (document.documentElement.scrollHeight - 160)) {
+        // 十分離れたら次回のために初期化(チラ見えでの誤再発動を防ぐ余白160px)
+        finaleArmed = true;
+        resetFinale();
+      }
     }
     isScrolling = false;
   }
