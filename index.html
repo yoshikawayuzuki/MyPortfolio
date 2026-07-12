@@ -680,14 +680,54 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
 }
 #wd-back:hover { transform: translateY(-2px); }
 #wd-back:active { transform: scale(.94); }
-.wd-step { margin-top: 44px; }
-.wd-step-num {
-  font-family: var(--font-dot); font-size: 11px; letter-spacing: .25em; color: var(--mizu);
+/* 制作過程ページ: 自由記述の本文 + 画像ギャラリー */
+.wd-block { margin-top: 40px; }
+.wd-block h3 {
+  font-size: 18px; font-weight: 900; margin-bottom: 12px;
+  display: inline-block; border-bottom: 3px solid var(--yuzu); padding-bottom: 3px;
 }
-.wd-step h3 { font-size: 20px; font-weight: 900; margin: 4px 0 12px; }
-.wd-step p { font-size: 14px; color: var(--sumi); line-height: 1.9; user-select: text; -webkit-user-select: text; }
-.wd-step .img-frame { margin-top: 16px; }
-.wd-lead { margin-top: 16px; font-size: 15px; line-height: 2; user-select: text; -webkit-user-select: text; }
+.wd-block p {
+  font-size: 14.5px; color: var(--ink); line-height: 2;
+  user-select: text; -webkit-user-select: text; white-space: pre-wrap; /* 改行をそのまま反映 */
+}
+.wd-lead {
+  margin-top: 18px; font-size: 16px; line-height: 2; font-weight: 500; color: var(--ink);
+  user-select: text; -webkit-user-select: text; white-space: pre-wrap;
+}
+.wd-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 18px; }
+.wd-gallery .img-frame { aspect-ratio: 4/3; }
+.wd-gallery .wd-single { grid-column: 1 / -1; aspect-ratio: 16/9; } /* 1枚のときは横長に */
+.wd-cap { font-size: 12px; color: var(--sumi); margin-top: 8px; user-select: text; -webkit-user-select: text; }
+@media (max-width: 600px) { .wd-gallery { grid-template-columns: 1fr; } }
+
+/* 制作過程: 企画書・仕様書などのPDFリンク */
+.wd-docs { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.wd-doc {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; border-radius: var(--r-md);
+  background: var(--white); border: 1px solid var(--haze);
+  text-decoration: none; color: var(--ink);
+  box-shadow: var(--shadow-card);
+  transition: transform .14s cubic-bezier(.2,1.4,.4,1), box-shadow .14s;
+}
+.wd-doc:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27,30,43,.1); }
+.wd-doc:active { transform: scale(.98); }
+.wd-doc-icon {
+  flex-shrink: 0; width: 40px; height: 48px; position: relative;
+  background: var(--yuzu); border-radius: 4px;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
+}
+.wd-doc-icon::before { /* 折れた角 */
+  content: ""; position: absolute; top: 0; right: 0;
+  border-width: 0 12px 12px 0; border-style: solid;
+  border-color: var(--paper) var(--paper) transparent transparent;
+  border-top-right-radius: 4px;
+}
+.wd-doc-icon span { font-family: var(--font-dot); font-size: 8px; font-weight: 700; color: var(--ink); letter-spacing: .05em; }
+.wd-doc-body { flex: 1; min-width: 0; }
+.wd-doc-title { font-size: 14.5px; font-weight: 700; }
+.wd-doc-sub { font-size: 11px; color: var(--sumi); margin-top: 2px; }
+.wd-doc-arrow { flex-shrink: 0; font-family: var(--font-dot); font-size: 11px; color: var(--mizu); letter-spacing: .1em; }
 
 /* =====================================================
    AFFORDANCE HINTS (各インタラクションの「予告編」)
@@ -936,7 +976,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
         <li data-src="images/hero.gif" data-label="プレイヤーがデバイスで遊ぶ様子"></li>
       </ul>
       <span class="img-label">プレイヤーがデバイスで遊ぶ様子</span>
-      <span class="img-path">images/hero.gif</span>
+      <span class="img-path">images/hero.jpg</span>
     </div>
   </div>
 </section>
@@ -1049,7 +1089,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
                 <span class="img-label">マイコン内部ギミック</span><span class="img-path">images/shakecon-inside.jpg</span>
               </div>
               <div class="img-frame lb-trigger" style="aspect-ratio:16/9;">
-                <ul class="slides-data"><li data-src="images/shakecon-spec.jpg" data-label="シリアル通信連携仕様書"></li></ul>
+                <ul class="slides-data"><li data-src="images/shakecon-spec.png" data-label="シリアル通信連携仕様書"></li></ul>
                 <span class="img-label">シリアル通信連携仕様書</span><span class="img-path">images/shakecon-spec.jpg</span>
               </div>
             </div>
@@ -1237,173 +1277,241 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     <p class="eyebrow">MAKING PROCESS</p>
     <h2 class="section-title">汲・撒・響</h2>
     <p style="margin-top:10px;"><span class="badge">ISCA2026 提出目標</span></p>
-    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 01</p>
-        <h3>課題と狙い</h3>
-        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 02</p>
-        <h3>プロトタイピング</h3>
-        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">初期スケッチ / プロトタイプ</span>
+
+    <p class="wd-lead">★要編集: この作品を一言で表すリード文。どんな体験を目指した作品か。</p>
+
+    <div class="wd-block">
+      <h3>企画意図・説明</h3>
+      <p>★要編集: この作品で何を狙ったのか、どんな課題や思いから生まれたのか、どう作ったのかを自由に書いてください。段落を分けても構いません(このまま改行が反映されます)。長さも自由です。</p>
+    </div>
+
+    <div class="wd-block">
+      <h3>プロトタイプ</h3>
+      <p>★要編集: 試作段階の説明(任意)。無ければこの段落は消してもOK。</p>
+      <div class="wd-gallery">
+        <div class="img-frame wd-single" style="aspect-ratio:16/9;">
+          <ul class="slides-data"><li data-src="images/process/kumi-proc-01.jpg" data-label="プロトタイプ"></li></ul>
+          <span class="img-label">プロトタイプ</span>
           <span class="img-path">images/process/kumi-proc-01.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 03</p>
-        <h3>テストプレイでの観察</h3>
-        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">テストプレイの記録</span>
+    </div>
+
+    <div class="wd-block">
+      <h3>完成品</h3>
+      <p>★要編集: 完成した作品の説明(任意)。</p>
+      <div class="wd-gallery">
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/kumi-proc-02.jpg" data-label="完成品 1"></li></ul>
+          <span class="img-label">完成品 1</span>
           <span class="img-path">images/process/kumi-proc-02.jpg</span>
         </div>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 04</p>
-        <h3>想定外から得た改善</h3>
-        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">改善後の仕様 / 比較</span>
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/kumi-proc-03.jpg" data-label="完成品 2"></li></ul>
+          <span class="img-label">完成品 2</span>
           <span class="img-path">images/process/kumi-proc-03.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 05</p>
-        <h3>学び</h3>
-        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+    </div>
+
+
+    <div class="wd-block">
+      <h3>資料</h3>
+      <div class="wd-docs">
+        <a class="wd-doc" href="docs/kumi-plan.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">企画書</span>
+            <span class="wd-doc-sub">docs/kumi-plan.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
       </div>
+    </div>
   </template>
   <template id="wd-nigi">
     <p class="eyebrow">MAKING PROCESS</p>
     <h2 class="section-title">『ニギ/ニギっとスライム研究所』専用コントローラー「ニギコン2」</h2>
     <p style="margin-top:10px;"><span class="badge">BitSummit2026 出展</span></p>
-    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 01</p>
-        <h3>課題と狙い</h3>
-        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 02</p>
-        <h3>プロトタイピング</h3>
-        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">初期スケッチ / プロトタイプ</span>
+
+    <p class="wd-lead">★要編集: この作品を一言で表すリード文。どんな体験を目指した作品か。</p>
+
+    <div class="wd-block">
+      <h3>企画意図・説明</h3>
+      <p>★要編集: この作品で何を狙ったのか、どんな課題や思いから生まれたのか、どう作ったのかを自由に書いてください。段落を分けても構いません(このまま改行が反映されます)。長さも自由です。</p>
+    </div>
+
+    <div class="wd-block">
+      <h3>プロトタイプ</h3>
+      <p>★要編集: 試作段階の説明(任意)。無ければこの段落は消してもOK。</p>
+      <div class="wd-gallery">
+        <div class="img-frame wd-single" style="aspect-ratio:16/9;">
+          <ul class="slides-data"><li data-src="images/process/nigi-proc-01.jpg" data-label="プロトタイプ"></li></ul>
+          <span class="img-label">プロトタイプ</span>
           <span class="img-path">images/process/nigi-proc-01.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 03</p>
-        <h3>テストプレイでの観察</h3>
-        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">テストプレイの記録</span>
+    </div>
+
+    <div class="wd-block">
+      <h3>完成品</h3>
+      <p>★要編集: 完成した作品の説明(任意)。</p>
+      <div class="wd-gallery">
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/nigi-proc-02.jpg" data-label="完成品 1"></li></ul>
+          <span class="img-label">完成品 1</span>
           <span class="img-path">images/process/nigi-proc-02.jpg</span>
         </div>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 04</p>
-        <h3>想定外から得た改善</h3>
-        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">改善後の仕様 / 比較</span>
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/nigi-proc-03.jpg" data-label="完成品 2"></li></ul>
+          <span class="img-label">完成品 2</span>
           <span class="img-path">images/process/nigi-proc-03.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 05</p>
-        <h3>学び</h3>
-        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+    </div>
+
+
+    <div class="wd-block">
+      <h3>資料</h3>
+      <div class="wd-docs">
+        <a class="wd-doc" href="docs/nigi-plan.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">企画書</span>
+            <span class="wd-doc-sub">docs/nigi-plan.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
+        <a class="wd-doc" href="docs/nigi-spec.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">仕様書</span>
+            <span class="wd-doc-sub">docs/nigi-spec.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
       </div>
+    </div>
   </template>
   <template id="wd-shake">
     <p class="eyebrow">MAKING PROCESS</p>
     <h2 class="section-title">ShakeCon</h2>
     <p style="margin-top:10px;"><span class="badge">遊創研/GCCP・BitSummit2027 出展目標</span></p>
-    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 01</p>
-        <h3>課題と狙い</h3>
-        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 02</p>
-        <h3>プロトタイピング</h3>
-        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">初期スケッチ / プロトタイプ</span>
+
+    <p class="wd-lead">★要編集: この作品を一言で表すリード文。どんな体験を目指した作品か。</p>
+
+    <div class="wd-block">
+      <h3>企画意図・説明</h3>
+      <p>★要編集: この作品で何を狙ったのか、どんな課題や思いから生まれたのか、どう作ったのかを自由に書いてください。段落を分けても構いません(このまま改行が反映されます)。長さも自由です。</p>
+    </div>
+
+    <div class="wd-block">
+      <h3>プロトタイプ</h3>
+      <p>★要編集: 試作段階の説明(任意)。無ければこの段落は消してもOK。</p>
+      <div class="wd-gallery">
+        <div class="img-frame wd-single" style="aspect-ratio:16/9;">
+          <ul class="slides-data"><li data-src="images/process/shake-proc-01.jpg" data-label="プロトタイプ"></li></ul>
+          <span class="img-label">プロトタイプ</span>
           <span class="img-path">images/process/shake-proc-01.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 03</p>
-        <h3>テストプレイでの観察</h3>
-        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">テストプレイの記録</span>
+    </div>
+
+    <div class="wd-block">
+      <h3>完成品</h3>
+      <p>★要編集: 完成した作品の説明(任意)。</p>
+      <div class="wd-gallery">
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/shake-proc-02.jpg" data-label="完成品 1"></li></ul>
+          <span class="img-label">完成品 1</span>
           <span class="img-path">images/process/shake-proc-02.jpg</span>
         </div>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 04</p>
-        <h3>想定外から得た改善</h3>
-        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">改善後の仕様 / 比較</span>
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/shake-proc-03.jpg" data-label="完成品 2"></li></ul>
+          <span class="img-label">完成品 2</span>
           <span class="img-path">images/process/shake-proc-03.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 05</p>
-        <h3>学び</h3>
-        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+    </div>
+
+
+    <div class="wd-block">
+      <h3>資料</h3>
+      <div class="wd-docs">
+        <a class="wd-doc" href="docs/shake-plan.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">企画書</span>
+            <span class="wd-doc-sub">docs/shake-plan.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
+        <a class="wd-doc" href="docs/shake-spec.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">仕様書</span>
+            <span class="wd-doc-sub">docs/shake-spec.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
       </div>
+    </div>
   </template>
   <template id="wd-tori">
     <p class="eyebrow">MAKING PROCESS</p>
     <h2 class="section-title">トリ合い譲り合い</h2>
     <p style="margin-top:10px;"><span class="badge">授業内制作（アナログ）</span></p>
-    <p class="wd-lead">★要編集: この作品の制作過程を一言でまとめるリード文。</p>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 01</p>
-        <h3>課題と狙い</h3>
-        <p>★要編集: この作品で解決したかった課題、最初の問い。何がきっかけで着想したか。</p>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 02</p>
-        <h3>プロトタイピング</h3>
-        <p>★要編集: 最初のプロトタイプをどう作ったか。素材・構造・かかった時間。捨てた案があればそれも。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">初期スケッチ / プロトタイプ</span>
+
+    <p class="wd-lead">★要編集: この作品を一言で表すリード文。どんな体験を目指した作品か。</p>
+
+    <div class="wd-block">
+      <h3>企画意図・説明</h3>
+      <p>★要編集: この作品で何を狙ったのか、どんな課題や思いから生まれたのか、どう作ったのかを自由に書いてください。段落を分けても構いません(このまま改行が反映されます)。長さも自由です。</p>
+    </div>
+
+    <div class="wd-block">
+      <h3>プロトタイプ</h3>
+      <p>★要編集: 試作段階の説明(任意)。無ければこの段落は消してもOK。</p>
+      <div class="wd-gallery">
+        <div class="img-frame wd-single" style="aspect-ratio:16/9;">
+          <ul class="slides-data"><li data-src="images/process/tori-proc-01.jpg" data-label="プロトタイプ"></li></ul>
+          <span class="img-label">プロトタイプ</span>
           <span class="img-path">images/process/tori-proc-01.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 03</p>
-        <h3>テストプレイでの観察</h3>
-        <p>★要編集: 初見プレイヤーがどう振る舞ったか。想定外の持ち方・遊び方の具体例。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">テストプレイの記録</span>
+    </div>
+
+    <div class="wd-block">
+      <h3>完成品</h3>
+      <p>★要編集: 完成した作品の説明(任意)。</p>
+      <div class="wd-gallery">
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/tori-proc-02.jpg" data-label="完成品 1"></li></ul>
+          <span class="img-label">完成品 1</span>
           <span class="img-path">images/process/tori-proc-02.jpg</span>
         </div>
-      </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 04</p>
-        <h3>想定外から得た改善</h3>
-        <p>★要編集: 観察結果を受けて何をどう変えたか。変更前後の差分。</p>
-        <div class="img-frame" style="aspect-ratio:16/9;">
-          <span class="img-label">改善後の仕様 / 比較</span>
+        <div class="img-frame" style="aspect-ratio:4/3;">
+          <ul class="slides-data"><li data-src="images/process/tori-proc-03.jpg" data-label="完成品 2"></li></ul>
+          <span class="img-label">完成品 2</span>
           <span class="img-path">images/process/tori-proc-03.jpg</span>
         </div>
       </div>
-      <div class="wd-step">
-        <p class="wd-step-num">STEP 05</p>
-        <h3>学び</h3>
-        <p>★要編集: この制作で得た、次の作品に持ち越す原則。</p>
+    </div>
+
+
+    <div class="wd-block">
+      <h3>資料</h3>
+      <div class="wd-docs">
+        <a class="wd-doc" href="docs/tori-plan.pdf" target="_blank" rel="noopener">
+          <span class="wd-doc-icon"><span>PDF</span></span>
+          <span class="wd-doc-body">
+            <span class="wd-doc-title">企画書</span>
+            <span class="wd-doc-sub">docs/tori-plan.pdf</span>
+          </span>
+          <span class="wd-doc-arrow">開く ↗</span>
+        </a>
       </div>
+    </div>
   </template>
 
 <!-- Lightbox Modal -->
@@ -1743,6 +1851,33 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
      THUMBNAIL AUTO SLIDER
      -------------------------------------------------- */
   var imgFrames = document.querySelectorAll('.img-frame');
+
+  // 画像ファイルが実際に存在すれば、その画像をカード上に表示する。
+  // 無ければプレースホルダー文字(IMAGE / ファイル名)のまま。
+  // → 公開時は images/ フォルダに正しい名前で画像を置くだけでOK。
+  imgFrames.forEach(function(frame) {
+    var first = frame.querySelector('.slides-data li');
+    if (!first) return;
+    var src = first.getAttribute('data-src');
+    if (!src) return;
+    var probe = new Image();
+    probe.onload = function() {
+      // 読み込み成功 = 画像が存在する → カードに表示
+      if (frame.querySelector('img')) return;
+      var im = document.createElement('img');
+      im.src = src;
+      im.alt = first.getAttribute('data-label') || '';
+      frame.appendChild(im);
+      // プレースホルダーの文字は隠す
+      var lbl = frame.querySelector('.img-label');
+      var pth = frame.querySelector('.img-path');
+      if (lbl) lbl.style.display = 'none';
+      if (pth) pth.style.display = 'none';
+      frame.style.background = 'transparent';
+    };
+    probe.src = src; // 存在しなければonloadは呼ばれず、枠は文字のまま
+  });
+
   imgFrames.forEach(function(frame) {
     var slides = frame.querySelectorAll('.slides-data li');
     if (slides.length <= 1) return; 
@@ -1750,14 +1885,13 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
     var currentIdx = 0;
     var labelEl = frame.querySelector('.img-label');
     var pathEl  = frame.querySelector('.img-path');
-    var realImg = frame.querySelector('img');
 
     setInterval(function() {
       currentIdx = (currentIdx + 1) % slides.length;
       var slide = slides[currentIdx];
       var src = slide.getAttribute('data-src');
       var label = slide.getAttribute('data-label');
-      
+      var realImg = frame.querySelector('img'); // 上の処理で後から生成される場合に対応
       if (labelEl) labelEl.innerText = label;
       if (pathEl)  pathEl.innerText = src;
       if (realImg) realImg.src = src;
