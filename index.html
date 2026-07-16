@@ -374,7 +374,12 @@ div.pressable, article.pressable { display: flex; }
 /* =====================================================
    HERO
    ===================================================== */
-#hero { min-height: 100svh; display: flex; align-items: center; padding-top: 100px; padding-bottom: 60px; position: relative; overflow: hidden; }
+#hero {
+  min-height: 100svh; display: flex; align-items: center;
+  padding-top: 100px; padding-bottom: 60px; position: relative;
+  overflow: visible;      /* フォールバック(横はbodyのoverflow-x:hiddenが抑える) */
+  overflow: clip visible; /* 横だけクリップ・縦は開放 → チップがページ下端まで落ちていける */
+}
 #hero::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
 #hero .wrap { position: relative; z-index: 1; width: 100%; }
 .hero-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; position: relative; z-index: 10; }
@@ -1665,6 +1670,7 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       if (isBlackhole) return;
       e.stopPropagation(); 
       isDragging = true;
+      el.style.zIndex = '500'; // 落下中にカード等の下へ潜り込まないように
       startX = e.clientX - currentX;
       startY = e.clientY - currentY;
       lastX = e.clientX;
@@ -1696,8 +1702,10 @@ footer p { font-family: var(--font-dot); font-size: 10px; letter-spacing: .28em;
       var bounce = -0.5;
       // 変形(transform)を除いた基準位置を一度だけ計算し、二重加算を防ぐ
       var rectNow = el.getBoundingClientRect();
-      var baseTop = rectNow.top - currentY;
-      var floorY  = window.innerHeight - rectNow.height - 20;
+      // 床を「いま見えている画面の下端」ではなく「ページ全体の底」に設定。
+      // 座標はドキュメント基準で計算する(スクロール位置に依存しない)
+      var baseTop = rectNow.top + window.scrollY - currentY;
+      var floorY  = document.documentElement.scrollHeight - rectNow.height - 16;
 
       function physicsLoop() {
         if (suckTarget && suckTarget.sucked) return; 
