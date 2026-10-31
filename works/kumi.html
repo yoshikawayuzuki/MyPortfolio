@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>汲・撒・響 | 吉川柚希 Portfolio</title>
+<meta name="description" content="柄杓を振って水を撒き、形の組み合わせを楽しむ。二人で遊ぶコミュニケーションゲーム「汲・撒・響」。">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261031f">
+<script src="../assets/js/site.js?v=20261031f" defer></script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="home" href="../">吉川 柚希</a>
+    <ul>
+      <li><a href="../#works" aria-current="page">作品</a></li>
+      <li><a href="../#about">自己紹介</a></li>
+      <li><a href="../#contact">連絡先</a></li>
+    </ul>
+  </div>
+  <div class="progress" aria-hidden="true"></div>
+</nav>
+
+<header class="work-hero wrap">
+  <h1>汲・撒・響<span class="yomi">きゅう・さん・きょう</span></h1>
+  <p class="catch lg"><span class="mk">柄杓を振って水を撒き、</span><br><span class="mk">形の組み合わせを楽しむ。</span></p>
+  <figure class="hero-media play" data-play="splash"><img src="../assets/img/kumi_title.webp" alt="京都の路地に「汲・撒・響」のタイトル"></figure>
+  <dl class="facts">
+    <div><dt>プレイ人数</dt><dd>2 人</dd></div>
+    <div><dt>プレイ時間</dt><dd>5〜10 分</dd></div>
+    <div><dt>制作期間</dt><dd>2026 年 5 月〜（制作中）</dd></div>
+    <div><dt>チーム</dt><dd>4 人</dd></div>
+    <div class="wide"><dt>担当</dt><dd>企画、ディレクション、プログラム、デザイン、コントローラー開発</dd></div>
+    <div class="wide"><dt>出展</dt><dd>ゲーム創造・継承シンポジウム ほか</dd></div>
+  </dl>
+</header>
+
+<div class="work-body wrap">
+  <nav class="toc" aria-label="このページの目次">
+    <p>目次</p>
+    <ol>
+      <li><a href="#overview"><span class="no">01</span><span class="t">作品概要</span></a></li>
+      <li><a href="#system"><span class="no">02</span><span class="t">ゲームシステム</span></a></li>
+      <li><a href="#axes"><span class="no">03</span><span class="t">企画の二軸</span></a></li>
+      <li><a href="#problem"><span class="no">04</span><span class="t">課題と解決</span></a></li>
+      <li><a href="#team"><span class="no">05</span><span class="t">チーム</span></a></li>
+      <li><a href="#exhibit"><span class="no">06</span><span class="t">展示で見たこと</span></a></li>
+      <li><a href="#learn"><span class="no">07</span><span class="t">学びとこの先</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="sec" id="overview">
+      <h2 class="sec-title"><span class="no">01</span>作品概要</h2>
+      <div class="split half">
+        <div class="stack">
+          <span class="tag">遊び方</span>
+          <p class="lead">足もとの「打ち水の床」と、<br>正面の「路地」の 2 画面で遊ぶ。</p>
+          <span class="tag">注力したポイント</span>
+          <p class="lead">柄杓を振る気持ちよさを、<br>床に残る水跡と音で返すこと。</p>
+        </div>
+        <div class="love-box">
+          <span class="tag yellow">ここが好き</span>
+          <p class="lead"><span class="mk">床に水跡が広がり、</span><br><span class="mk">名前がつく瞬間。</span></p>
+        </div>
+      </div>
+      <div class="photos" style="margin-top:32px">
+        <figure><img class="zoomable" src="../assets/img/kumi_play.webp" alt="床に映した打ち水の画面に、二人が柄杓で水を撒く" loading="lazy"><figcaption class="caption">足もとの「打ち水の床」に、柄杓で水を撒く</figcaption></figure>
+        <figure><img class="zoomable" src="../assets/img/kumi_floor_sanjo_full.webp" alt="床の画面。水跡に「三条大橋」の銘がつく" loading="lazy"><figcaption class="caption">水跡に「三条大橋」の銘がついた床</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="sec" id="system">
+      <h2 class="sec-title"><span class="no">02</span>ゲームシステム</h2>
+      <p class="catch"><span class="mk">「こう撒いたら、どうなる？」</span><br><span class="mk">二人の会話が、偶然の銘を生む。</span></p>
+      <div class="split half">
+        <figure>
+          <img class="cover zoomable" src="../assets/img/kumi_floor_kamogawa.webp" alt="床の画面。水跡に「鴨川デルタ」の銘がつく" loading="lazy">
+          <figcaption class="caption">実際の床：「一文字」＋「末広」が「鴨川デルタ」に</figcaption>
+        </figure>
+        <div>
+          <ol class="steps">
+            <li>二人が交代で柄杓を振り、床に水を撒く。</li>
+            <li>水跡の形に「扇」「一文字」などの銘がつく。</li>
+            <li>銘は一人では完結しない。相手の水跡と組み合わさると、京都の地名に見立てた「組み合わせ銘」に変わる。</li>
+          </ol>
+          <p class="sub small">決まった回数を撒いたら終わり。勝ち負けはない。</p>
+        </div>
+      </div>
+      <p style="margin:40px 0 16px"><span class="tag">楽しみどころ</span></p>
+      <div class="flow">
+        <div class="step"><h3><span class="mk">話す</span></h3><p>相手の水跡を見て、「こう撒いたら？」と相談する。</p></div>
+        <span class="arrow" aria-hidden="true"></span>
+        <div class="step"><h3><span class="mk">試す</span></h3><p>振り方や位置を変えて、撒いてみる。</p></div>
+        <span class="arrow" aria-hidden="true"></span>
+        <div class="step"><h3><span class="mk">出会う</span></h3><p>偶然、思いがけない組み合わせ銘が生まれ、二人で盛り上がる。</p></div>
+      </div>
+    </section>
+
+    <section class="sec" id="axes">
+      <h2 class="sec-title"><span class="no">03</span>企画の二軸</h2>
+      <p class="catch"><span class="mk">「京都」と「ボタン以外の入力」に、</span><br><span class="mk">祖母の打ち水で答えた。</span></p>
+      <div class="flow box" style="grid-template-columns:1fr auto 1fr">
+        <div class="step stack-sm"><span class="tag">授業の課題</span><p class="bold">京都をモチーフにする。<br>ボタン以外の入力動作が必要。</p></div>
+        <span class="times" aria-hidden="true">×</span>
+        <div class="step stack-sm"><span class="tag">原体験</span><p class="bold">京都に住む祖母の打ち水。<br>撒く音と、残る水跡が心地よかった。</p></div>
+      </div>
+      <div class="split half" style="margin-top:48px">
+        <div class="stack-sm" style="border-top:1px solid var(--ink);padding-top:12px">
+          <p class="small sub">課題の「京都」から</p>
+          <h3 class="catch lg"><span class="mk">見立て</span></h3>
+          <p class="bold">水跡の形を京都の景色に見立てて、銘をつける。<br>例：「一文字」＋「末広」→「鴨川デルタ」</p>
+          <p>京都の枯山水は、石と砂で水の流れを表す。江戸時代の遊び「投扇興」も、扇・蝶・枕が落ちた形に『源氏物語』の巻名で銘をつける。日本人が古くから持つ「見立て」の感性を、遊びの中心にした。</p>
+        </div>
+        <div class="stack-sm" style="border-top:1px solid var(--ink);padding-top:12px">
+          <p class="small sub">原体験の「打ち水」から</p>
+          <h3 class="catch"><span class="mk">行動に、音が応える。</span></h3>
+          <p>少し遅れて鳴るパシャッは、「届いた」の合図。</p>
+          <p class="bold">→ 柄杓型コントローラーを振ると、水の音が鳴る。</p>
+          <h3 class="catch" style="padding-top:20px"><span class="mk">行動が、形に残る。</span></h3>
+          <p>水跡がじんわり広がり、涼しさが目に見える。</p>
+          <p class="bold">→ 振り方で、水跡の形が変わる。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="problem">
+      <h2 class="sec-title"><span class="no">04</span>課題と解決</h2>
+      <div class="split" style="grid-template-columns:1.1fr 1fr;align-items:center">
+        <div class="stack">
+          <span class="tag">問題</span>
+          <p class="catch" style="margin:0"><span class="mk">振った形と、出る水跡が合わない。</span></p>
+          <p>説明がないと「あれ？」となる人が多かった。「こう撒いたら、どうなる？」を試すには、振り方が思った形にきちんと表れる必要がある。</p>
+        </div>
+        <img class="cover zoomable" src="../assets/img/kumi_device_v2.webp" alt="手桶 2 つと、センサーを付けた柄杓型コントローラー 2 本" loading="lazy" style="--r:4/3">
+      </div>
+      <div class="split half" style="margin-top:40px;border-top:1px solid var(--ink);padding-top:28px">
+        <div class="stack">
+          <h3 class="lead" style="font-size:21px"><span class="mk">原因 1　遊ぶ人の振り方</span></h3>
+          <dl class="kv">
+            <dt>原因</dt><dd>説明がないと、みんな刀のように振る。</dd>
+            <dt>解決</dt><dd>機能のない桶を持ってもらうと、水を撒くように振ることに気づいた。最初から桶を持つ形にし、桶にバッテリーを入れて持つ理由をつくった。</dd>
+            <dt>結果</dt><dd class="bold"><span class="mk">安定して、納得感のある形が出やすくなった。</span></dd>
+          </dl>
+        </div>
+        <div class="stack">
+          <h3 class="lead" style="font-size:21px"><span class="mk">原因 2　判定のしかた</span></h3>
+          <dl class="kv">
+            <dt>原因</dt><dd>しきい値を、自分の振り方に合わせて手で決めていた。人によって判定がずれる。</dd>
+            <dt>解決</dt><dd>いろいろな人の振りのデータを集め、機械学習で判定する仕組みをつくる。</dd>
+            <dt>結果</dt><dd class="sub bold">挑戦中。</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="team">
+      <h2 class="sec-title"><span class="no">05</span>チーム</h2>
+      <p class="catch" style="margin-bottom:6px"><span class="mk">役職に関係なく、みんなで考える。</span></p>
+      <p class="lead" style="margin-bottom:32px">自信のある企画だからこそ、一人の力ではもったいない。</p>
+      <div class="flow">
+        <div class="step"><h3><span class="mk">仲間を集める</span></h3><p>自分にできない部分や、アイデアを集めて、より良いものにしたかった。「この企画が面白い」と思ってくれた 3 人が集まった。</p></div>
+        <span class="arrow" aria-hidden="true"></span>
+        <div class="step"><h3><span class="mk">みんなで考える</span></h3><p>企画とチーム運営を担当した。進捗の確認に加えて、一人ひとりと定期的に話し、みんなで考える場をつくった。</p></div>
+        <span class="arrow" aria-hidden="true"></span>
+        <div class="step"><h3><span class="mk">選んで、磨く</span></h3><p>案を出すだけでなく、挙がった案から良いものを見つけて採用し、どう良くするかを考えた。例：水を撒くほど音が賑やかになる、インタラクティブミュージック。</p></div>
+      </div>
+      <p class="small sub" style="margin:40px 0 10px">チーム（4 人）　黒が自分の担当</p>
+      <div class="cols tight keep2" style="--n:4">
+        <div style="background:var(--ink);color:#fff;padding:14px 16px;font-weight:700;line-height:1.5">企画・ディレクション<br>コントローラー</div>
+        <div style="border:1px solid var(--ink);background:#fff;padding:14px 16px;font-weight:700;display:grid;place-items:center">プログラム</div>
+        <div style="border:1px solid var(--ink);background:#fff;padding:14px 16px;font-weight:700;display:grid;place-items:center">サウンド</div>
+        <div style="border:1px solid var(--ink);background:#fff;padding:14px 16px;font-weight:700;display:grid;place-items:center">デザイン</div>
+      </div>
+    </section>
+
+    <section class="sec" id="exhibit">
+      <h2 class="sec-title"><span class="no">06</span>展示で見たこと</h2>
+      <p class="catch"><span class="mk">遊びが、親から子へ打ち水を伝えていた。</span></p>
+      <div class="split" style="grid-template-columns:1.1fr 1fr">
+        <figure>
+          <img class="cover zoomable" src="../assets/img/kumi_loop.webp" alt="展示で、子どもとお父さんが柄杓を持って遊ぶ" loading="lazy" style="--r:5/4">
+          <figcaption class="caption">展示で遊ぶ子ども（初期の版）</figcaption>
+        </figure>
+        <div class="stack">
+          <span class="tag">展示で見た親子</span>
+          <p>ゲームに興味を持った親子に、「打ち水がテーマのゲームです」と説明すると、男の子がお父さんに聞いた。</p>
+          <p class="lead" style="font-size:22px"><span class="mk">「打ち水って何？」</span></p>
+          <p>お父さんはこう答えていた。</p>
+          <p class="lead" style="font-size:22px"><span class="mk">「おばあちゃんの家で</span><br><span class="mk">やってたやつだよ」</span></p>
+          <p>そのあと男の子は、何度も戻ってきて遊んでくれた。</p>
+        </div>
+      </div>
+      <p style="margin-top:32px"><span class="catch"><span class="mk">延べ 100 人以上</span></span> <span class="sub">が遊んだ。年齢も国籍もさまざまで、ふだんゲームをしない人も遊んでくれた。</span></p>
+    </section>
+
+    <section class="sec" id="learn">
+      <h2 class="sec-title"><span class="no">07</span>学びとこの先</h2>
+      <span class="tag">学んだこと</span>
+      <p class="catch" style="margin-top:12px"><span class="mk">自分の感覚ではなく、遊ぶ人を見て作る。</span></p>
+      <div class="split half">
+        <dl class="kv"><dt>判定</dt><dd>自分の振り方だけを基準にして、ほかの人が振るとうまくいかなかった。</dd></dl>
+        <dl class="kv"><dt>桶</dt><dd>自分では思いつかなかった振り方を、遊ぶ人が教えてくれた。</dd></dl>
+      </div>
+      <div class="split half" style="margin-top:48px;border-top:1px solid var(--ink);padding-top:32px;align-items:center">
+        <div class="stack">
+          <span class="tag">この作品の先に</span>
+          <h3 class="catch lg"><span class="mk">遊びを通して、</span><br><span class="mk">打ち水の見方を変える。</span></h3>
+          <p>この作品は、家で遊べるゲームではない。でも遊んだ人が家に帰って、柄杓で打ち水をしてみる。遊びの外の夏まで、少し変えたい。</p>
+        </div>
+        <img class="cover zoomable" src="../assets/img/kumi_play.webp" alt="床の画面を挟んで、二人が柄杓と桶を持って遊ぶ" loading="lazy" style="--r:4/3">
+      </div>
+    </section>
+
+    <a class="next-work" href="denden.html">
+      <div class="media"><img src="../assets/img/denden_kv.webp" alt="" loading="lazy"></div>
+      <div><p class="label">次の作品</p><p class="t">でんでんファイター<span class="ico ico-right" aria-hidden="true"></span></p><p class="small" style="margin-top:8px">でんでん太鼓を振って、相手を吹っ飛ばす。</p></div>
+    </a>
+    <a class="back-link" href="../#works"><span class="ico ico-left" aria-hidden="true"></span>作品一覧へ戻る</a>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>© 2026 吉川 柚希 / Yuzuki Yoshikawa</p>
+    <nav aria-label="フッター"><a href="../#works">作品</a><a href="../#about">自己紹介</a><a href="../#contact">連絡先</a></nav>
+  </div>
+</footer>
+
+</body>
+</html>
